@@ -24,6 +24,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
   late String _lastReleases = "";
   late String _instagram = "";
   late String _youtube = "";
+  late String _profileImageUrl = "";
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         _lastReleases = userData['lastReleases'];
         _instagram = userData['instagram'];
         _youtube = userData['youtube'];
+        _profileImageUrl = userData['profileImageUrl'];
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e"); // Trate erros, se houverem
@@ -78,18 +80,14 @@ class _ProfileCompleteState extends State<ProfileComplete> {
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage:
-                        AssetImage('assets/profiles/default-user-image.png'),
-                  )),
+              SizedBox(height: 20),
+              _buildProfileImage(),
+              SizedBox(height: 5),
 
               Text(
                 //max 35 char
-                _category,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                "$_publicName (${_category})",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               Text(
                 //max 35 char
@@ -206,6 +204,46 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         ),
       ),
     );
+  }
+
+  Widget _buildProfileImage() {
+    return _profileImageUrl.isNotEmpty
+        ? ClipOval(
+            child: Image.network(
+              _profileImageUrl,
+              fit: BoxFit.cover,
+              width: 100,
+              height: 100,
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              (loadingProgress.expectedTotalBytes ?? 1)
+                          : null,
+                    ),
+                  );
+                }
+              },
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stackTrace) {
+                return CircleAvatar(
+                  radius: 50,
+                  backgroundImage:
+                      AssetImage('assets/profiles/default-user-image.png'),
+                );
+              },
+            ),
+          )
+        : CircleAvatar(
+            radius: 50,
+            backgroundImage:
+                AssetImage('assets/profiles/default-user-image.png'),
+          );
   }
 }
 

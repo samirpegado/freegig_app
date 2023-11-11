@@ -1,4 +1,8 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/profile_complete.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:freegig_app/common_widgets/pickimage.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:iconsax/iconsax.dart';
@@ -12,11 +16,14 @@ class ProfileEditForm extends StatefulWidget {
 
 class _ProfileEditFormState extends State<ProfileEditForm> {
   late String _publicName = "";
+  Uint8List? _image;
+  bool _isImageSelected =
+      false; // Variable to track whether an image is selected
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario(); // carrega os dados
+    _carregarDadosDoUsuario(); // Load user data
   }
 
   Future<void> _carregarDadosDoUsuario() async {
@@ -27,7 +34,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         _publicName = userData['publicName'];
       });
     } catch (e) {
-      print("Erro ao buscar dados do usuário: $e"); // Trate erros, se houverem
+      print("Erro ao buscar dados do usuário: $e");
     }
   }
 
@@ -48,14 +55,34 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
   }
 
   Future<void> _completarPerfil() async {
+    if (!_isImageSelected) {
+      // Check if an image is selected
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, selecione uma foto para o perfil.'),
+        ),
+      );
+      return;
+    }
+
     await UserDataService().updateUserProfile(
       description: description.text,
       release: release.text,
       lastReleases: lastReleases.text,
       instagram: instagram.text,
       youtube: youtube.text,
+      image: _image!,
     );
-    Navigator.pop(context);
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => ProfileComplete()));
+  }
+
+  void _pickImage() async {
+    Uint8List img = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = img;
+      _isImageSelected = true; // Set the flag when an image is selected
+    });
   }
 
   @override
@@ -71,10 +98,11 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         ),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.close))
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.close),
+          ),
         ],
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -92,10 +120,18 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                 children: [
                   Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 55,
-                        backgroundImage: AssetImage(
-                            'assets/profiles/default-user-image.png'),
+                      InkWell(
+                        onTap: _pickImage,
+                        child: _image != null
+                            ? CircleAvatar(
+                                radius: 55,
+                                backgroundImage: MemoryImage(_image!),
+                              )
+                            : CircleAvatar(
+                                radius: 55,
+                                backgroundImage: AssetImage(
+                                    'assets/profiles/default-user-image.png'),
+                              ),
                       ),
                       Positioned(
                         bottom: 0,
@@ -137,7 +173,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                 maxLength: 30,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Iconsax.message_minus),
-                  labelText: "Descrição",
+                  labelText: "Descrição*",
                   hintText: "Ex: Versátil, criativo e pontual",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0)),
@@ -150,7 +186,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                 maxLines: 2,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Iconsax.edit),
-                  labelText: "Release",
+                  labelText: "Release*",
                   hintText: "Um breve resumo da sua carreira",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0)),

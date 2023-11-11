@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserDataService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Future<Map<String, dynamic>> getUserData() async {
     try {
@@ -32,10 +36,13 @@ class UserDataService {
     required String lastReleases,
     required String instagram,
     required String youtube,
+    required Uint8List image,
   }) async {
     try {
       User? user = _auth.currentUser;
+
       if (user != null) {
+        String imageUrl = await uploadImagetoStorage(user.uid, image);
         await _firestore.collection('users').doc(user.uid).update({
           'description': description,
           'release': release,
@@ -43,6 +50,7 @@ class UserDataService {
           'instagram': instagram,
           'youtube': youtube,
           'profileComplete': true,
+          'profileImageUrl': imageUrl,
         });
       }
     } catch (e) {
@@ -67,6 +75,7 @@ class UserDataService {
             'lastReleases': userSnapshot['lastReleases'],
             'instagram': userSnapshot['instagram'],
             'youtube': userSnapshot['youtube'],
+            'profileImageUrl': userSnapshot['profileImageUrl']
           };
         }
       }
@@ -74,5 +83,13 @@ class UserDataService {
       print("Erro ao buscar dados do usuário: $e");
     }
     return {};
+  }
+
+  Future<String> uploadImagetoStorage(String childName, Uint8List file) async {
+    Reference ref = _storage.ref().child(childName);
+    UploadTask uploadTask = ref.putData(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
   }
 }
