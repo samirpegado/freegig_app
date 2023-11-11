@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_widget.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileComplete extends StatefulWidget {
@@ -14,14 +16,46 @@ class ProfileComplete extends StatefulWidget {
 class _ProfileCompleteState extends State<ProfileComplete> {
   bool isSwitched = true;
 
-  final user = FirebaseAuth.instance.currentUser!;
+  late String _publicName = "";
+  late String _category = "";
+  late String _description = "";
+  late String _email = "";
+  late String _release = "";
+  late String _lastReleases = "";
+  late String _instagram = "";
+  late String _youtube = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDadosDoUsuario(); // carrega os dados
+  }
+
+  Future<void> _carregarDadosDoUsuario() async {
+    try {
+      Map<String, dynamic> userData = await UserDataService().getProfileData();
+
+      setState(() {
+        _publicName = userData['publicName'];
+        _category = userData['category'];
+        _description = userData['description'];
+        _email = userData['email'];
+        _release = userData['release'];
+        _lastReleases = userData['lastReleases'];
+        _instagram = userData['instagram'];
+        _youtube = userData['youtube'];
+      });
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e"); // Trate erros, se houverem
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Perfil',
+          _publicName,
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 19.0,
@@ -45,34 +79,127 @@ class _ProfileCompleteState extends State<ProfileComplete> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ProfileWidget(
-                  imagePath: "assets/profiles/samir.png",
-                  onClicked: () {},
-                  colorCircle: Colors.blue,
-                ),
-              ),
+                  padding: const EdgeInsets.all(20.0),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage:
+                        AssetImage('assets/profiles/default-user-image.png'),
+                  )),
+
               Text(
-                "Samir Pegado",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                //max 35 char
+                _category,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               Text(
                 //max 35 char
-                "Baterista, produtor e desenvolvedor",
+                _description,
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               Text(
-                "samirpegado@gmail.com",
+                _email,
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               SizedBox(height: 20),
               ProfileNumbers(),
               SizedBox(height: 20),
-              buildAbout(),
+
+              ///Release
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Release',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _release,
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 20),
-              lastReleases(),
+
+              /// last releases
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Últimos trabalhos',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _lastReleases,
+                      style: TextStyle(fontSize: 16, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+
               SizedBox(height: 20),
-              socialMedia(),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Redes Sociais',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+
+                    ///redes icones
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(100)),
+                          child: IconButton(
+                              onPressed: () {
+                                Link("www.youtube.com/$_youtube");
+                              },
+                              icon: Icon(Iconsax.video5)),
+                        ),
+                        Text(_youtube,
+                            style: TextStyle(fontSize: 16, height: 1.4)),
+                      ],
+                    ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(100)),
+                          child: IconButton(
+                              onPressed: () {
+                                Link("www.instagram.com/$_instagram");
+                              },
+                              icon: Icon(Iconsax.instagram5)),
+                        ),
+                        Text(_instagram,
+                            style: TextStyle(fontSize: 16, height: 1.4)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 20),
             ],
           ),
@@ -169,75 +296,3 @@ class NumbersWidget extends StatelessWidget {
         ),
       );
 }
-
-Widget buildAbout() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Release',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit ullamcorper pulvinar. Vestibulum fermentum tortor id m",
-            style: TextStyle(fontSize: 16, height: 1.4),
-          ),
-        ],
-      ),
-    );
-
-Widget lastReleases() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Últimos trabalhos',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit ullamcorper pulvinar. Vestibulum fermentum tortor id m",
-            style: TextStyle(fontSize: 16, height: 1.4),
-          ),
-        ],
-      ),
-    );
-
-Widget socialMedia() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Redes Sociais',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-
-          ///redes icones
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/youtube.png",
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-              ),
-              SizedBox(width: 15),
-              Image.asset(
-                "assets/icons/instagram.png",
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );

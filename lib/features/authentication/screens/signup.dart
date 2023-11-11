@@ -129,6 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final user = FirebaseAuth.instance.currentUser!;
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'uid': user.uid,
       'firstName': firstName,
       'lastName': lastName,
       'publicName': publicName,
@@ -136,6 +137,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'birthDate': birthDate,
       'phoneNo': phoneNo,
       'email': email,
+      'profileComplete': false,
     });
   }
 
@@ -384,36 +386,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ],
                         ),
                         SizedBox(height: 25),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () {
-                              signUp();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(14.0),
-                              child: Text(
-                                "Criar conta",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 15),
                       ],
                     ),
                   ),
                 ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      signUp();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Text(
+                        "Criar conta",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15),
               ],
             ),
           ),

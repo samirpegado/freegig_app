@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_widget.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/profile_edit_form.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileEdit extends StatefulWidget {
@@ -15,11 +16,26 @@ class ProfileEdit extends StatefulWidget {
 class _ProfileEditState extends State<ProfileEdit> {
   bool isSwitched = true;
 
-  final user = FirebaseAuth.instance.currentUser!;
+  late String _publicName = "";
+  late String _category = "";
 
   @override
   void initState() {
     super.initState();
+    _carregarDadosDoUsuario(); // carrega os dados
+  }
+
+  Future<void> _carregarDadosDoUsuario() async {
+    try {
+      Map<String, dynamic> userData = await UserDataService().getUserData();
+
+      setState(() {
+        _publicName = userData['publicName'];
+        _category = userData['category'];
+      });
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e"); // Trate erros, se houverem
+    }
   }
 
   @override
@@ -53,19 +69,18 @@ class _ProfileEditState extends State<ProfileEdit> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ProfileWidget(
-                  imagePath: "assets/profiles/default-user-image.png",
-                  onClicked: () {},
-                  colorCircle: Colors.green,
-                ),
-              ),
+                  padding: const EdgeInsets.all(20.0),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundImage:
+                        AssetImage('assets/profiles/default-user-image.png'),
+                  )),
               Text(
-                "Olá, user",
+                "Olá, $_publicName",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Text(
-                "email",
+                "$_category",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               SizedBox(height: 20),
@@ -81,8 +96,30 @@ class _ProfileEditState extends State<ProfileEdit> {
               lastReleases(),
               SizedBox(height: 20),
               socialMedia(),
-              SizedBox(height: 30),
-              completeButton(),
+              SizedBox(height: 40),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ProfileEditForm()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: Text(
+                    "Completar perfil",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -147,28 +184,5 @@ Widget socialMedia() => Container(
             style: TextStyle(fontSize: 16, height: 1.4),
           ),
         ],
-      ),
-    );
-
-Widget completeButton() => SizedBox(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        onPressed: () {},
-        child: Padding(
-          padding: const EdgeInsets.all(14.0),
-          child: Text(
-            "Completar perfil",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 16.0,
-            ),
-          ),
-        ),
       ),
     );

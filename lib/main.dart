@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
-import 'package:freegig_app/features/authentication/screens/login.dart';
 import 'package:freegig_app/firebase_options.dart';
+import 'package:freegig_app/services/auth/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
-      home: LoginScreen(),
+      home: AuthGate(),
     );
   }
 }

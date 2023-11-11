@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_0/widgets/messages/messages_card.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 
 class Messages extends StatelessWidget {
@@ -26,9 +25,7 @@ class Messages extends StatelessWidget {
           children: [
             Expanded(
               child: Column(
-                children: [
-                  MessageCard(),
-                ],
+                children: [],
               ),
             )
           ],
