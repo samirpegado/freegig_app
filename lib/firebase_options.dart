@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC6YysbGJW-W_F73eIXeCNiRGV9aX9Bev8',
-    appId: '1:788475447771:android:59e8439d02e4e51157bffe',
-    messagingSenderId: '788475447771',
-    projectId: 'freegig-72812',
-    storageBucket: 'freegig-72812.appspot.com',
+    apiKey: 'AIzaSyBM43U3iayX8dfmufks3L7GWxRUg_-31gg',
+    appId: '1:336206459639:android:14915212f66386dfff99f2',
+    messagingSenderId: '336206459639',
+    projectId: 'freegig-fac8e',
+    storageBucket: 'freegig-fac8e.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDxW3pS_eEp8pEFz5TpKSK4oEhl61Ohxp0',
-    appId: '1:788475447771:ios:3a5db7b9a819a10357bffe',
-    messagingSenderId: '788475447771',
-    projectId: 'freegig-72812',
-    storageBucket: 'freegig-72812.appspot.com',
+    apiKey: 'AIzaSyDuU1OiMwa_v-jMnCUD-by6UfCZnn45lpA',
+    appId: '1:336206459639:ios:540b229c84f1f04cff99f2',
+    messagingSenderId: '336206459639',
+    projectId: 'freegig-fac8e',
+    storageBucket: 'freegig-fac8e.appspot.com',
     iosBundleId: 'com.example.freegigApp',
   );
 }

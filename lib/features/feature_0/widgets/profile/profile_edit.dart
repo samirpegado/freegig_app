@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/authentication/controllers/logout_controller.dart';
+import 'package:freegig_app/features/authentication/screens/login.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_widget.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
@@ -16,30 +15,11 @@ class ProfileEdit extends StatefulWidget {
 class _ProfileEditState extends State<ProfileEdit> {
   bool isSwitched = true;
 
-  final LogoutUser logoutUser = LogoutUser();
-
   final user = FirebaseAuth.instance.currentUser!;
-  late String _publicName = '';
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    // Consulta ao Firestore para obter dados adicionais do usuário
-    final userDoc = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(user.uid)
-        .get();
-
-    // Verifica se o documento existe antes de acessar os dados
-    if (userDoc.exists) {
-      setState(() {
-        _publicName = userDoc['publicName'];
-      });
-    }
   }
 
   @override
@@ -56,7 +36,9 @@ class _ProfileEditState extends State<ProfileEdit> {
         actions: [
           IconButton(
               onPressed: () {
-                logoutUser.signOut(context);
+                FirebaseAuth.instance.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
               },
               icon: Icon(Iconsax.logout_1))
         ],
@@ -79,11 +61,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                 ),
               ),
               Text(
-                "Olá, $_publicName",
+                "Olá, user",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Text(
-                "${user.email}",
+                "email",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               SizedBox(height: 20),

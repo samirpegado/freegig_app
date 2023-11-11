@@ -90,7 +90,7 @@ class Home extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: HomePageView(),
+            child: HomeAgenda(),
           )
         ],
       ),

@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Importe o pacote intl para lidar com datas
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:intl/intl.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/features/authentication/controllers/signup_controller.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:iconsax/iconsax.dart';
@@ -17,7 +19,6 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool showPassword = false;
   bool isChecked = false;
-  final SignUpController signUpController = SignUpController();
 
   void toggleShowPassword() {
     setState(() {
@@ -54,6 +55,89 @@ class _SignUpScreenState extends State<SignUpScreen> {
     ],
     'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
   };
+
+  final firstName = TextEditingController();
+  final lastName = TextEditingController();
+  final publicName = TextEditingController();
+  final category = TextEditingController();
+  final birthDate = TextEditingController();
+  final phoneNo = TextEditingController();
+  final email = TextEditingController();
+  final password = TextEditingController();
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    firstName.dispose();
+    lastName.dispose();
+    publicName.dispose();
+    category.dispose();
+    birthDate.dispose();
+    phoneNo.dispose();
+    super.dispose();
+  }
+
+  Future signUp() async {
+    try {
+      //create user
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email.text.trim(),
+        password: password.text.trim(),
+      );
+      // Se a conta foi criada com sucesso, navegue para a tela desejada
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NavigationMenu(),
+        ),
+      );
+
+      //add user details
+      addUserDetails(
+        firstName.text.trim(),
+        lastName.text.trim(),
+        publicName.text.trim(),
+        category.text.trim(),
+        birthDate.text.trim(),
+        phoneNo.text.trim(),
+        email.text.trim(),
+      );
+
+      ///
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+    }
+  }
+
+  ///
+  Future addUserDetails(
+    String firstName,
+    String lastName,
+    String publicName,
+    String category,
+    String birthDate,
+    String phoneNo,
+    String email,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser!;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'firstName': firstName,
+      'lastName': lastName,
+      'publicName': publicName,
+      'category': category,
+      'birthDate': birthDate,
+      'phoneNo': phoneNo,
+      'email': email,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                controller: signUpController.firstName,
+                                controller: firstName,
                                 textCapitalization: TextCapitalization.words,
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Iconsax.user),
@@ -110,7 +194,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             SizedBox(width: 15),
                             Expanded(
                               child: TextFormField(
-                                controller: signUpController.lastName,
+                                controller: lastName,
                                 textCapitalization: TextCapitalization.words,
                                 decoration: InputDecoration(
                                   prefixIcon: Icon(Iconsax.user),
@@ -125,7 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         SizedBox(height: 15),
                         TextFormField(
-                          controller: signUpController.publicName,
+                          controller: publicName,
                           textCapitalization: TextCapitalization.words,
                           decoration: InputDecoration(
                             labelText: "Nome artístico",
@@ -140,7 +224,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Expanded(
                               child: TypeAheadField<String>(
                                 textFieldConfiguration: TextFieldConfiguration(
-                                  controller: signUpController.category,
+                                  controller: category,
                                   decoration: InputDecoration(
                                     labelText: 'Categoria',
                                     prefixIcon: Icon(Iconsax.music),
@@ -163,7 +247,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onSuggestionSelected: (suggestion) {
                                   setState(() {
                                     selectedMusician = suggestion;
-                                    signUpController.category.text = suggestion;
+                                    category.text = suggestion;
                                   });
                                 },
                                 noItemsFoundBuilder: (context) {
@@ -180,7 +264,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             SizedBox(width: 15),
                             Expanded(
                               child: TextFormField(
-                                controller: signUpController.birthDate,
+                                controller: birthDate,
                                 inputFormatters: [
                                   MaskTextInputFormatter(mask: '##-##-####')
                                 ],
@@ -198,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         SizedBox(height: 15),
                         TextFormField(
-                          controller: signUpController.phoneNo,
+                          controller: phoneNo,
                           inputFormatters: [
                             MaskTextInputFormatter(
                                 mask: "(XX) XXXXX-XXXX",
@@ -216,7 +300,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         SizedBox(height: 15),
                         TextFormField(
-                          controller: signUpController.email,
+                          controller: email,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Iconsax.direct),
                             labelText: "E-mail",
@@ -226,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         SizedBox(height: 15),
                         TextFormField(
-                          controller: signUpController.password,
+                          controller: password,
                           obscureText: !showPassword,
                           decoration: InputDecoration(
                             prefixIcon: Icon(Iconsax.password_check),
@@ -310,12 +394,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             onPressed: () {
-                              if (isChecked &&
-                                  _isOver18(signUpController.birthDate.text)) {
-                                signUpController.signUp(context);
-                              } else {
-                                _showErrorSnackBar(context);
-                              }
+                              signUp();
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(14.0),

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:freegig_app/features/feature_1/provider/favoriteprovider.dart';
 import 'package:freegig_app/features/feature_1/screens/3_musiciandetail.dart';
 import 'package:freegig_app/data/data.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:provider/provider.dart';
 
 class HomeCardsRoll extends StatefulWidget {
   @override
@@ -25,8 +22,6 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
 
   @override
   Widget build(BuildContext context) {
-    final favoritesProvider = Provider.of<FavoritesProvider>(context);
-
     void openProfileDetails(int index) {
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -41,103 +36,51 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
           children: profiles.asMap().entries.map((entry) {
             final index = entry.key;
             final pr = entry.value;
-            final isFavorited =
-                favoritesProvider.favoritedIndexes.contains(index);
+
             return Padding(
               padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
-              child: Card(
-                elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      /// Imagem do perfil
-                      InkWell(
-                        onTap: () {
-                          openProfileDetails(index);
-                        },
-                        child: ClipOval(
-                          child: Image.asset(
-                            pr.image,
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          ),
+              child: InkWell(
+                onTap: () {
+                  openProfileDetails(index);
+                },
+                child: Card(
+                  elevation: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        /// Imagem do perfil
+                        CircleAvatar(
+                          radius: 35,
+                          backgroundImage: AssetImage(pr.image),
                         ),
-                      ),
-                      SizedBox(width: 15),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            /// Nome do perfil
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  pr.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.0,
-                                  ),
-                                ),
-
-                                /// Favoritar
-                                IconButton(
-                                  onPressed: () {
-                                    favoritesProvider.toggleFavorite(index);
-                                    if (isFavorited) {
-                                      Fluttertoast.showToast(
-                                        msg: "Removido dos favoritos",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0,
-                                      );
-                                    } else {
-                                      Fluttertoast.showToast(
-                                        msg: "Adicionado aos favoritos",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.grey,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0,
-                                      );
-                                    }
-                                  },
-                                  icon: isFavorited
-                                      ? Icon(
-                                          Iconsax.heart5,
-                                          color: Colors.red,
-                                          size: 26,
-                                        )
-                                      : Icon(
-                                          Iconsax.heart,
-                                          size: 26,
-                                        ),
-                                ),
-                              ],
-                            ),
-
-                            /// Descricao
-                            Text(
-                              pr.description,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14.0,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                        SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              /// Nome do perfil
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
+                                  Text(
+                                    pr.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                  Icon(Iconsax.arrow_right_3)
+                                ],
+                              ),
+
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("(Categoria)"),
                                   Row(
                                     children: [
                                       Icon(
@@ -170,19 +113,23 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                       ),
                                     ],
                                   ),
-                                  IconButton(
-                                    icon: Icon(Iconsax.arrow_right_3),
-                                    onPressed: () {
-                                      openProfileDetails(index);
-                                    },
-                                  ),
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                              SizedBox(height: 6),
+
+                              /// Descricao
+                              Text(
+                                pr.description,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

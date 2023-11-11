@@ -1,5 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/authentication/controllers/logout_controller.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_widget.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
@@ -14,7 +14,7 @@ class ProfileComplete extends StatefulWidget {
 class _ProfileCompleteState extends State<ProfileComplete> {
   bool isSwitched = true;
 
-  final LogoutUser logoutUser = LogoutUser();
+  final user = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         actions: [
           IconButton(
               onPressed: () {
-                logoutUser.signOut(context);
+                FirebaseAuth.instance.signOut();
               },
               icon: Icon(Iconsax.logout_1))
         ],

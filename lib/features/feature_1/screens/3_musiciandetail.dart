@@ -13,7 +13,7 @@ class ProfileDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 65,
+        toolbarHeight: 60,
         title: Text(
           profile.name,
           style: TextStyle(
@@ -26,23 +26,6 @@ class ProfileDetailsPage extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  openMessage(context);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Iconsax.message,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10),
-              InkWell(
-                onTap: () {
                   openDialog(context);
                 },
                 child: Container(
@@ -53,7 +36,7 @@ class ProfileDetailsPage extends StatelessWidget {
                   child: Icon(
                     Iconsax.add,
                     color: Colors.white,
-                    size: 30,
+                    size: 25,
                   ),
                 ),
               ),
@@ -70,26 +53,41 @@ class ProfileDetailsPage extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: ClipOval(
-                    child: Image.asset(
-                      profile.image,
-                      height: 128,
-                      width: 128,
-                      fit: BoxFit.cover,
-                    ),
-                  )),
+                padding: const EdgeInsets.all(20.0),
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: AssetImage(profile.image),
+                ),
+              ),
               Text(
                 profile.name,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               Text(
                 //max 35 char
+                '(Categoria)',
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 10),
+              Text(
+                //max 35 char
                 profile.description,
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               ProfileNumbers(profile: profile),
+              TextButton(
+                onPressed: () {
+                  openMessage(context);
+                },
+                child: Text(
+                  "Enviar uma mensagem",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
               SizedBox(height: 20),
               buildAbout(profile: profile),
               SizedBox(height: 20),

@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/authentication/controllers/login_controller.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,7 +25,31 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  final LoginController loginController = LoginController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      // Se o login tiver sucesso, navegue para a tela desejada
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NavigationMenu(),
+          ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.toString(),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       ///Email
                       TextFormField(
-                        controller: loginController.emailController,
+                        controller: emailController,
                         decoration: InputDecoration(
                           labelText: "E-mail",
                           prefixIcon: Icon(Iconsax.direct_right),
@@ -80,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       /// Password
                       TextFormField(
-                        controller: loginController.passwordController,
+                        controller: passwordController,
                         obscureText: !showPassword, // Use !showPassword here
                         decoration: InputDecoration(
                           prefixIcon: Icon(Iconsax.password_check),
@@ -132,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           onPressed: () {
-                            loginController.signIn(context);
+                            signIn();
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(14.0),
