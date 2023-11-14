@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:freegig_app/data/data.dart';
 
 class InviteConfirm extends StatelessWidget {
   const InviteConfirm({
@@ -8,7 +7,7 @@ class InviteConfirm extends StatelessWidget {
     required this.profile,
   });
 
-  final Profile profile;
+  final Map<String, dynamic> profile;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,7 @@ class InviteConfirm extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
       content: Text(
-        "Deseja convidar ${profile.name} para se juntar a sua GIG?",
+        "Deseja convidar ${profile['publicName']} para se juntar a sua GIG?",
         textAlign: TextAlign.center,
       ),
       actions: [

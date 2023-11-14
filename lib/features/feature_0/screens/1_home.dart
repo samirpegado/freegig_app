@@ -76,9 +76,7 @@ class Home extends StatelessWidget {
                         ),
                         HomeCustomCard(
                           buttonText: "Criar Gigs",
-                          destination: NavigationMenu(
-                            navPage: 1,
-                          ),
+                          destination: NavigationMenu(navPage: 1),
                           imgCard: 'assets/images/criar.png',
                         ),
                         SizedBox(),

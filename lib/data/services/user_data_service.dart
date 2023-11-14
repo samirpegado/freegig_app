@@ -3,11 +3,13 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:freegig_app/features/authentication/screens/login.dart';
 
 class UserDataService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
 
   Future<Map<String, dynamic>> getUserData() async {
     try {
@@ -51,6 +53,7 @@ class UserDataService {
           'youtube': youtube,
           'profileComplete': true,
           'profileImageUrl': imageUrl,
+          'userStatus': false,
         });
       }
     } catch (e) {
@@ -75,7 +78,7 @@ class UserDataService {
             'lastReleases': userSnapshot['lastReleases'],
             'instagram': userSnapshot['instagram'],
             'youtube': userSnapshot['youtube'],
-            'profileImageUrl': userSnapshot['profileImageUrl']
+            'profileImageUrl': userSnapshot['profileImageUrl'],
           };
         }
       }
@@ -83,6 +86,20 @@ class UserDataService {
       print("Erro ao buscar dados do usuário: $e");
     }
     return {};
+  }
+
+  void logOut(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+    FirebaseAuth.instance.signOut();
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   Future<String> uploadImagetoStorage(String childName, Uint8List file) async {

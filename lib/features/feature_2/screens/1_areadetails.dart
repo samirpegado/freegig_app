@@ -15,6 +15,7 @@ class AreaDetails extends StatefulWidget {
 
 class _AreaDetailsState extends State<AreaDetails> {
   final dataformat = DateFormat("dd-MM-yyyy");
+  final _addressController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,9 @@ class _AreaDetailsState extends State<AreaDetails> {
                 SizedBox(height: 20),
 
                 ///Pesquisa de endereco
-                SearchGoogleAddress(),
+                SearchGoogleAddress(
+                  addressController: _addressController,
+                ),
                 SizedBox(height: 15),
 
                 ///Data

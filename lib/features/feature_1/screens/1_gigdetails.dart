@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
+import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_1/screens/2_listmusicians.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common_widgets/formatcurrency.dart';
-import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -14,11 +12,9 @@ class GigDetails extends StatefulWidget {
 }
 
 class _GigDetailsState extends State<GigDetails> {
-  final TextEditingController _fixeddateController = TextEditingController();
-  final TextEditingController _cacheController = TextEditingController();
-  final TextEditingController _initTimeController = TextEditingController();
-  final TextEditingController _finalTimeController = TextEditingController();
-
+  final _fixeddateController = TextEditingController();
+  final _initTimeController = TextEditingController();
+  final _cityController = TextEditingController();
   final hourformat = DateFormat("HH:mm");
 
   DateTime? startTime;
@@ -65,135 +61,25 @@ class _GigDetailsState extends State<GigDetails> {
                 ),
 
                 SizedBox(height: 20),
-
-                ///Pesquisa de endereco
-                SearchGoogleAddress(),
-                SizedBox(height: 15),
-
-                ///Hora de inicio e término
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: DateTimeField(
-                        controller: _initTimeController,
-                        decoration: InputDecoration(
-                          labelText: 'Início',
-                          prefixIcon: Icon(Iconsax.clock),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                        format: hourformat,
-                        onShowPicker: (context, currentValue) async {
-                          final timeInicio = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                currentValue ?? DateTime.now()),
-                          );
-                          setState(() {
-                            startTime = DateTimeField.convert(timeInicio);
-                            _initTimeController.text = startTime.toString();
-                          });
-                          return DateTimeField.convert(timeInicio);
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Expanded(
-                      child: DateTimeField(
-                        controller: _finalTimeController,
-                        decoration: InputDecoration(
-                          labelText: 'Término',
-                          prefixIcon: Icon(Iconsax.clock),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                        format: hourformat,
-                        initialValue:
-                            startTime, // Defina o valor inicial do campo de término com o valor do campo de início.
-                        onShowPicker: (context, currentValue) async {
-                          final timeTermino = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(currentValue ??
-                                (startTime ??
-                                    DateTime
-                                        .now())), // Use startTime se estiver definido.
-                          );
-                          setState(() {
-                            endTime = DateTimeField.convert(timeTermino);
-                            _finalTimeController.text = endTime.toString();
-                          });
-                          return DateTimeField.convert(timeTermino);
-                        },
-                      ),
-                    ),
-                  ],
+                SearchGoogleCity(
+                  cityController: _cityController,
                 ),
                 SizedBox(height: 15),
 
-                ///Data e cache
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _fixeddateController,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(Iconsax.calendar),
-                          filled: true,
-                          fillColor: backgroundColor,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 15),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _cacheController,
-                        onChanged: (value) {
-                          setState(() {
-                            _cacheController.text =
-                                FormatCurrency().formatCurrency(value);
-                          });
-                        },
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Cachê',
-                          prefixIcon: Icon(Iconsax.money),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15),
-
-                ///Mais detalhes
                 TextField(
-                  maxLines: 3,
+                  controller: _fixeddateController,
+                  readOnly: true,
                   decoration: InputDecoration(
-                    hintText:
-                        'Mais detalhes da sua GIG...\nLocal, evento, estilo de música...',
-                    labelText: "Detalhes",
-                    prefixIcon: Icon(Iconsax.device_message),
+                    prefixIcon: Icon(Iconsax.calendar),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: backgroundColor,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0)),
                   ),
                 ),
 
                 ///Botao
-                SizedBox(height: 35),
+                SizedBox(height: 50),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF274b99),

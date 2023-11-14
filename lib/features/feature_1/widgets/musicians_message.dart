@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:freegig_app/data/data.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MessageToMusician extends StatelessWidget {
@@ -9,7 +8,7 @@ class MessageToMusician extends StatelessWidget {
     required this.profile,
   });
 
-  final Profile profile;
+  final Map<String, dynamic> profile;
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +18,11 @@ class MessageToMusician extends StatelessWidget {
         textAlign: TextAlign.center,
       ),
       content: SizedBox(
-        height: 160,
+        height: 130,
         child: Column(
           children: [
-            Text(
-              "Para: ${profile.name}",
-            ),
-            SizedBox(height: 10),
             TextField(
+              textCapitalization: TextCapitalization.sentences,
               maxLines: 3,
               decoration: InputDecoration(
                 labelText: "Mensagem",
@@ -52,14 +48,14 @@ class MessageToMusician extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(100)),
                   child: Icon(
                     Iconsax.forbidden_2,
                     color: Colors.white,
-                    size: 30,
+                    size: 20,
                   ),
                 ),
               ),
@@ -78,14 +74,14 @@ class MessageToMusician extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  padding: EdgeInsets.all(12),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(100)),
                   child: Icon(
                     Iconsax.send_1,
                     color: Colors.white,
-                    size: 30,
+                    size: 20,
                   ),
                 ),
               ),

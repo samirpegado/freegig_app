@@ -29,7 +29,7 @@ class HomeAgenda extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20, right: 20),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.3,
+              height: MediaQuery.of(context).size.height * 0.25,
               padding: EdgeInsets.all(35),
               alignment: Alignment.center,
               decoration: BoxDecoration(

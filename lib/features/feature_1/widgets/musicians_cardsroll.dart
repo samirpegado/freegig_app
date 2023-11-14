@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/data/services/profiles_data_service.dart';
 import 'package:freegig_app/features/feature_1/screens/3_musiciandetail.dart';
-import 'package:freegig_app/data/data.dart';
+
 import 'package:iconsax/iconsax.dart';
 
 class HomeCardsRoll extends StatefulWidget {
@@ -9,20 +10,18 @@ class HomeCardsRoll extends StatefulWidget {
 }
 
 class _HomeCardsRollState extends State<HomeCardsRoll> {
-  List<bool> isClickedList = List.filled(profiles.length, false);
+  late Future<List<Map<String, dynamic>>> userDataList;
 
-  //lista para rastrear músicos favoritados
-
-  /// Funcao para clicar no coracao
-  void toggleFavorite(int index) {
-    setState(() {
-      isClickedList[index] = !isClickedList[index];
-    });
+  @override
+  void initState() {
+    super.initState();
+    userDataList = ProfileDataService().getActiveUserProfile();
   }
 
   @override
   Widget build(BuildContext context) {
-    void openProfileDetails(int index) {
+    Future<void> openProfileDetails(int index) async {
+      List<Map<String, dynamic>> profiles = await userDataList;
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ProfileDetailsPage(profile: profiles[index]),
@@ -30,114 +29,135 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
       );
     }
 
-    return Column(
-      children: [
-        Column(
-          children: profiles.asMap().entries.map((entry) {
-            final index = entry.key;
-            final pr = entry.value;
-
+    return FutureBuilder<List<Map<String, dynamic>>>(
+        future: userDataList,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
-              child: InkWell(
-                onTap: () {
-                  openProfileDetails(index);
-                },
-                child: Card(
-                  elevation: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        /// Imagem do perfil
-                        CircleAvatar(
-                          radius: 35,
-                          backgroundImage: AssetImage(pr.image),
-                        ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              /// Nome do perfil
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    pr.name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.0,
-                                    ),
+              padding: const EdgeInsets.all(30.0),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Erro: ${snapshot.error}');
+          } else {
+            // Se estiver tudo bem, você pode acessar os dados em snapshot.data
+            List<Map<String, dynamic>> profiles = snapshot.data!;
+            // Agora você pode usar a lista de gigs normalmente no seu código
+            if (profiles.isEmpty) {
+              // Se a lista de gigs estiver vazia, exibe a mensagem "Nenhuma gig encontrada"
+              return Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Center(
+                  child: Text(
+                    'Nenhuma músico encontrado',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: [
+                Column(
+                  children: profiles.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final profile = entry.value;
+
+                    return Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      child: InkWell(
+                        onTap: () {
+                          openProfileDetails(index);
+                        },
+                        child: Card(
+                          elevation: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                /// Imagem do perfil
+                                ClipOval(
+                                  child: Image.network(
+                                    profile['profileImageUrl'],
+                                    fit: BoxFit.cover,
+                                    width: 70,
+                                    height: 70,
                                   ),
-                                  Icon(Iconsax.arrow_right_3)
-                                ],
-                              ),
-
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("(Categoria)"),
-                                  Row(
+                                ),
+                                SizedBox(width: 15),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Iconsax.star1,
-                                        color: Colors.amber,
-                                        size: 28,
+                                      /// Nome do perfil
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            profile['publicName'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 15.0,
+                                            ),
+                                          ),
+                                          Icon(Iconsax.arrow_right_3)
+                                        ],
                                       ),
 
-                                      /// Avaliacao
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text("Categoria"),
+                                          Row(
+                                            children: [
+                                              /// Avaliacao
+                                              Text(
+                                                "N/A",
+                                                style: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 80, 78, 78),
+                                                  //fontWeight: FontWeight.w600,
+                                                  fontSize: 14.0,
+                                                ),
+                                              ),
+                                              SizedBox(width: 3),
+                                              Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 6),
+
+                                      /// Descricao
                                       Text(
-                                        pr.rate,
+                                        profile['description'],
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color:
-                                              Color.fromARGB(255, 80, 78, 78),
-                                          fontWeight: FontWeight.bold,
                                           fontSize: 14.0,
-                                        ),
-                                      ),
-                                      SizedBox(width: 5),
-
-                                      /// Numero de comentarios
-                                      Text(
-                                        '(${pr.ncomments})',
-                                        style: TextStyle(
-                                          color: Color.fromARGB(
-                                              255, 134, 133, 133),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13.0,
                                         ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 6),
-
-                              /// Descricao
-                              Text(
-                                pr.description,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                ),
-                              ),
-                            ],
+                                )
+                              ],
+                            ),
                           ),
-                        )
-                      ],
-                    ),
-                  ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-              ),
+                SizedBox(height: 30)
+              ],
             );
-          }).toList(),
-        ),
-        SizedBox(height: 30)
-      ],
-    );
+          }
+        });
   }
 }

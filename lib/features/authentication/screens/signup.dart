@@ -80,6 +80,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future signUp() async {
     try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
       //create user
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(),

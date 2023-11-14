@@ -6,18 +6,18 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-class SearchGoogleAddress extends StatefulWidget {
-  final TextEditingController addressController;
+class SearchGoogleCity extends StatefulWidget {
+  final TextEditingController cityController;
 
-  const SearchGoogleAddress({Key? key, required this.addressController})
+  const SearchGoogleCity({Key? key, required this.cityController})
       : super(key: key);
 
   @override
-  State<SearchGoogleAddress> createState() => _SearchGoogleAddressState();
+  State<SearchGoogleCity> createState() => _SearchGoogleCityState();
 }
 
-class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
-  final _searchController = TextEditingController();
+class _SearchGoogleCityState extends State<SearchGoogleCity> {
+  final _searchCityController = TextEditingController();
 
   Uuid uuid = const Uuid();
   String sessionToken = "";
@@ -28,7 +28,7 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
     String baseUrl =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json";
     String request =
-        "$baseUrl?input=$input&key=$googleApiKey&sessiontoken=$sessionToken&components=country:BR&language=pt-BR";
+        "$baseUrl?input=$input&key=$googleApiKey&sessiontoken=$sessionToken&components=country:BR&language=pt-BR&types=(cities)&inputtype=textquery";
 
     var response = await http.get(Uri.parse(request));
 
@@ -53,14 +53,14 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
     if (sessionToken.isEmpty) {
       sessionToken = uuid.v4();
     } else {
-      getSuggestions(_searchController.text);
+      getSuggestions(_searchCityController.text);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
+    _searchCityController.addListener(() {
       onChange();
     });
   }
@@ -71,11 +71,10 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
       children: [
         TypeAheadField(
           textFieldConfiguration: TextFieldConfiguration(
-            controller: _searchController,
+            controller: _searchCityController,
             decoration: InputDecoration(
-              labelText: "Local",
-              hintText: "Local, endereço...",
-              prefixIcon: Icon(Iconsax.location),
+              labelText: "Cidade",
+              prefixIcon: Icon(Iconsax.global),
               filled: true,
               fillColor: Colors.white,
               border:
@@ -93,8 +92,8 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
           },
           onSuggestionSelected: (suggestion) {
             setState(() {
-              _searchController.text = suggestion;
-              widget.addressController.text = suggestion;
+              _searchCityController.text = suggestion;
+              widget.cityController.text = suggestion;
             });
           },
           noItemsFoundBuilder: (context) {

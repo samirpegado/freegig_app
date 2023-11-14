@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/features/authentication/screens/login.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_edit_form.dart';
 import 'package:iconsax/iconsax.dart';
@@ -52,9 +50,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         actions: [
           IconButton(
               onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                UserDataService().logOut(context);
               },
               icon: Icon(Iconsax.logout_1))
         ],
@@ -136,12 +132,12 @@ Widget buildAbout() => Container(
         children: [
           Text(
             'Release',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(
             "*Nenhum release publicado",
-            style: TextStyle(fontSize: 16, height: 1.4),
+            style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],
       ),
@@ -155,12 +151,12 @@ Widget lastReleases() => Container(
         children: [
           Text(
             'Últimos trabalhos',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(
             "*Nenhum trabalho publicado",
-            style: TextStyle(fontSize: 16, height: 1.4),
+            style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],
       ),
@@ -181,7 +177,7 @@ Widget socialMedia() => Container(
           ///redes icones
           Text(
             "*Nenhuma rede social publicada",
-            style: TextStyle(fontSize: 16, height: 1.4),
+            style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],
       ),

@@ -4,6 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:freegig_app/common_widgets/formatcurrency.dart';
 import 'package:freegig_app/common_widgets/musicianselectionform.dart';
 import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
+import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
@@ -13,9 +17,30 @@ class CreateNewGig extends StatefulWidget {
 }
 
 class _CreateNewGigState extends State<CreateNewGig> {
-  final TextEditingController _cacheController = TextEditingController();
-  final TextEditingController _initTimeController = TextEditingController();
-  final TextEditingController _finalTimeController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _dateController = TextEditingController();
+  final _cacheController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _detailsController = TextEditingController();
+  final _initTimeController = TextEditingController();
+  final _finalTimeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _dateController.dispose();
+    _cacheController.dispose();
+    _categoryController.dispose();
+    _detailsController.dispose();
+    _initTimeController.dispose();
+    _finalTimeController.dispose();
+
+    super.dispose();
+  }
 
   final hourformat = DateFormat("HH:mm");
   final dataformat = DateFormat("dd-MM-yyyy");
@@ -43,7 +68,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
                     ))
               ],
             ),
-            SizedBox(height: 12),
+
             Text(
               "Nova GIG",
               textAlign: TextAlign.center,
@@ -52,6 +77,8 @@ class _CreateNewGigState extends State<CreateNewGig> {
             SizedBox(height: 15),
 
             TextFormField(
+              controller: _descriptionController,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 labelText: 'Descrição',
                 hintText: "Ex: Preciso de um tecladista",
@@ -62,12 +89,17 @@ class _CreateNewGigState extends State<CreateNewGig> {
                     borderRadius: BorderRadius.circular(10.0)),
               ),
               inputFormatters: [
-                LengthLimitingTextInputFormatter(35)
+                LengthLimitingTextInputFormatter(30)
               ], // Define o limite para 50 caracteres
             ),
-
             SizedBox(height: 15),
-            SearchGoogleAddress(),
+            SearchGoogleCity(
+              cityController: _cityController,
+            ),
+            SizedBox(height: 15),
+            SearchGoogleAddress(
+              addressController: _addressController,
+            ),
             SizedBox(height: 15),
 
             ///Hora de inicio e término
@@ -141,6 +173,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
               children: [
                 Expanded(
                     child: DateTimeField(
+                  controller: _dateController,
                   decoration: InputDecoration(
                     labelText: 'Data',
                     prefixIcon: Icon(Iconsax.location),
@@ -187,13 +220,18 @@ class _CreateNewGigState extends State<CreateNewGig> {
               ],
             ),
             SizedBox(height: 15),
-            MusicianSelecttionForm(),
+            MusicianSelectionForm(
+              categoryController: _categoryController,
+            ),
 
             SizedBox(height: 15),
 
             ///Mais detalhes
             TextFormField(
-              maxLines: 3,
+              controller: _detailsController,
+              maxLength: 150,
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 2,
               decoration: InputDecoration(
                 hintText:
                     'Mais detalhes da sua GIG...\nLocal, evento, estilo de música...',
@@ -207,7 +245,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
             ),
 
             ///Botao
-            SizedBox(height: 35),
+            SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF274b99),
@@ -216,7 +254,26 @@ class _CreateNewGigState extends State<CreateNewGig> {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    });
+                GigsDataService().createNewGig(
+                  gigDescription: _descriptionController.text,
+                  gigCity: _cityController.text,
+                  gigAddress: _addressController.text,
+                  gigInitHour: _initTimeController.text,
+                  gigFinalHour: _finalTimeController.text,
+                  gigDate: _dateController.text,
+                  gigCache: _cacheController.text,
+                  gigCategorys: _categoryController.text,
+                  gigDetails: _detailsController.text,
+                );
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NavigationMenu(navPage: 1)));
               },
               child: Padding(
                 padding: const EdgeInsets.all(14.0),

@@ -30,10 +30,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future signIn() async {
     try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+
       // Se o login tiver sucesso, navegue para a tela desejada
       Navigator.pushReplacement(
           context,

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-class MusicianSelecttionForm extends StatefulWidget {
+class MusicianSelectionForm extends StatefulWidget {
+  final TextEditingController categoryController;
+
+  const MusicianSelectionForm({super.key, required this.categoryController});
   @override
-  _MusicianSelecttionFormState createState() => _MusicianSelecttionFormState();
+  _MusicianSelectionFormState createState() => _MusicianSelectionFormState();
 }
 
-class _MusicianSelecttionFormState extends State<MusicianSelecttionForm> {
+class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
   TextEditingController _textController = TextEditingController();
   Map<String, Set<String>> selectedMusiciansByCategory = {};
 
@@ -101,6 +104,8 @@ class _MusicianSelecttionFormState extends State<MusicianSelecttionForm> {
                         selectedMusicians.addAll(musicians);
                       });
                       _textController.text = selectedMusicians.join(', ');
+                      widget.categoryController.text = _textController.text;
+
                       Navigator.of(context).pop();
                     },
                     icon: Icon(
@@ -117,6 +122,7 @@ class _MusicianSelecttionFormState extends State<MusicianSelecttionForm> {
   @override
   void dispose() {
     _textController.dispose();
+
     super.dispose();
   }
 

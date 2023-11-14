@@ -1,101 +1,189 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_message.dart';
-import 'package:freegig_app/features/feature_1/widgets/musicians_numbers.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_inviteconfirm.dart';
-import 'package:freegig_app/data/data.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileDetailsPage extends StatelessWidget {
-  final Profile profile;
+  final Map<String, dynamic> profile;
   ProfileDetailsPage({required this.profile});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 60,
-        title: Text(
-          profile.name,
-          style: TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 19.0,
-          ),
-        ),
-        actions: [
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  openDialog(context);
-                },
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Iconsax.add,
-                    color: Colors.white,
-                    size: 25,
-                  ),
-                ),
-              ),
-              SizedBox(width: 15),
-            ],
-          )
-        ],
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          onPressed: () {
+            openDialog(context);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(14.0),
+            child: Text(
+              "Convidar músico",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 16.0,
+              ),
+            ),
+          ),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage(profile.image),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+
+                /// Header
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            profile['publicName'],
+                            style: TextStyle(
+                              height: 1,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Text(
+                            profile['category'],
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            profile['description'],
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ClipOval(
+                      child: Image.network(
+                        profile['profileImageUrl'],
+                        fit: BoxFit.cover,
+                        width: 100,
+                        height: 100,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Text(
-                profile.name,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                //max 35 char
-                '(Categoria)',
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 10),
-              Text(
-                //max 35 char
-                profile.description,
-                style: TextStyle(fontSize: 16, color: Colors.black),
-              ),
-              SizedBox(height: 10),
-              ProfileNumbers(profile: profile),
-              TextButton(
-                onPressed: () {
-                  openMessage(context);
-                },
-                child: Text(
-                  "Enviar uma mensagem",
-                  style: TextStyle(fontSize: 16),
+                SizedBox(height: 20),
+
+                ///Profile numbers
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        SizedBox(width: 15),
+                        Text(
+                          '*Nenhuma avaliação',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    Icon(
+                      Iconsax.arrow_right_3,
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: 20),
-              buildAbout(profile: profile),
-              SizedBox(height: 20),
-              lastReleases(profile: profile),
-              SizedBox(height: 20),
-              socialMedia(),
-              SizedBox(height: 20),
-            ],
+                SizedBox(height: 10),
+
+                TextButton(
+                  onPressed: () {
+                    openMessage(context);
+                  },
+                  child: Text(
+                    "Enviar uma mensagem",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+
+                buildAbout(profile: profile),
+                SizedBox(height: 20),
+                lastReleases(profile: profile),
+                SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Redes Sociais',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 10),
+
+                      ///redes icones
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(100)),
+                            child: IconButton(
+                                onPressed: () {
+                                  Link("www.youtube.com/_youtube");
+                                },
+                                icon: Icon(Iconsax.video5)),
+                          ),
+                          Text(profile['youtube'],
+                              style: TextStyle(fontSize: 15, height: 1.4)),
+                        ],
+                      ),
+                      SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(100)),
+                            child: IconButton(
+                                onPressed: () {
+                                  Link("www.instagram.com/_instagram");
+                                },
+                                icon: Icon(Iconsax.instagram5)),
+                          ),
+                          Text(profile['instagram'],
+                              style: TextStyle(fontSize: 15, height: 1.4)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -110,73 +198,37 @@ class ProfileDetailsPage extends StatelessWidget {
       builder: (context) => MessageToMusician(profile: profile));
 }
 
-Widget buildAbout({required Profile profile}) => Container(
+Widget buildAbout({required Map<String, dynamic> profile}) => Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Release',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(
-            profile.release,
-            style: TextStyle(fontSize: 16, height: 1.4),
+            profile['release'],
+            style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],
       ),
     );
 
-Widget lastReleases({required Profile profile}) => Container(
+Widget lastReleases({required Map<String, dynamic> profile}) => Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Últimos trabalhos',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
           Text(
-            profile.lastJobs,
-            style: TextStyle(fontSize: 16, height: 1.4),
-          ),
-        ],
-      ),
-    );
-
-Widget socialMedia() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Redes Sociais',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-
-          ///redes icones
-          Row(
-            children: [
-              Image.asset(
-                "assets/icons/youtube.png",
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-              ),
-              SizedBox(width: 15),
-              Image.asset(
-                "assets/icons/instagram.png",
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-              ),
-            ],
+            profile['lastReleases'],
+            style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],
       ),

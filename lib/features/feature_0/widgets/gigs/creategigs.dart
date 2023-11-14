@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/showmygigs.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CreateGigs extends StatefulWidget {
@@ -18,6 +19,7 @@ class _CreateGigsState extends State<CreateGigs> {
             child: Column(
               children: [
                 ExpansionTile(
+                  initiallyExpanded: true,
                   title: Row(children: [
                     Icon(
                       Iconsax.calendar_add5,
@@ -30,7 +32,7 @@ class _CreateGigsState extends State<CreateGigs> {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     )
                   ]),
-                  children: [],
+                  children: [MyGigsCard()],
                 ),
                 SizedBox(height: 15),
                 ExpansionTile(

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_complete.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+
 import 'package:image_picker/image_picker.dart';
 import 'package:freegig_app/common_widgets/pickimage.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
@@ -64,6 +65,13 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
       );
       return;
     }
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
 
     await UserDataService().updateUserProfile(
       description: description.text,
@@ -73,8 +81,9 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
       youtube: youtube.text,
       image: _image!,
     );
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => ProfileComplete()));
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => NavigationMenu(navPage: 3),
+    ));
   }
 
   void _pickImage() async {
@@ -124,11 +133,11 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                         onTap: _pickImage,
                         child: _image != null
                             ? CircleAvatar(
-                                radius: 55,
+                                radius: 50,
                                 backgroundImage: MemoryImage(_image!),
                               )
                             : CircleAvatar(
-                                radius: 55,
+                                radius: 50,
                                 backgroundImage: AssetImage(
                                     'assets/profiles/default-user-image.png'),
                               ),
@@ -150,12 +159,12 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                           "$_publicName,",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w600),
+                              fontSize: 20, fontWeight: FontWeight.w600),
                         ),
                         Text(
                           "Nos conte um pouco mais sobre você.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 16),
                         ),
                       ],
                     ),
