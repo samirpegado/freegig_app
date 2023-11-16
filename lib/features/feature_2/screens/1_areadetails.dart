@@ -1,8 +1,8 @@
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_2/screens/2_listgigs.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
@@ -15,7 +15,7 @@ class AreaDetails extends StatefulWidget {
 
 class _AreaDetailsState extends State<AreaDetails> {
   final dataformat = DateFormat("dd-MM-yyyy");
-  final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -51,16 +51,14 @@ class _AreaDetailsState extends State<AreaDetails> {
                 SizedBox(height: 20),
 
                 ///Pesquisa de endereco
-                SearchGoogleAddress(
-                  addressController: _addressController,
-                ),
+                SearchGoogleCity(cityController: _cityController),
                 SizedBox(height: 15),
 
                 ///Data
                 DateTimeField(
                   decoration: InputDecoration(
                     labelText: 'Data',
-                    prefixIcon: Icon(Iconsax.location),
+                    prefixIcon: Icon(Iconsax.calendar),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(

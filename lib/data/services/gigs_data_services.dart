@@ -13,7 +13,7 @@ class GigsDataService {
     required String gigFinalHour,
     required String gigDate,
     required String gigCache,
-    required String gigCategorys,
+    required List<String> gigCategorys,
     required String gigDetails,
   }) async {
     try {
@@ -27,6 +27,7 @@ class GigsDataService {
           'gigUid': newGigRef.id,
           'gigOwner': user.uid,
           'gigArchived': false,
+          'gigCompleted': false,
 
           /// formularios da gig
           'gigDescription': gigDescription,
@@ -38,6 +39,7 @@ class GigsDataService {
           'gigCache': gigCache,
           'gigCategorys': gigCategorys,
           'gigDetails': gigDetails,
+          'gigParticipants': [user.uid],
         });
       }
     } catch (e) {
@@ -77,6 +79,7 @@ class GigsDataService {
             'gigAdress': gigData['gigAdress'],
             'gigInitHour': gigData['gigInitHour'],
             'gigFinalHour': gigData['gigFinalHour'],
+            'gigOwner': gigData['gigOwner'],
             'gigDate': gigData['gigDate'],
             'gigCache': gigData['gigCache'],
             'gigCategorys': gigData['gigCategorys'],
@@ -84,6 +87,7 @@ class GigsDataService {
             'profileImageUrl': userData['profileImageUrl'],
             'publicName': userData['publicName'],
             'category': userData['category'],
+            'gigParticipants': userData['gigParticipants']
           });
         }
 
@@ -131,9 +135,11 @@ class GigsDataService {
             'gigCache': gigData['gigCache'],
             'gigCategorys': gigData['gigCategorys'],
             'gigDetails': gigData['gigDetails'],
+            'gigOwner': gigData['gigOwner'],
             'profileImageUrl': userData['profileImageUrl'],
             'publicName': userData['publicName'],
             'category': userData['category'],
+            'gigParticipants': userData['gigParticipants']
           });
         }
 
@@ -143,5 +149,56 @@ class GigsDataService {
       print("Erro ao buscar dados das GIGs: $e");
     }
     return [];
+  }
+
+  Future<void> myGigDelete(String documentId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('gigs')
+          .doc(documentId)
+          .delete();
+      print('Documento removido com sucesso!');
+    } catch (e) {
+      print('Erro ao remover documento: $e');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getParticipantsData(String gigUid) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
+          await _firestore.collection('gigs').doc(gigUid).get();
+
+      if (!gigSnapshot.exists) {
+        print('Gig com UID $gigUid não encontrado.');
+        return [];
+      }
+
+      List<String> participantUids =
+          List<String>.from(gigSnapshot['gigParticipants'] ?? []);
+
+      List<Map<String, dynamic>> participantsData = [];
+
+      for (String participantUid in participantUids) {
+        DocumentSnapshot<Map<String, dynamic>> participantSnapshot =
+            await _firestore.collection('users').doc(participantUid).get();
+
+        if (participantSnapshot.exists) {
+          Map<String, dynamic> participantData =
+              participantSnapshot.data() ?? {};
+          participantsData.add({
+            'publicName': participantData['publicName'],
+            'profileImageUrl': participantData['profileImageUrl'],
+            'category': participantData['category'],
+          });
+        } else {
+          print('Usuário com UID $participantUid não encontrado.');
+        }
+      }
+
+      return participantsData;
+    } catch (e) {
+      print('Erro ao obter dados dos participantes: $e');
+      return [];
+    }
   }
 }

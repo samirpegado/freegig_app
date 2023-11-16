@@ -22,6 +22,7 @@ class ProfileDataService {
               userDocument.data() as Map<String, dynamic>;
 
           userDataList.add({
+            'uid': userData['uid'],
             'publicName': userData['publicName'],
             'category': userData['category'],
             'description': userData['description'],

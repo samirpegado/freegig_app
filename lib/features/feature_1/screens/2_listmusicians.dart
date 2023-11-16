@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/data.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
@@ -13,8 +12,6 @@ class ListMusicians extends StatefulWidget {
 }
 
 class _ListMusiciansState extends State<ListMusicians> {
-  List<bool> isClickedList = List.filled(profiles.length, false);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -40,11 +40,9 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
           } else if (snapshot.hasError) {
             return Text('Erro: ${snapshot.error}');
           } else {
-            // Se estiver tudo bem, você pode acessar os dados em snapshot.data
             List<Map<String, dynamic>> profiles = snapshot.data!;
-            // Agora você pode usar a lista de gigs normalmente no seu código
+
             if (profiles.isEmpty) {
-              // Se a lista de gigs estiver vazia, exibe a mensagem "Nenhuma gig encontrada"
               return Padding(
                 padding: const EdgeInsets.all(30.0),
                 child: Center(
@@ -111,7 +109,7 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text("Categoria"),
+                                          Text(profile['category']),
                                           Row(
                                             children: [
                                               /// Avaliacao

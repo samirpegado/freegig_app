@@ -90,7 +90,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
               ),
               inputFormatters: [
                 LengthLimitingTextInputFormatter(30)
-              ], // Define o limite para 50 caracteres
+              ], // Define o limite para 30 caracteres
             ),
             SizedBox(height: 15),
             SearchGoogleCity(
@@ -186,11 +186,10 @@ class _CreateNewGigState extends State<CreateNewGig> {
                   format: dataformat,
                   onShowPicker: (context, currentValue) async {
                     final now = DateTime.now();
-                    final tomorrow = DateTime(now.year, now.month, now.day + 1);
                     return await showDatePicker(
                       context: context,
-                      firstDate: tomorrow,
-                      initialDate: currentValue ?? tomorrow,
+                      firstDate: now,
+                      initialDate: currentValue ?? now,
                       lastDate: DateTime(2100),
                     );
                   },
@@ -269,7 +268,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
                   gigFinalHour: _finalTimeController.text,
                   gigDate: _dateController.text,
                   gigCache: _cacheController.text,
-                  gigCategorys: _categoryController.text,
+                  gigCategorys: _categoryController.text.split(', '),
                   gigDetails: _detailsController.text,
                 );
                 Navigator.of(context).push(MaterialPageRoute(

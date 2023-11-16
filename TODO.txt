@@ -1,0 +1,10 @@
+Só cria gig com perfil completo
+Alterar o status da gig conforme data e hora
+Animações de transições de tela
+Fazer pagina de editar perfil e ativar o botão.
+
+// Solicitação 
+
+
+Função atualizar categoria(
+Compara e atualiza a lista de categorias removendo a categoria do participante aceito);

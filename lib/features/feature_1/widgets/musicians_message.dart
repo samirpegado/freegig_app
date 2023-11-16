@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:iconsax/iconsax.dart';
 
-class MessageToMusician extends StatelessWidget {
+class MessageToMusician extends StatefulWidget {
   const MessageToMusician({
     super.key,
     required this.profile,
@@ -11,31 +12,91 @@ class MessageToMusician extends StatelessWidget {
   final Map<String, dynamic> profile;
 
   @override
+  State<MessageToMusician> createState() => _MessageToMusicianState();
+}
+
+class _MessageToMusicianState extends State<MessageToMusician> {
+  late Future<List<Map<String, dynamic>>> gigsDataList;
+  String selectedGigUid = '';
+
+  @override
+  void initState() {
+    super.initState();
+    gigsDataList = GigsDataService().getMyActiveGigs();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
         "Enviar mensagem",
         textAlign: TextAlign.center,
       ),
-      content: SizedBox(
-        height: 130,
-        child: Column(
-          children: [
-            TextField(
-              textCapitalization: TextCapitalization.sentences,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: "Mensagem",
-                hintText: 'Escreva aqui a sua mensagem...',
-                prefixIcon: Icon(Iconsax.device_message),
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-              ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Selecione a GIG sobre a qual gostaria de conversar:',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 15),
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: gigsDataList,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Map<String, dynamic>> data = snapshot.data!;
+                return SingleChildScrollView(
+                  child: Column(
+                    children: data.map<Widget>((gig) {
+                      bool isSelected = gig['gigUid'] == selectedGigUid;
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedGigUid = gig['gigUid'];
+                            print(selectedGigUid);
+                          });
+                        },
+                        child: Card(
+                          elevation: 3,
+                          color: isSelected
+                              ? const Color.fromARGB(255, 188, 213, 233)
+                              : null,
+                          child: ListTile(
+                            title: Text(gig['gigDescription'] ?? ''),
+                            subtitle: Text(
+                              '${gig['gigLocale']}, ${gig['gigDate']}',
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Erro ao carregar dados');
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+          SizedBox(height: 15),
+          TextField(
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 3,
+            decoration: InputDecoration(
+              labelText: "Mensagem",
+              hintText: 'Escreva aqui a sua mensagem...',
+              prefixIcon: Icon(Iconsax.device_message),
+              filled: true,
+              fillColor: Colors.white,
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         Padding(
