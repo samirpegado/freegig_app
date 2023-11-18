@@ -1,11 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_1/screens/1_gigdetails.dart';
-import 'package:freegig_app/features/feature_2/screens/1_areadetails.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_customcard.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
+import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -66,17 +66,17 @@ class Home extends StatelessWidget {
                         SizedBox(),
                         HomeCustomCard(
                           buttonText: "Encontrar músicos",
-                          destination: GigDetails(),
+                          destination: ListMusicians(),
                           imgCard: 'assets/images/musicos.png',
                         ),
                         HomeCustomCard(
                           buttonText: "Encontrar GIGs",
-                          destination: AreaDetails(),
+                          destination: ListGigs(),
                           imgCard: 'assets/images/encontrar.png',
                         ),
                         HomeCustomCard(
                           buttonText: "Criar Gigs",
-                          destination: NavigationMenu(navPage: 1),
+                          destination: CreateNewGig(),
                           imgCard: 'assets/images/criar.png',
                         ),
                         SizedBox(),

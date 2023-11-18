@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
 class RequestsSent extends StatefulWidget {
@@ -29,7 +30,7 @@ class _RequestsSentState extends State<RequestsSent> {
           } else if (snapshot.hasError) {
             return Text('Erro ao carregar convites: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return ExpansionTile(title: Text('Nenhuma solicitação recebida'));
+            return Container();
           } else {
             List<Map<String, dynamic>> requests = snapshot.data!;
             return ExpansionTile(
@@ -144,8 +145,12 @@ class _RequestsSentState extends State<RequestsSent> {
                                                   requestData['gigUid'],
                                               requesterUid:
                                                   requestData['requesterUid']);
-                                          setState(() {});
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NavigationMenu(
+                                                        navPage: 1,
+                                                      )));
                                         },
                                         child: Text(
                                           'Adicionar',

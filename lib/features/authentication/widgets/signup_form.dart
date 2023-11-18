@@ -57,7 +57,7 @@ class _SignUpFormState extends State<SignUpForm> {
       'Violonista',
       'Harpista'
     ],
-    'Teclas': ['Pianista', 'Tecladista', 'Organista'],
+    'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
     'Sopros': [
       'Flautista',
       'Saxofonista',

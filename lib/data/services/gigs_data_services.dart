@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class GigsDataService {
   final _auth = FirebaseAuth.instance;
@@ -47,9 +48,11 @@ class GigsDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getActiveUserGigs() async {
+  Future<List<Map<String, dynamic>>> getActiveUserGigs(
+      BuildContext context) async {
     try {
       User? user = _auth.currentUser;
+
       if (user != null) {
         QuerySnapshot gigsSnapshot = await _firestore
             .collection('gigs')
@@ -90,6 +93,7 @@ class GigsDataService {
             'gigParticipants': userData['gigParticipants']
           });
         }
+        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
 
         return gigsDataList;
       }
@@ -143,6 +147,63 @@ class GigsDataService {
           });
         }
 
+        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
+
+        return gigsDataList;
+      }
+    } catch (e) {
+      print("Erro ao buscar dados das GIGs: $e");
+    }
+    return [];
+  }
+
+  Future<List<Map<String, dynamic>>> getParticipantGigs() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        QuerySnapshot gigsSnapshot = await _firestore
+            .collection('gigs')
+            .where('gigArchived', isEqualTo: false)
+            .where('gigParticipants', arrayContains: user.uid)
+            .where('gigOwner', isNotEqualTo: user.uid)
+            .get();
+
+        List<Map<String, dynamic>> gigsDataList = [];
+
+        for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+          Map<String, dynamic> gigData =
+              gigDocument.data() as Map<String, dynamic>;
+
+          // Obter informações do usuário que criou a GIG
+          DocumentSnapshot userSnapshot = await _firestore
+              .collection('users')
+              .doc(gigData['gigOwner'])
+              .get();
+
+          Map<String, dynamic> userData =
+              userSnapshot.data() as Map<String, dynamic>;
+
+          gigsDataList.add({
+            'gigUid': gigDocument.id,
+            'gigDescription': gigData['gigDescription'],
+            'gigLocale': gigData['gigLocale'],
+            'gigAdress': gigData['gigAdress'],
+            'gigInitHour': gigData['gigInitHour'],
+            'gigFinalHour': gigData['gigFinalHour'],
+            'gigDate': gigData['gigDate'],
+            'gigCache': gigData['gigCache'],
+            'gigCategorys': gigData['gigCategorys'],
+            'gigDetails': gigData['gigDetails'],
+            'gigOwner': gigData['gigOwner'],
+            'profileImageUrl': userData['profileImageUrl'],
+            'publicName': userData['publicName'],
+            'category': userData['category'],
+            'gigParticipants': userData['gigParticipants']
+          });
+        }
+
+        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
+
         return gigsDataList;
       }
     } catch (e) {
@@ -189,6 +250,7 @@ class GigsDataService {
             'publicName': participantData['publicName'],
             'profileImageUrl': participantData['profileImageUrl'],
             'category': participantData['category'],
+            'uid': participantUid,
           });
         } else {
           print('Usuário com UID $participantUid não encontrado.');
@@ -199,6 +261,33 @@ class GigsDataService {
     } catch (e) {
       print('Erro ao obter dados dos participantes: $e');
       return [];
+    }
+  }
+
+  Future<void> leaveGig({
+    required String gigUid,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        DocumentReference<Map<String, dynamic>> requestedGigUpdate =
+            _firestore.collection('gigs').doc(gigUid);
+
+        DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
+            await requestedGigUpdate.get();
+
+        List<String> gigParticipants =
+            List<String>.from(gigSnapshot['gigParticipants'] ?? []);
+
+        gigParticipants.remove(user.uid);
+
+        await requestedGigUpdate.update({
+          'gigParticipants': gigParticipants,
+        });
+      }
+    } catch (e) {
+      print("Erro ao aceitar a solicitação: $e");
     }
   }
 }

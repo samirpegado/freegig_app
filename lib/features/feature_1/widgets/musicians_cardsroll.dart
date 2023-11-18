@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/profiles_data_service.dart';
-import 'package:freegig_app/features/feature_1/screens/3_musiciandetail.dart';
-
+import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeCardsRoll extends StatefulWidget {
@@ -61,8 +60,8 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                     final profile = entry.value;
 
                     return Padding(
-                      padding:
-                          const EdgeInsets.only(left: 15, right: 15, top: 15),
+                      padding: const EdgeInsets.only(
+                          left: 15, right: 15, bottom: 10),
                       child: InkWell(
                         onTap: () {
                           openProfileDetails(index);
@@ -116,11 +115,9 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                               Text(
                                                 "N/A",
                                                 style: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 80, 78, 78),
-                                                  //fontWeight: FontWeight.w600,
-                                                  fontSize: 14.0,
-                                                ),
+                                                    color: Color.fromARGB(
+                                                        255, 80, 78, 78),
+                                                    fontSize: 14.0),
                                               ),
                                               SizedBox(width: 3),
                                               Icon(
@@ -132,14 +129,23 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                         ],
                                       ),
                                       SizedBox(height: 6),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Iconsax.location5,
+                                            size: 18,
+                                          ),
+                                          Text(' ' + profile['city'],
+                                              style: TextStyle(fontSize: 14.0)),
+                                        ],
+                                      ),
+                                      SizedBox(height: 6),
 
                                       /// Descricao
                                       Text(
                                         profile['description'],
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 14.0,
-                                        ),
+                                        style: TextStyle(fontSize: 14.0),
                                       ),
                                     ],
                                   ),

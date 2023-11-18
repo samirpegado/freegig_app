@@ -24,6 +24,7 @@ class ProfileDataService {
           userDataList.add({
             'uid': userData['uid'],
             'publicName': userData['publicName'],
+            'city': userData['city'],
             'category': userData['category'],
             'description': userData['description'],
             'release': userData['release'],

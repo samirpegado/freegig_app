@@ -5,6 +5,7 @@ import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GigsCard extends StatefulWidget {
+  const GigsCard({super.key});
   @override
   State<GigsCard> createState() => _GigsCardState();
 }
@@ -15,7 +16,8 @@ class _GigsCardState extends State<GigsCard> {
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getActiveUserGigs();
+    gigsDataList = GigsDataService().getActiveUserGigs(context);
+    setState(() {});
   }
 
   @override
@@ -31,11 +33,9 @@ class _GigsCardState extends State<GigsCard> {
         } else if (snapshot.hasError) {
           return Text('Erro: ${snapshot.error}');
         } else {
-          // Se estiver tudo bem, você pode acessar os dados em snapshot.data
           List<Map<String, dynamic>> gigs = snapshot.data!;
-          // Agora você pode usar a lista de gigs normalmente no seu código
+
           if (gigs.isEmpty) {
-            // Se a lista de gigs estiver vazia, exibe a mensagem "Nenhuma gig encontrada"
             return Padding(
               padding: const EdgeInsets.all(30.0),
               child: Center(
@@ -51,7 +51,8 @@ class _GigsCardState extends State<GigsCard> {
               (gig) {
                 // Seu código para construir os cards
                 return Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
+                  padding:
+                      const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                   child: InkWell(
                     onTap: () {
                       // Ação ao tocar

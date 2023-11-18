@@ -24,7 +24,7 @@ class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
         'Violoncelista',
         'Harpista',
       ],
-      'Teclas': ['Pianista', 'Tecladista', 'Organista'],
+      'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
       'Sopros': [
         'Flautista',
         'Saxofonista',

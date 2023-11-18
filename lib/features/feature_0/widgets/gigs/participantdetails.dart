@@ -1,27 +1,60 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 
-class ConfirmRequest extends StatefulWidget {
+class ParticipantDetails extends StatefulWidget {
   final Map<String, dynamic> gig;
-  const ConfirmRequest({
+  const ParticipantDetails({
     super.key,
     required this.gig,
   });
 
   @override
-  State<ConfirmRequest> createState() => _ConfirmRequestState();
+  State<ParticipantDetails> createState() => _ParticipantDetailsState();
 }
 
-class _ConfirmRequestState extends State<ConfirmRequest> {
+class _ParticipantDetailsState extends State<ParticipantDetails> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        "Entrar na GIG",
-        textAlign: TextAlign.center,
-      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Atenção!', style: TextStyle(color: Colors.red)),
+                  content: Text('Tem certeza que deseja desistir da GIG?'),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          GigsDataService()
+                              .leaveGig(gigUid: widget.gig['gigUid']);
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => NavigationMenu(
+                                    navPage: 1,
+                                  )));
+                        },
+                        child: Text("Confirmar",
+                            style: TextStyle(color: Colors.red))),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          setState(() {});
+                        },
+                        child: Text("Cancelar",
+                            style: TextStyle(color: Colors.black)))
+                  ],
+                ),
+              );
+            },
+            child: Text("Desistir", style: TextStyle(color: Colors.red))),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Voltar", style: TextStyle(color: Colors.black)))
+      ],
       content: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -134,63 +167,6 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
           ],
         ),
       ),
-      actions: [
-        Center(child: Text('Gostaria de participar desta GIG?')),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Icons.close,
-                    size: 50,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(width: 20),
-              InkWell(
-                onTap: () {
-                  CircularProgressIndicator();
-                  UserRequest().userRequest(
-                      gigOwnerId: widget.gig['gigOwner'],
-                      selectedGigUid: widget.gig['gigUid']);
-                  Navigator.of(context).pop();
-                  Fluttertoast.showToast(
-                    msg: "Solicitação enviada com sucesso",
-                    toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
-                    timeInSecForIosWeb: 1,
-                    backgroundColor: Colors.grey,
-                    textColor: Colors.white,
-                    fontSize: 16.0,
-                  );
-                },
-                child: Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Icons.check,
-                    size: 50,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
-      ],
     );
   }
 }

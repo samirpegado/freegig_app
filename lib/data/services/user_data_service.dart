@@ -38,6 +38,7 @@ class UserDataService {
     required String lastReleases,
     required String instagram,
     required String youtube,
+    required String city,
     required Uint8List image,
   }) async {
     try {
@@ -51,8 +52,39 @@ class UserDataService {
           'lastReleases': lastReleases,
           'instagram': instagram,
           'youtube': youtube,
+          'city': city,
           'profileComplete': true,
           'profileImageUrl': imageUrl,
+          'userStatus': false,
+        });
+      }
+    } catch (e) {
+      print("Erro ao atualizar dados do usuário: $e");
+    }
+  }
+
+  Future<void> updateProfile({
+    required String description,
+    required String release,
+    required String lastReleases,
+    required String instagram,
+    required String youtube,
+    required String city,
+    required String category,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).update({
+          'description': description,
+          'release': release,
+          'lastReleases': lastReleases,
+          'instagram': instagram,
+          'youtube': youtube,
+          'categoty': category,
+          'city': city,
+          'profileComplete': true,
           'userStatus': false,
         });
       }
@@ -73,6 +105,7 @@ class UserDataService {
             'publicName': userSnapshot['publicName'],
             'category': userSnapshot['category'],
             'description': userSnapshot['description'],
+            'city': userSnapshot['city'],
             'email': userSnapshot['email'],
             'release': userSnapshot['release'],
             'lastReleases': userSnapshot['lastReleases'],

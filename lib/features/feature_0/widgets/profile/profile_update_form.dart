@@ -1,39 +1,79 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-
-import 'package:image_picker/image_picker.dart';
-import 'package:freegig_app/common_widgets/pickimage.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ProfileEditForm extends StatefulWidget {
-  const ProfileEditForm({super.key});
+class ProfileUpdateForm extends StatefulWidget {
+  const ProfileUpdateForm({super.key});
 
   @override
-  State<ProfileEditForm> createState() => _ProfileEditFormState();
+  State<ProfileUpdateForm> createState() => _ProfileUpdateFormState();
 }
 
-class _ProfileEditFormState extends State<ProfileEditForm> {
+class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   late String _publicName = "";
-  Uint8List? _image;
-  bool _isImageSelected =
-      false; // Variable to track whether an image is selected
+  late String _category = "";
+  late String _description = "";
+  late String _city = "";
+  late String _release = "";
+  late String _lastReleases = "";
+  late String _instagram = "";
+  late String _youtube = "";
+
+  String selectedMusician = '';
+  Map<String, List<String>> options = {
+    'Voz': ['Cantor', 'Cantora'],
+    'Cordas': [
+      'Violinista',
+      'Violoncelista',
+      'Guitarrista',
+      'Baixista',
+      'Violonista',
+      'Harpista'
+    ],
+    'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
+    'Sopros': [
+      'Flautista',
+      'Saxofonista',
+      'Trompetista',
+      'Trombonista',
+      'Clarinetista',
+      'Oboísta'
+    ],
+    'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
+  };
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario(); // Load user data
+    _carregarDadosDoUsuario();
+    setState(() {});
   }
 
   Future<void> _carregarDadosDoUsuario() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getUserData();
+      Map<String, dynamic> userData = await UserDataService().getProfileData();
 
       setState(() {
         _publicName = userData['publicName'];
+        _category = userData['category'];
+        _description = userData['description'];
+        _city = userData['city'];
+        _release = userData['release'];
+        _lastReleases = userData['lastReleases'];
+        _instagram = userData['instagram'];
+        _youtube = userData['youtube'];
+
+        description.text = _description;
+        category.text = _category;
+        release.text = _release;
+        city.text = _city;
+        lastReleases.text = _lastReleases;
+        instagram.text = _instagram;
+        youtube.text = _youtube;
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -42,32 +82,13 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
 
   final description = TextEditingController();
   final release = TextEditingController();
+  final category = TextEditingController();
   final city = TextEditingController();
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
   final youtube = TextEditingController();
 
-  @override
-  void dispose() {
-    description.dispose();
-    release.dispose();
-    city.dispose();
-    lastReleases.dispose();
-    instagram.dispose();
-    youtube.dispose();
-    super.dispose();
-  }
-
   Future<void> _completarPerfil() async {
-    if (!_isImageSelected) {
-      // Check if an image is selected
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Por favor, selecione uma foto para o perfil.'),
-        ),
-      );
-      return;
-    }
     showDialog(
         context: context,
         builder: (context) {
@@ -76,26 +97,18 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
           );
         });
 
-    await UserDataService().updateUserProfile(
+    await UserDataService().updateProfile(
       description: description.text.trim(),
       release: release.text.trim(),
       lastReleases: lastReleases.text.trim(),
       instagram: instagram.text.trim(),
       youtube: youtube.text.trim(),
-      image: _image!,
       city: city.text.trim(),
+      category: category.text,
     );
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => NavigationMenu(navPage: 3),
     ));
-  }
-
-  void _pickImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-      _isImageSelected = true; // Set the flag when an image is selected
-    });
   }
 
   @override
@@ -103,7 +116,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Complete seu perfil',
+          'Atualizar perfil',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 19.0,
@@ -126,7 +139,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         padding: const EdgeInsets.all(12.0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
+            backgroundColor: Color.fromARGB(255, 3, 141, 77),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -137,7 +150,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
           child: Padding(
             padding: const EdgeInsets.all(14.0),
             child: Text(
-              "Completar perfil",
+              "Atualizar perfil",
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -154,50 +167,18 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
           child: Column(
             children: [
               /// photo and banner
-              Row(
+              Column(
                 children: [
-                  Stack(
-                    children: [
-                      InkWell(
-                        onTap: _pickImage,
-                        child: _image != null
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage: MemoryImage(_image!),
-                              )
-                            : CircleAvatar(
-                                radius: 50,
-                                backgroundImage: AssetImage(
-                                    'assets/profiles/default-user-image.png'),
-                              ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 60,
-                        child: Icon(Icons.add_a_photo),
-                      )
-                    ],
+                  Text(
+                    "$_publicName,",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  SizedBox(
-                    width: 20,
+                  Text(
+                    "Vamos atualizar seu perfil.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
                   ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(
-                          "$_publicName,",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
-                        ),
-                        Text(
-                          "Nos conte um pouco mais sobre você.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  )
                 ],
               ),
               SizedBox(
@@ -251,6 +232,44 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                 ),
               ),
               SearchGoogleCity(cityController: city),
+              SizedBox(height: 26),
+              TypeAheadField<String>(
+                textFieldConfiguration: TextFieldConfiguration(
+                  controller: category,
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    labelText: 'Categoria',
+                    prefixIcon: Icon(Iconsax.music),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                  ),
+                ),
+                suggestionsCallback: (pattern) {
+                  return options.values.expand((e) => e).where(
+                      (e) => e.toLowerCase().contains(pattern.toLowerCase()));
+                },
+                itemBuilder: (context, suggestion) {
+                  return ListTile(
+                    title: Text(suggestion),
+                  );
+                },
+                onSuggestionSelected: (suggestion) {
+                  setState(() {
+                    selectedMusician = suggestion;
+                    category.text = suggestion;
+                  });
+                },
+                noItemsFoundBuilder: (context) {
+                  return Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      "Categoria não encontrada",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  );
+                },
+              ),
               SizedBox(height: 26),
               TextFormField(
                 controller: instagram,

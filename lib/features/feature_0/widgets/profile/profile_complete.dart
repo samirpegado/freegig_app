@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/profile_update_form.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileComplete extends StatefulWidget {
@@ -19,6 +20,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
   late String _category = "";
   late String _description = "";
   late String _email = "";
+  late String _city = "";
   late String _release = "";
   late String _lastReleases = "";
   late String _instagram = "";
@@ -42,6 +44,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         _category = userData['category'];
         _description = userData['description'];
         _email = userData['email'];
+        _city = userData['city'];
         _release = userData['release'];
         _lastReleases = userData['lastReleases'];
         _instagram = userData['instagram'];
@@ -120,7 +123,12 @@ class _ProfileCompleteState extends State<ProfileComplete> {
           },
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Iconsax.user_edit)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ProfileUpdateForm()));
+              },
+              icon: Icon(Iconsax.user_edit)),
           IconButton(
               onPressed: () {
                 UserDataService().logOut(context);
@@ -169,6 +177,20 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                           Text(
                             _description,
                             style: TextStyle(fontSize: 15, color: Colors.black),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.location5,
+                                size: 18,
+                                color: Colors.black54,
+                              ),
+                              Text(
+                                ' ' + _city,
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black54),
+                              ),
+                            ],
                           ),
                           Text(
                             _email,

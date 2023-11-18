@@ -28,7 +28,7 @@ class _InvitationsSentState extends State<InvitationsSent> {
           } else if (snapshot.hasError) {
             return Text('Erro ao carregar convites: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return ExpansionTile(title: Text('Nenhum convite enviado'));
+            return Container();
           } else {
             List<Map<String, dynamic>> invites = snapshot.data!;
             return ExpansionTile(

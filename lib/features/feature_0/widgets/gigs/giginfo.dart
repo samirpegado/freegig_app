@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/data/services/user_request.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/invitations.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/requests.dart';
@@ -23,6 +23,13 @@ class _GigInfoState extends State<GigInfo> {
     super.initState();
     participantsData =
         GigsDataService().getParticipantsData(widget.gig['gigUid']);
+  }
+
+  void reloadParticipants() {
+    setState(() {
+      participantsData =
+          GigsDataService().getParticipantsData(widget.gig['gigUid']);
+    });
   }
 
   @override
@@ -97,34 +104,6 @@ class _GigInfoState extends State<GigInfo> {
                 ),
               ),
             ),
-            SizedBox(width: 20),
-            InkWell(
-              onTap: () {
-                Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                  msg: "Solicitação enviada com sucesso",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(100)),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -137,7 +116,9 @@ class _GigInfoState extends State<GigInfo> {
               InvitationsSent(
                 gigUid: widget.gig['gigUid'],
               ),
-              RequestsSent(gigUid: widget.gig['gigUid']),
+              RequestsSent(
+                gigUid: widget.gig['gigUid'],
+              ),
               SizedBox(height: 10),
               Text(
                 "${widget.gig['gigDetails']}",
@@ -148,7 +129,7 @@ class _GigInfoState extends State<GigInfo> {
               ),
               SizedBox(height: 15),
               Text(
-                "Para: ${widget.gig['gigCategorys']}",
+                "Para: ${widget.gig['gigCategorys'].join(', ')}",
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -211,6 +192,7 @@ class _GigInfoState extends State<GigInfo> {
                   } else {
                     List<Map<String, dynamic>> participantsData =
                         snapshot.data!;
+
                     return Column(
                       children: participantsData.map((participant) {
                         return ListTile(
@@ -222,10 +204,17 @@ class _GigInfoState extends State<GigInfo> {
                               height: 50,
                             ),
                           ),
-                          trailing: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.delete),
-                          ),
+                          trailing: participant['uid'] != widget.gig['gigOwner']
+                              ? IconButton(
+                                  onPressed: () {
+                                    UserRequest().removeParticipant(
+                                        gigUid: widget.gig['gigUid'],
+                                        participantUid: participant['uid']);
+                                    Navigator.of(context).pop();
+                                  },
+                                  icon: Icon(Icons.delete),
+                                )
+                              : null,
                           title: Text(
                             participant['publicName'],
                             style: TextStyle(fontSize: 15),

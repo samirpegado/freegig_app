@@ -246,43 +246,21 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 16),
 
               ///Footer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Image(
-                        width: 40,
-                        height: 40,
-                        image: AssetImage("assets/images/google.png"),
-                      ),
-                    ),
+              Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: Image(
+                    width: 40,
+                    height: 40,
+                    image: AssetImage("assets/images/google.png"),
                   ),
-                  SizedBox(width: 10),
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Image(
-                        width: 40,
-                        height: 40,
-                        image: AssetImage("assets/images/facebook.png"),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               )
             ],
           ),

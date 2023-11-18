@@ -60,6 +60,7 @@ class UserRequest {
         Map<String, dynamic> userData = {
           'publicName': userSnapshot['publicName'],
           'profileImageUrl': userSnapshot['profileImageUrl'],
+          'city': userSnapshot['city'],
           'category': userSnapshot['category'],
           'description': userSnapshot['description'],
           'lastReleases': userSnapshot['lastReleases'],
@@ -117,6 +118,34 @@ class UserRequest {
           'gigParticipants': gigParticipants,
         });
         await refuseRequest(requestUid);
+      }
+    } catch (e) {
+      print("Erro ao aceitar a solicitação: $e");
+    }
+  }
+
+  Future<void> removeParticipant({
+    required String gigUid,
+    required String participantUid,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        DocumentReference<Map<String, dynamic>> requestedGigUpdate =
+            _firestore.collection('gigs').doc(gigUid);
+
+        DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
+            await requestedGigUpdate.get();
+
+        List<String> gigParticipants =
+            List<String>.from(gigSnapshot['gigParticipants'] ?? []);
+
+        gigParticipants.remove(participantUid);
+
+        await requestedGigUpdate.update({
+          'gigParticipants': gigParticipants,
+        });
       }
     } catch (e) {
       print("Erro ao aceitar a solicitação: $e");

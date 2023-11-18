@@ -74,6 +74,19 @@ class ProfileDetailsPage extends StatelessWidget {
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500),
                           ),
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.location5,
+                                size: 18,
+                              ),
+                              Text(
+                                ' ' + profile['city'],
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black),
+                              ),
+                            ],
+                          ),
                           Text(
                             profile['description'],
                             style: TextStyle(fontSize: 15, color: Colors.black),
