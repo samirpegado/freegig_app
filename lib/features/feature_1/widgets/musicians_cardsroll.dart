@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/profiles_data_service.dart';
 import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeCardsRoll extends StatefulWidget {
+  final Future<List<Map<String, dynamic>>> profileListFunction;
+
+  const HomeCardsRoll({super.key, required this.profileListFunction});
   @override
   _HomeCardsRollState createState() => _HomeCardsRollState();
 }
@@ -14,7 +16,7 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
   @override
   void initState() {
     super.initState();
-    userDataList = ProfileDataService().getActiveUserProfile();
+    userDataList = widget.profileListFunction;
   }
 
   @override

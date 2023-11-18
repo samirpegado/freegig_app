@@ -1,11 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GigsCard extends StatefulWidget {
-  const GigsCard({super.key});
+  final Future<List<Map<String, dynamic>>> dataListFunction;
+  const GigsCard({super.key, required this.dataListFunction});
   @override
   State<GigsCard> createState() => _GigsCardState();
 }
@@ -16,7 +16,7 @@ class _GigsCardState extends State<GigsCard> {
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getActiveUserGigs(context);
+    gigsDataList = widget.dataListFunction;
     setState(() {});
   }
 

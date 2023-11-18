@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/usercitybutton.dart';
+import 'package:freegig_app/common_widgets/usercitybutton_profile.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ListMusicians extends StatefulWidget {
-  const ListMusicians({super.key});
+  final Future<List<Map<String, dynamic>>> profileListFunction;
+  final String city;
+  const ListMusicians(
+      {super.key, required this.profileListFunction, required this.city});
 
   @override
   _ListMusiciansState createState() => _ListMusiciansState();
@@ -42,12 +45,14 @@ class _ListMusiciansState extends State<ListMusicians> {
       body: SafeArea(
         child: Column(
           children: [
-            UserCityButton(),
+            UserCityButtonProfile(city: widget.city),
             Expanded(
                 child: SingleChildScrollView(
               child: Column(
                 children: [
-                  HomeCardsRoll(),
+                  HomeCardsRoll(
+                    profileListFunction: widget.profileListFunction,
+                  ),
                 ],
               ),
             ))

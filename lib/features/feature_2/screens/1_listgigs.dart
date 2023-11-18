@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/usercitybutton.dart';
+import 'package:freegig_app/common_widgets/usercitybutton_gig.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_descriptioncard.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ListGigs extends StatelessWidget {
-  const ListGigs({super.key});
+class ListGigs extends StatefulWidget {
+  final Future<List<Map<String, dynamic>>> dataListFunction;
+  final String city;
+  const ListGigs(
+      {super.key, required this.dataListFunction, required this.city});
 
+  @override
+  State<ListGigs> createState() => _ListGigsState();
+}
+
+class _ListGigsState extends State<ListGigs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,12 +44,16 @@ class ListGigs extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            UserCityButton(),
+            UserCityButtonGig(
+              city: widget.city,
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    GigsCard(),
+                    GigsCard(
+                      dataListFunction: widget.dataListFunction,
+                    ),
                   ],
                 ),
               ),

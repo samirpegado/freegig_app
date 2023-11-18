@@ -1,40 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/data/services/profiles_data_service.dart';
+import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:iconsax/iconsax.dart';
 
-class UserCityButton extends StatefulWidget {
-  const UserCityButton({super.key});
+class UserCityButtonProfile extends StatefulWidget {
+  final String city;
+  const UserCityButtonProfile({super.key, required this.city});
 
   @override
-  State<UserCityButton> createState() => _UserCityButtonState();
+  State<UserCityButtonProfile> createState() => _UserCityButtonProfileState();
 }
 
-class _UserCityButtonState extends State<UserCityButton> {
+class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
   final cityController = TextEditingController();
-  late String _city;
-
-  @override
-  void initState() {
-    super.initState();
-    _city = '';
-    _carregarDadosDoUsuario();
-  }
-
-  Future<void> _carregarDadosDoUsuario() async {
-    try {
-      Map<String, dynamic> userData = await UserDataService().getProfileData();
-
-      setState(() {
-        _city = userData['city'];
-      });
-    } catch (e) {
-      print("Erro ao buscar dados do usuário: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    String _city = widget.city;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
@@ -65,8 +48,14 @@ class _UserCityButtonState extends State<UserCityButton> {
                         ElevatedButton(
                           onPressed: () {
                             _city = 'Brasil';
-                            Navigator.of(context).pop();
-                            setState(() {});
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ListMusicians(
+                                    profileListFunction: ProfileDataService()
+                                        .getAllActiveUserProfile(),
+                                    city: _city),
+                              ),
+                            );
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -87,10 +76,16 @@ class _UserCityButtonState extends State<UserCityButton> {
                     ),
                     actions: [
                       TextButton(
-                          onPressed: () async {
+                          onPressed: () {
                             _city = cityController.text;
-                            Navigator.of(context).pop();
-                            setState(() {});
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => ListMusicians(
+                                    profileListFunction: ProfileDataService()
+                                        .getCityActiveUserProfile(_city),
+                                    city: _city),
+                              ),
+                            );
                           },
                           child: Text('Selecionar'))
                     ],

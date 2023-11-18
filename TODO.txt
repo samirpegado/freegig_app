@@ -59,3 +59,8 @@ Encontrar GIGs
         Função para confirmar se se a categoria bate com a do usuário;
         Função para confirmar se a gig já está completa;
         Não listar gig completa;
+
+Avaliacao
+    Ao finalizar as GIGs;
+    Sempre que alguma gig for aquivada automaticamente (PopUp);
+    PopUp com os musicos que participantes com as estrelas e TextField para comentários;
