@@ -20,6 +20,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late String _city = "";
+  late String _category = "";
+  late String _profileCategory = "";
 
   @override
   void initState() {
@@ -34,6 +36,8 @@ class _HomeState extends State<Home> {
 
       setState(() {
         _city = userData['city'];
+        _category = userData['category'];
+        _profileCategory = 'Todos';
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -97,8 +101,10 @@ class _HomeState extends State<Home> {
                           buttonText: "Encontrar músicos",
                           destination: ListMusicians(
                             profileListFunction: ProfileDataService()
-                                .getCityActiveUserProfileStream(_city),
+                                .getActiveUserProfileStream(
+                                    category: _profileCategory, city: _city),
                             city: _city,
+                            category: _profileCategory,
                           ),
                           imgCard: 'assets/images/musicos.png',
                         ),
@@ -106,8 +112,10 @@ class _HomeState extends State<Home> {
                           buttonText: "Encontrar GIGs",
                           destination: ListGigs(
                             dataListFunction: GigsDataService()
-                                .getCityActiveUserGigsStream(_city),
+                                .getCityActiveUserGigsStream(
+                                    city: _city, category: _category),
                             city: _city,
+                            category: _category,
                           ),
                           imgCard: 'assets/images/encontrar.png',
                         ),

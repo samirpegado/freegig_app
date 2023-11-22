@@ -167,4 +167,21 @@ class UserInvitation {
       print("Erro ao aceitar a solicitação: $e");
     }
   }
+
+  Future<bool> checkGuestInvite(String gigUid, String guestUid) async {
+    CollectionReference userRequestCollection =
+        FirebaseFirestore.instance.collection('userInvite');
+
+    try {
+      QuerySnapshot querySnapshot = await userRequestCollection
+          .where('gigUid', isEqualTo: gigUid)
+          .where('guestUserId', isEqualTo: guestUid)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Erro ao verificar a solicitação do usuário: $e');
+      return false;
+    }
+  }
 }

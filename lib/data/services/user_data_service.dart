@@ -22,6 +22,7 @@ class UserDataService {
           return {
             'publicName': userSnapshot['publicName'],
             'category': userSnapshot['category'],
+            'profileComplete': userSnapshot['profileComplete'],
             'uid': userSnapshot['uid'],
           };
         }
@@ -124,6 +125,7 @@ class UserDataService {
         if (userSnapshot.exists) {
           return {
             'city': userSnapshot['city'],
+            'category': userSnapshot['category'],
           };
         }
       }

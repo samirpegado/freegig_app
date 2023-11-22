@@ -2,7 +2,7 @@ import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/common_widgets/formatcurrency.dart';
-import 'package:freegig_app/common_widgets/musicianselectionform.dart';
+import 'package:freegig_app/common_widgets/musicianmultiselectionform.dart';
 import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
@@ -220,7 +220,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
                 ],
               ),
               SizedBox(height: 15),
-              MusicianSelectionForm(
+              MusicianMultiSelectionForm(
                 categoryController: _categoryController,
               ),
 

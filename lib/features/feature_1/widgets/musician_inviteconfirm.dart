@@ -21,11 +21,24 @@ class InviteConfirm extends StatefulWidget {
 class _InviteConfirmState extends State<InviteConfirm> {
   late Stream<List<Map<String, dynamic>>> gigsDataList;
   String selectedGigUid = '';
+  late bool _isAlreadyInvited = false;
+  late List _categorys = [];
+  late List _participants = [];
+  late bool _userProfileStatus = widget.profile['profileComplete'];
 
   @override
   void initState() {
     super.initState();
     gigsDataList = GigsDataService().getMyActiveGigsStream();
+  }
+
+  Future<void> isAlreadyInvited() async {
+    bool alreadyInvited = await UserInvitation()
+        .checkGuestInvite(selectedGigUid, widget.profile['uid']);
+
+    setState(() {
+      _isAlreadyInvited = alreadyInvited;
+    });
   }
 
   @override
@@ -62,7 +75,8 @@ class _InviteConfirmState extends State<InviteConfirm> {
                           onTap: () {
                             setState(() {
                               selectedGigUid = gig['gigUid'];
-                              print(selectedGigUid);
+                              _categorys = gig['gigCategorys'];
+                              _participants = gig['gigParticipants'];
                             });
                           },
                           child: Card(
@@ -117,9 +131,14 @@ class _InviteConfirmState extends State<InviteConfirm> {
               ),
               SizedBox(width: 20),
               InkWell(
-                onTap: () {
-                  if (selectedGigUid != '') {
-                    CircularProgressIndicator();
+                onTap: () async {
+                  await isAlreadyInvited();
+
+                  if (selectedGigUid != '' &&
+                      _isAlreadyInvited == false &&
+                      _categorys.contains(widget.profile['category']) &&
+                      !_participants.contains(widget.profile['uid']) &&
+                      _userProfileStatus == true) {
                     UserInvitation().userInvitation(
                         guestUserUid: widget.profile['uid'],
                         selectedGigUid: selectedGigUid);
@@ -152,25 +171,50 @@ class _InviteConfirmState extends State<InviteConfirm> {
                                   )
                                 ],
                               ),
-                              content: Padding(
-                                padding: const EdgeInsets.only(bottom: 30),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Visibility(
-                                      visible: _gigDataCount > 0 ? true : false,
-                                      child: Text(
-                                        "Por favor, selecione uma GIG para a qual deseja enviar o convite.",
-                                      ),
+                              content: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Visibility(
+                                    visible: _categorys.contains(
+                                            widget.profile['category'])
+                                        ? false
+                                        : _categorys.isEmpty
+                                            ? false
+                                            : true,
+                                    child: Text(
+                                        "** A categoria deste músico não corresponde à GIG selecionada."),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Visibility(
+                                    visible: !_participants
+                                            .contains(widget.profile['uid'])
+                                        ? false
+                                        : true,
+                                    child: Text(
+                                        "** Este músico já está participando da GIG selecionada."),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Visibility(
+                                    visible: _isAlreadyInvited ? true : false,
+                                    child: Text("** Convite já enviado."),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Visibility(
+                                    visible:
+                                        selectedGigUid == '' ? true : false,
+                                    child: Text(
+                                      "** Por favor, selecione uma GIG para a qual deseja enviar o convite.",
                                     ),
-                                    Visibility(
-                                      visible: _gigDataCount > 0 ? false : true,
-                                      child: Text(
-                                        "Antes de enviar o convite, é necessário criar uma GIG.",
-                                      ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Visibility(
+                                    visible: _gigDataCount > 0 ? false : true,
+                                    child: Text(
+                                      "** Antes de enviar o convite, é necessário criar uma GIG.",
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                               actions: [
                                 Visibility(

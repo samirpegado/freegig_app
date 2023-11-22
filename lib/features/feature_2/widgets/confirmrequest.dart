@@ -24,6 +24,7 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
   late List _participants = widget.gig['gigParticipants'];
   late String userUid = '';
   late String userCategory = '';
+  late bool userProfileStatus = false;
   late bool _isAlreadyRequested = false;
 
   @override
@@ -39,6 +40,7 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
       setState(() {
         userUid = userData['uid'];
         userCategory = userData['category'];
+        userProfileStatus = userData['profileComplete'];
         isAlreadyRequested();
       });
     } catch (e) {
@@ -301,7 +303,8 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
                       onTap: () {
                         if (_categorys.contains(userCategory) &&
                             !_participants.contains(userUid) &&
-                            _isAlreadyRequested == false) {
+                            _isAlreadyRequested == false &&
+                            userProfileStatus == true) {
                           UserRequest().userRequest(
                               gigOwnerId: widget.gig['gigOwner'],
                               selectedGigUid: widget.gig['gigUid']);
@@ -332,6 +335,8 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
                                           ))
                                     ],
                                     content: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Visibility(
@@ -340,22 +345,31 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
                                                   ? false
                                                   : true,
                                           child: Text(
-                                              "Esta GIG não está disponível para músicos na sua categoria."),
+                                              "** Esta GIG não está disponível para músicos na sua categoria."),
                                         ),
+                                        SizedBox(height: 10),
                                         Visibility(
                                           visible:
                                               !_participants.contains(userUid)
                                                   ? false
                                                   : true,
                                           child: Text(
-                                              "Você já está participando desta GIG."),
+                                              "** Você já está participando desta GIG."),
                                         ),
+                                        SizedBox(height: 10),
                                         Visibility(
                                           visible: _isAlreadyRequested
                                               ? true
                                               : false,
-                                          child:
-                                              Text("Solicitação já enviada."),
+                                          child: Text(
+                                              "** Solicitação já enviada."),
+                                        ),
+                                        SizedBox(height: 10),
+                                        Visibility(
+                                          visible:
+                                              userProfileStatus ? false : true,
+                                          child: Text(
+                                              "** Para participar de uma GIG, por favor, complete o seu perfil. O seu perfil ainda não está completo."),
                                         ),
                                       ],
                                     ),

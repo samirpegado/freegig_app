@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/usercitybutton_profile.dart';
+import 'package:freegig_app/features/feature_1/widgets/musician_usercategorybutton.dart';
+import 'package:freegig_app/features/feature_1/widgets/musician_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
@@ -9,8 +10,12 @@ import 'package:iconsax/iconsax.dart';
 class ListMusicians extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> profileListFunction;
   final String city;
+  final String category;
   const ListMusicians(
-      {super.key, required this.profileListFunction, required this.city});
+      {super.key,
+      required this.profileListFunction,
+      required this.city,
+      required this.category});
 
   @override
   _ListMusiciansState createState() => _ListMusiciansState();
@@ -52,7 +57,17 @@ class _ListMusiciansState extends State<ListMusicians> {
         body: SafeArea(
           child: Column(
             children: [
-              UserCityButtonProfile(city: widget.city),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  UserCityButtonProfile(
+                    city: widget.city,
+                    category: widget.category,
+                  ),
+                  MusicianCategoryButton(
+                      city: widget.city, category: widget.category)
+                ],
+              ),
               Expanded(
                   child: SingleChildScrollView(
                 child: Column(
@@ -91,55 +106,11 @@ Future openFilter(context) => showDialog(
           mainAxisSize: MainAxisSize.min,
           children: [
             ExpansionTile(
+              initiallyExpanded: true,
               title: Text("Avaliação"),
               children: [
-                SizedBox(height: 10),
-                SizedBox(
-                  height: 40,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "De",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Text("-"),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            labelText: "Até",
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-              ],
-            ),
-            ExpansionTile(
-              title: Text("Categoria"),
-              children: [
-                SizedBox(height: 10),
-                SizedBox(
-                  height: 40,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Categoria",
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
+                TextButton(onPressed: () {}, child: Text('Maior para o menor')),
+                TextButton(onPressed: () {}, child: Text('Menor para o maior')),
               ],
             ),
           ],

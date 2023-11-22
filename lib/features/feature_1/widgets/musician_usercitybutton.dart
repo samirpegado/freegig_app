@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
+import 'package:freegig_app/data/services/profiles_data_service.dart';
+import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:iconsax/iconsax.dart';
 
-class UserCityButtonGig extends StatefulWidget {
+class UserCityButtonProfile extends StatefulWidget {
   final String city;
-  const UserCityButtonGig({super.key, required this.city});
+  final String category;
+  const UserCityButtonProfile(
+      {super.key, required this.city, required this.category});
 
   @override
-  State<UserCityButtonGig> createState() => _UserCityButtonGigState();
+  State<UserCityButtonProfile> createState() => _UserCityButtonProfileState();
 }
 
-class _UserCityButtonGigState extends State<UserCityButtonGig> {
+class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
   final cityController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     String _city = widget.city;
+    String _category = widget.category;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
@@ -50,10 +53,12 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                             _city = 'Brasil';
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ListGigs(
-                                  dataListFunction: GigsDataService()
-                                      .getAllActiveUserGigsStream(),
+                                builder: (context) => ListMusicians(
+                                  profileListFunction: ProfileDataService()
+                                      .getActiveUserProfileStream(
+                                          category: _category, city: _city),
                                   city: _city,
+                                  category: _category,
                                 ),
                               ),
                             );
@@ -78,16 +83,22 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                     actions: [
                       TextButton(
                           onPressed: () {
-                            _city = cityController.text;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListGigs(
-                                  dataListFunction: GigsDataService()
-                                      .getCityActiveUserGigsStream(_city),
-                                  city: _city,
+                            if (cityController.text.isEmpty) {
+                              Navigator.of(context).pop();
+                            } else {
+                              _city = cityController.text;
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => ListMusicians(
+                                    profileListFunction: ProfileDataService()
+                                        .getActiveUserProfileStream(
+                                            category: _category, city: _city),
+                                    city: _city,
+                                    category: _category,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           },
                           child: Text('Selecionar'))
                     ],

@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/data/services/profiles_data_service.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:iconsax/iconsax.dart';
 
-class UserCityButtonProfile extends StatefulWidget {
+class MusicianCategoryButton extends StatefulWidget {
   final String city;
-  const UserCityButtonProfile({super.key, required this.city});
+  final String category;
+  const MusicianCategoryButton(
+      {super.key, required this.city, required this.category});
 
   @override
-  State<UserCityButtonProfile> createState() => _UserCityButtonProfileState();
+  State<MusicianCategoryButton> createState() => _MusicianCategoryButtonState();
 }
 
-class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
-  final cityController = TextEditingController();
+class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
+  final categoryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     String _city = widget.city;
+    String _category = widget.category;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
@@ -34,7 +37,7 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Alterar cidade'),
+                        Text('Alterar categoria'),
                         IconButton(
                             onPressed: () {
                               Navigator.of(context).pop();
@@ -47,19 +50,20 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            _city = 'Brasil';
+                            _category = 'Todos';
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => ListMusicians(
-                                    profileListFunction: ProfileDataService()
-                                        .getAllActiveUserProfileStream(),
-                                    city: _city),
-                              ),
+                                  builder: (context) => ListMusicians(
+                                      profileListFunction: ProfileDataService()
+                                          .getActiveUserProfileStream(
+                                              city: _city, category: _category),
+                                      city: _city,
+                                      category: _category)),
                             );
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text('Todo o Brasil'),
+                            child: Text('Todas as Categorias'),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -69,23 +73,32 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        Text('Pesquisar por cidade'),
+                        Text('Pesquisar por categoria'),
                         SizedBox(height: 10),
-                        SearchGoogleCity(cityController: cityController)
+                        MusicianOnlySelectionForm(
+                            categoryController: categoryController)
                       ],
                     ),
                     actions: [
                       TextButton(
                           onPressed: () {
-                            _city = cityController.text;
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListMusicians(
-                                    profileListFunction: ProfileDataService()
-                                        .getCityActiveUserProfileStream(_city),
-                                    city: _city),
-                              ),
-                            );
+                            if (categoryController.text.isEmpty) {
+                              Navigator.of(context).pop();
+                            } else {
+                              _category = categoryController.text;
+
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => ListMusicians(
+                                        profileListFunction:
+                                            ProfileDataService()
+                                                .getActiveUserProfileStream(
+                                                    city: _city,
+                                                    category: _category),
+                                        city: _city,
+                                        category: _category)),
+                              );
+                            }
                           },
                           child: Text('Selecionar'))
                     ],
@@ -97,12 +110,12 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Iconsax.location5,
+                Iconsax.music5,
                 size: 18,
                 color: Colors.black,
               ),
               Flexible(
-                child: Text(' ' + _city,
+                child: Text(' ' + _category,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 14.0, color: Colors.black)),
               ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -47,30 +47,6 @@ class _SignUpFormState extends State<SignUpForm> {
       isChecked = !isChecked;
     });
   }
-
-  String selectedMusician = '';
-
-  Map<String, List<String>> options = {
-    'Voz': ['Cantor', 'Cantora'],
-    'Cordas': [
-      'Violinista',
-      'Violoncelista',
-      'Guitarrista',
-      'Baixista',
-      'Violonista',
-      'Harpista'
-    ],
-    'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
-    'Sopros': [
-      'Flautista',
-      'Saxofonista',
-      'Trompetista',
-      'Trombonista',
-      'Clarinetista',
-      'Oboísta'
-    ],
-    'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -131,42 +107,8 @@ class _SignUpFormState extends State<SignUpForm> {
             Row(
               children: [
                 Expanded(
-                  child: TypeAheadField<String>(
-                    textFieldConfiguration: TextFieldConfiguration(
-                      controller: widget.category,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        labelText: 'Categoria',
-                        prefixIcon: Icon(Iconsax.music),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                      ),
-                    ),
-                    suggestionsCallback: (pattern) {
-                      return options.values.expand((e) => e).where((e) =>
-                          e.toLowerCase().contains(pattern.toLowerCase()));
-                    },
-                    itemBuilder: (context, suggestion) {
-                      return ListTile(
-                        title: Text(suggestion),
-                      );
-                    },
-                    onSuggestionSelected: (suggestion) {
-                      setState(() {
-                        selectedMusician = suggestion;
-                        widget.category.text = suggestion;
-                      });
-                    },
-                    noItemsFoundBuilder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                          "Categoria não encontrada",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      );
-                    },
+                  child: MusicianOnlySelectionForm(
+                    categoryController: widget.category,
                   ),
                 ),
                 SizedBox(width: 15),

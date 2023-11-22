@@ -107,13 +107,33 @@ class _GigsCardState extends State<GigsCard> {
                                 Row(
                                   children: [
                                     Icon(
-                                      Iconsax.location5,
+                                      Iconsax.music5,
                                       size: 14.0,
                                       color: Colors.black54,
                                     ),
                                     SizedBox(width: 4),
                                     SizedBox(
-                                      width: 300,
+                                      width: 240,
+                                      child: Text(
+                                        "${gig['gigCategorys'].join(', ')}",
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 14.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Iconsax.location5,
+                                      size: 14.0,
+                                      color: Colors.black54,
+                                    ),
+                                    SizedBox(width: 4),
+                                    Expanded(
                                       child: Text(
                                         gig['gigLocale'],
                                         overflow: TextOverflow.ellipsis,

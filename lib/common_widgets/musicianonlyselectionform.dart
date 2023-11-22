@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
-class MusicianSelectionForm extends StatefulWidget {
+class MusicianOnlySelectionForm extends StatefulWidget {
   final TextEditingController categoryController;
 
-  const MusicianSelectionForm({super.key, required this.categoryController});
+  const MusicianOnlySelectionForm({
+    Key? key,
+    required this.categoryController,
+  }) : super(key: key);
+
   @override
-  _MusicianSelectionFormState createState() => _MusicianSelectionFormState();
+  _MusicianOnlySelectionFormState createState() =>
+      _MusicianOnlySelectionFormState();
 }
 
-class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
+class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
   TextEditingController _textController = TextEditingController();
-  Map<String, Set<String>> selectedMusiciansByCategory = {};
+  String? selectedMusician;
 
   void _showSelectionDialog() async {
     Map<String, List<String>> musicianCategories = {
-      'Voz': ['Cantor', 'Cantora'],
+      'Voz': ['Vocalista', 'Backing Vocal'],
       'Cordas': [
         'Guitarrista',
         'Baixista',
@@ -35,13 +40,6 @@ class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
       ],
       'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
     };
-
-    // Inicialize os conjuntos para cada categoria
-    for (var category in musicianCategories.keys) {
-      if (!selectedMusiciansByCategory.containsKey(category)) {
-        selectedMusiciansByCategory[category] = Set();
-      }
-    }
 
     await showDialog(
       context: context,
@@ -65,19 +63,13 @@ class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
                           musicianCategories[category]!.length,
                           (j) {
                             var musician = musicianCategories[category]![j];
-                            return CheckboxListTile(
+                            return RadioListTile<String>(
                               title: Text(musician),
-                              value: selectedMusiciansByCategory[category]!
-                                  .contains(musician),
+                              value: musician,
+                              groupValue: selectedMusician,
                               onChanged: (value) {
                                 setState(() {
-                                  if (value!) {
-                                    selectedMusiciansByCategory[category]!
-                                        .add(musician);
-                                  } else {
-                                    selectedMusiciansByCategory[category]!
-                                        .remove(musician);
-                                  }
+                                  selectedMusician = value;
                                 });
                               },
                             );
@@ -90,27 +82,26 @@ class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
               ),
               actions: [
                 IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(
-                      Icons.close,
-                    )),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(
+                    Icons.close,
+                  ),
+                ),
                 IconButton(
-                    onPressed: () {
-                      List<String> selectedMusicians = [];
-                      selectedMusiciansByCategory
-                          .forEach((category, musicians) {
-                        selectedMusicians.addAll(musicians);
-                      });
-                      _textController.text = selectedMusicians.join(', ');
+                  onPressed: () {
+                    if (selectedMusician != null) {
+                      _textController.text = selectedMusician!;
                       widget.categoryController.text = _textController.text;
+                    }
 
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(
-                      Icons.check,
-                    )),
+                    Navigator.of(context).pop();
+                  },
+                  icon: Icon(
+                    Icons.check,
+                  ),
+                ),
               ],
             );
           },
@@ -135,11 +126,13 @@ class _MusicianSelectionFormState extends State<MusicianSelectionForm> {
         _showSelectionDialog();
       },
       decoration: InputDecoration(
-        labelText: 'Categoria de músicos',
+        labelText: 'Categoria',
         prefixIcon: Icon(Iconsax.music),
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
       ),
     );
   }
