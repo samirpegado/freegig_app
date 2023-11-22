@@ -16,13 +16,13 @@ class MessageToMusician extends StatefulWidget {
 }
 
 class _MessageToMusicianState extends State<MessageToMusician> {
-  late Future<List<Map<String, dynamic>>> gigsDataList;
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
   String selectedGigUid = '';
 
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getMyActiveGigs();
+    gigsDataList = GigsDataService().getMyActiveGigsStream();
   }
 
   @override
@@ -40,8 +40,8 @@ class _MessageToMusicianState extends State<MessageToMusician> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 15),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: gigsDataList,
+          StreamBuilder<List<Map<String, dynamic>>>(
+            stream: gigsDataList,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<Map<String, dynamic>> data = snapshot.data!;

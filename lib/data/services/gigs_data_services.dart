@@ -47,222 +47,299 @@ class GigsDataService {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getAllActiveUserGigs() async {
+  Stream<List<Map<String, dynamic>>> getAllActiveUserGigsStream() {
     try {
       User? user = _auth.currentUser;
 
       if (user != null) {
-        QuerySnapshot gigsSnapshot = await _firestore
+        return _firestore
             .collection('gigs')
             .where('gigArchived', isEqualTo: false)
             .where('gigOwner', isNotEqualTo: user.uid)
-            .get();
+            .snapshots()
+            .asyncMap((gigsSnapshot) async {
+          List<Map<String, dynamic>> gigsDataList = [];
 
-        List<Map<String, dynamic>> gigsDataList = [];
+          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+            Map<String, dynamic> gigData =
+                gigDocument.data() as Map<String, dynamic>;
 
-        for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
-          Map<String, dynamic> gigData =
-              gigDocument.data() as Map<String, dynamic>;
+            DocumentSnapshot userSnapshot = await _firestore
+                .collection('users')
+                .doc(gigData['gigOwner'])
+                .get();
 
-          // Obter informações do usuário que criou a GIG
-          DocumentSnapshot userSnapshot = await _firestore
-              .collection('users')
-              .doc(gigData['gigOwner'])
-              .get();
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
 
-          Map<String, dynamic> userData =
-              userSnapshot.data() as Map<String, dynamic>;
+            gigsDataList.add({
+              'gigUid': gigDocument.id,
+              'gigDescription': gigData['gigDescription'],
+              'gigLocale': gigData['gigLocale'],
+              'gigAdress': gigData['gigAdress'],
+              'gigInitHour': gigData['gigInitHour'],
+              'gigFinalHour': gigData['gigFinalHour'],
+              'gigOwner': gigData['gigOwner'],
+              'gigDate': gigData['gigDate'],
+              'gigCache': gigData['gigCache'],
+              'gigCategorys': gigData['gigCategorys'],
+              'gigDetails': gigData['gigDetails'],
+              'profileImageUrl': userData['profileImageUrl'],
+              'publicName': userData['publicName'],
+              'category': userData['category'],
+              'gigParticipants': userData['gigParticipants'],
+            });
+          }
 
-          gigsDataList.add({
-            'gigUid': gigDocument.id,
-            'gigDescription': gigData['gigDescription'],
-            'gigLocale': gigData['gigLocale'],
-            'gigAdress': gigData['gigAdress'],
-            'gigInitHour': gigData['gigInitHour'],
-            'gigFinalHour': gigData['gigFinalHour'],
-            'gigOwner': gigData['gigOwner'],
-            'gigDate': gigData['gigDate'],
-            'gigCache': gigData['gigCache'],
-            'gigCategorys': gigData['gigCategorys'],
-            'gigDetails': gigData['gigDetails'],
-            'profileImageUrl': userData['profileImageUrl'],
-            'publicName': userData['publicName'],
-            'category': userData['category'],
-            'gigParticipants': userData['gigParticipants']
-          });
-        }
-        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
+          gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
 
-        return gigsDataList;
+          return gigsDataList;
+        });
       }
     } catch (e) {
       print("Erro ao buscar dados das GIGs: $e");
     }
-    return [];
+
+    // Retorna um stream vazio em caso de erro
+    return Stream.value([]);
   }
 
-  Future<List<Map<String, dynamic>>> getCityActiveUserGigs(String city) async {
+  Stream<List<Map<String, dynamic>>> getCityActiveUserGigsStream(String city) {
     try {
       User? user = _auth.currentUser;
 
       if (user != null) {
-        QuerySnapshot gigsSnapshot = await _firestore
+        return _firestore
             .collection('gigs')
             .where('gigArchived', isEqualTo: false)
             .where('gigOwner', isNotEqualTo: user.uid)
             .where('gigLocale', isEqualTo: city)
-            .get();
+            .snapshots()
+            .asyncExpand((gigsSnapshot) async* {
+          List<Map<String, dynamic>> gigsDataList = [];
 
-        List<Map<String, dynamic>> gigsDataList = [];
+          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+            Map<String, dynamic> gigData =
+                gigDocument.data() as Map<String, dynamic>;
 
-        for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
-          Map<String, dynamic> gigData =
-              gigDocument.data() as Map<String, dynamic>;
+            DocumentSnapshot userSnapshot = await _firestore
+                .collection('users')
+                .doc(gigData['gigOwner'])
+                .get();
 
-          // Obter informações do usuário que criou a GIG
-          DocumentSnapshot userSnapshot = await _firestore
-              .collection('users')
-              .doc(gigData['gigOwner'])
-              .get();
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
 
-          Map<String, dynamic> userData =
-              userSnapshot.data() as Map<String, dynamic>;
+            gigsDataList.add({
+              'gigUid': gigDocument.id,
+              'gigDescription': gigData['gigDescription'],
+              'gigCompleted': gigData['gigCompleted'],
+              'gigArchived': gigData['gigArchived'],
+              'gigLocale': gigData['gigLocale'],
+              'gigAdress': gigData['gigAdress'],
+              'gigInitHour': gigData['gigInitHour'],
+              'gigFinalHour': gigData['gigFinalHour'],
+              'gigOwner': gigData['gigOwner'],
+              'gigDate': gigData['gigDate'],
+              'gigCache': gigData['gigCache'],
+              'gigCategorys': gigData['gigCategorys'],
+              'gigDetails': gigData['gigDetails'],
+              'gigParticipants': gigData['gigParticipants'],
+              'profileImageUrl': userData['profileImageUrl'],
+              'publicName': userData['publicName'],
+              'category': userData['category'],
+            });
+          }
 
-          gigsDataList.add({
-            'gigUid': gigDocument.id,
-            'gigDescription': gigData['gigDescription'],
-            'gigLocale': gigData['gigLocale'],
-            'gigAdress': gigData['gigAdress'],
-            'gigInitHour': gigData['gigInitHour'],
-            'gigFinalHour': gigData['gigFinalHour'],
-            'gigOwner': gigData['gigOwner'],
-            'gigDate': gigData['gigDate'],
-            'gigCache': gigData['gigCache'],
-            'gigCategorys': gigData['gigCategorys'],
-            'gigDetails': gigData['gigDetails'],
-            'profileImageUrl': userData['profileImageUrl'],
-            'publicName': userData['publicName'],
-            'category': userData['category'],
-            'gigParticipants': userData['gigParticipants']
-          });
-        }
-        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
+          gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
 
-        return gigsDataList;
+          yield gigsDataList;
+        });
       }
     } catch (e) {
       print("Erro ao buscar dados das GIGs: $e");
     }
-    return [];
+
+    // Retorna um stream vazio em caso de erro
+    return Stream.value([]);
   }
 
-  Future<List<Map<String, dynamic>>> getMyActiveGigs() async {
+  Stream<List<Map<String, dynamic>>> getMyActiveGigsStream() {
     try {
       User? user = _auth.currentUser;
+
       if (user != null) {
-        QuerySnapshot gigsSnapshot = await _firestore
+        return _firestore
             .collection('gigs')
             .where('gigArchived', isEqualTo: false)
             .where('gigOwner', isEqualTo: user.uid)
-            .get();
+            .snapshots()
+            .asyncMap((gigsSnapshot) async {
+          List<Map<String, dynamic>> gigsDataList = [];
 
-        List<Map<String, dynamic>> gigsDataList = [];
+          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+            Map<String, dynamic> gigData =
+                gigDocument.data() as Map<String, dynamic>;
 
-        for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
-          Map<String, dynamic> gigData =
-              gigDocument.data() as Map<String, dynamic>;
+            DocumentSnapshot userSnapshot = await _firestore
+                .collection('users')
+                .doc(gigData['gigOwner'])
+                .get();
 
-          // Obter informações do usuário que criou a GIG
-          DocumentSnapshot userSnapshot = await _firestore
-              .collection('users')
-              .doc(gigData['gigOwner'])
-              .get();
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
 
-          Map<String, dynamic> userData =
-              userSnapshot.data() as Map<String, dynamic>;
+            gigsDataList.add({
+              'gigUid': gigDocument.id,
+              'gigDescription': gigData['gigDescription'],
+              'gigCompleted': gigData['gigCompleted'],
+              'gigArchived': gigData['gigArchived'],
+              'gigLocale': gigData['gigLocale'],
+              'gigAdress': gigData['gigAdress'],
+              'gigInitHour': gigData['gigInitHour'],
+              'gigFinalHour': gigData['gigFinalHour'],
+              'gigDate': gigData['gigDate'],
+              'gigCache': gigData['gigCache'],
+              'gigCategorys': gigData['gigCategorys'],
+              'gigDetails': gigData['gigDetails'],
+              'gigOwner': gigData['gigOwner'],
+              'profileImageUrl': userData['profileImageUrl'],
+              'publicName': userData['publicName'],
+              'category': userData['category'],
+              'gigParticipants': userData['gigParticipants'],
+            });
+          }
 
-          gigsDataList.add({
-            'gigUid': gigDocument.id,
-            'gigDescription': gigData['gigDescription'],
-            'gigLocale': gigData['gigLocale'],
-            'gigAdress': gigData['gigAdress'],
-            'gigInitHour': gigData['gigInitHour'],
-            'gigFinalHour': gigData['gigFinalHour'],
-            'gigDate': gigData['gigDate'],
-            'gigCache': gigData['gigCache'],
-            'gigCategorys': gigData['gigCategorys'],
-            'gigDetails': gigData['gigDetails'],
-            'gigOwner': gigData['gigOwner'],
-            'profileImageUrl': userData['profileImageUrl'],
-            'publicName': userData['publicName'],
-            'category': userData['category'],
-            'gigParticipants': userData['gigParticipants']
-          });
-        }
+          gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
 
-        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
-
-        return gigsDataList;
+          return gigsDataList;
+        });
       }
     } catch (e) {
       print("Erro ao buscar dados das GIGs: $e");
     }
-    return [];
+
+    // Retorna um stream vazio em caso de erro
+    return Stream.value([]);
   }
 
-  Future<List<Map<String, dynamic>>> getParticipantGigs() async {
+  Stream<List<Map<String, dynamic>>> getParticipantGigsStream() {
     try {
       User? user = _auth.currentUser;
+
       if (user != null) {
-        QuerySnapshot gigsSnapshot = await _firestore
+        return _firestore
             .collection('gigs')
             .where('gigArchived', isEqualTo: false)
             .where('gigParticipants', arrayContains: user.uid)
             .where('gigOwner', isNotEqualTo: user.uid)
-            .get();
+            .snapshots()
+            .asyncMap((gigsSnapshot) async {
+          List<Map<String, dynamic>> gigsDataList = [];
 
-        List<Map<String, dynamic>> gigsDataList = [];
+          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+            Map<String, dynamic> gigData =
+                gigDocument.data() as Map<String, dynamic>;
 
-        for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
-          Map<String, dynamic> gigData =
-              gigDocument.data() as Map<String, dynamic>;
+            DocumentSnapshot userSnapshot = await _firestore
+                .collection('users')
+                .doc(gigData['gigOwner'])
+                .get();
 
-          // Obter informações do usuário que criou a GIG
-          DocumentSnapshot userSnapshot = await _firestore
-              .collection('users')
-              .doc(gigData['gigOwner'])
-              .get();
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
 
-          Map<String, dynamic> userData =
-              userSnapshot.data() as Map<String, dynamic>;
+            gigsDataList.add({
+              'gigUid': gigDocument.id,
+              'gigDescription': gigData['gigDescription'],
+              'gigCompleted': gigData['gigCompleted'],
+              'gigArchived': gigData['gigArchived'],
+              'gigLocale': gigData['gigLocale'],
+              'gigAdress': gigData['gigAdress'],
+              'gigInitHour': gigData['gigInitHour'],
+              'gigFinalHour': gigData['gigFinalHour'],
+              'gigDate': gigData['gigDate'],
+              'gigCache': gigData['gigCache'],
+              'gigCategorys': gigData['gigCategorys'],
+              'gigDetails': gigData['gigDetails'],
+              'gigOwner': gigData['gigOwner'],
+              'profileImageUrl': userData['profileImageUrl'],
+              'publicName': userData['publicName'],
+              'category': userData['category'],
+              'gigParticipants': userData['gigParticipants'],
+            });
+          }
 
-          gigsDataList.add({
-            'gigUid': gigDocument.id,
-            'gigDescription': gigData['gigDescription'],
-            'gigLocale': gigData['gigLocale'],
-            'gigAdress': gigData['gigAdress'],
-            'gigInitHour': gigData['gigInitHour'],
-            'gigFinalHour': gigData['gigFinalHour'],
-            'gigDate': gigData['gigDate'],
-            'gigCache': gigData['gigCache'],
-            'gigCategorys': gigData['gigCategorys'],
-            'gigDetails': gigData['gigDetails'],
-            'gigOwner': gigData['gigOwner'],
-            'profileImageUrl': userData['profileImageUrl'],
-            'publicName': userData['publicName'],
-            'category': userData['category'],
-            'gigParticipants': userData['gigParticipants']
-          });
-        }
+          gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
 
-        gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
-
-        return gigsDataList;
+          return gigsDataList;
+        });
       }
     } catch (e) {
       print("Erro ao buscar dados das GIGs: $e");
     }
-    return [];
+
+    // Retorna um stream vazio em caso de erro
+    return Stream.value([]);
+  }
+
+  Stream<List<Map<String, dynamic>>> getMyAllGigsStream() {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        return _firestore
+            .collection('gigs')
+            .where('gigArchived', isEqualTo: false)
+            .where('gigParticipants', arrayContains: user.uid)
+            .snapshots()
+            .asyncMap((gigsSnapshot) async {
+          List<Map<String, dynamic>> gigsDataList = [];
+
+          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
+            Map<String, dynamic> gigData =
+                gigDocument.data() as Map<String, dynamic>;
+
+            DocumentSnapshot userSnapshot = await _firestore
+                .collection('users')
+                .doc(gigData['gigOwner'])
+                .get();
+
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
+
+            gigsDataList.add({
+              'gigUid': gigDocument.id,
+              'gigDescription': gigData['gigDescription'],
+              'gigCompleted': gigData['gigCompleted'],
+              'gigArchived': gigData['gigArchived'],
+              'gigLocale': gigData['gigLocale'],
+              'gigAdress': gigData['gigAdress'],
+              'gigInitHour': gigData['gigInitHour'],
+              'gigFinalHour': gigData['gigFinalHour'],
+              'gigDate': gigData['gigDate'],
+              'gigCache': gigData['gigCache'],
+              'gigCategorys': gigData['gigCategorys'],
+              'gigDetails': gigData['gigDetails'],
+              'gigOwner': gigData['gigOwner'],
+              'profileImageUrl': userData['profileImageUrl'],
+              'publicName': userData['publicName'],
+              'category': userData['category'],
+              'gigParticipants': userData['gigParticipants'],
+            });
+          }
+
+          gigsDataList.sort((a, b) => a['gigDate'].compareTo(b['gigDate']));
+
+          return gigsDataList;
+        });
+      }
+    } catch (e) {
+      print("Erro ao buscar dados das GIGs: $e");
+    }
+
+    // Retorna um stream vazio em caso de erro
+    return Stream.value([]);
   }
 
   Future<void> myGigDelete(String documentId) async {
@@ -303,6 +380,11 @@ class GigsDataService {
             'publicName': participantData['publicName'],
             'profileImageUrl': participantData['profileImageUrl'],
             'category': participantData['category'],
+            'city': participantData['city'],
+            'instagram': participantData['instagram'],
+            'description': participantData['description'],
+            'release': participantData['release'],
+            'lastReleases': participantData['lastReleases'],
             'uid': participantUid,
           });
         } else {
@@ -341,6 +423,20 @@ class GigsDataService {
       }
     } catch (e) {
       print("Erro ao aceitar a solicitação: $e");
+    }
+  }
+
+  Future<void> updateGigStatus(bool newStatus, String gigUid) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await FirebaseFirestore.instance
+            .collection('gigs')
+            .doc(gigUid)
+            .update({'gigCompleted': newStatus});
+      }
+    } catch (e) {
+      print("Erro ao atualizar o status do usuário: $e");
     }
   }
 }

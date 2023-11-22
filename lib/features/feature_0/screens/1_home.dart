@@ -9,6 +9,7 @@ import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
+import 'package:iconsax/iconsax.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -28,7 +29,8 @@ class _HomeState extends State<Home> {
 
   Future<void> _carregarDadosDoUsuario() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getProfileData();
+      Map<String, dynamic> userData =
+          await UserDataService().getCityProfileData();
 
       setState(() {
         _city = userData['city'];
@@ -95,7 +97,7 @@ class _HomeState extends State<Home> {
                           buttonText: "Encontrar músicos",
                           destination: ListMusicians(
                             profileListFunction: ProfileDataService()
-                                .getCityActiveUserProfile(_city),
+                                .getCityActiveUserProfileStream(_city),
                             city: _city,
                           ),
                           imgCard: 'assets/images/musicos.png',
@@ -103,8 +105,8 @@ class _HomeState extends State<Home> {
                         HomeCustomCard(
                           buttonText: "Encontrar GIGs",
                           destination: ListGigs(
-                            dataListFunction:
-                                GigsDataService().getCityActiveUserGigs(_city),
+                            dataListFunction: GigsDataService()
+                                .getCityActiveUserGigsStream(_city),
                             city: _city,
                           ),
                           imgCard: 'assets/images/encontrar.png',
@@ -123,7 +125,29 @@ class _HomeState extends State<Home> {
             ),
           ),
           Expanded(
-            child: HomeAgenda(),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(width: 30),
+                    Icon(Iconsax.calendar5,
+                        color: Color.fromARGB(255, 55, 158, 58)),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Text(
+                        "Suas GIGs",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 19.0,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(child: HomeAgenda()),
+              ],
+            ),
           )
         ],
       ),

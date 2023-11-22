@@ -52,7 +52,7 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                               MaterialPageRoute(
                                 builder: (context) => ListMusicians(
                                     profileListFunction: ProfileDataService()
-                                        .getAllActiveUserProfile(),
+                                        .getAllActiveUserProfileStream(),
                                     city: _city),
                               ),
                             );
@@ -82,7 +82,7 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                               MaterialPageRoute(
                                 builder: (context) => ListMusicians(
                                     profileListFunction: ProfileDataService()
-                                        .getCityActiveUserProfile(_city),
+                                        .getCityActiveUserProfileStream(_city),
                                     city: _city),
                               ),
                             );

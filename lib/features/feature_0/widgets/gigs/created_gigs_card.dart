@@ -1,27 +1,27 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/participantdetails.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/created_giginfo.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ParticipantGigsCard extends StatefulWidget {
+class MyGigsCard extends StatefulWidget {
   @override
-  State<ParticipantGigsCard> createState() => _ParticipantGigsCardState();
+  State<MyGigsCard> createState() => _MyGigsCardState();
 }
 
-class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
-  late Future<List<Map<String, dynamic>>> gigsDataList;
+class _MyGigsCardState extends State<MyGigsCard> {
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
 
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getParticipantGigs();
+    gigsDataList = GigsDataService().getMyActiveGigsStream();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: gigsDataList,
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: gigsDataList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
@@ -31,7 +31,7 @@ class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
         } else if (snapshot.hasError) {
           return Text('Erro: ${snapshot.error}');
         } else {
-          List<Map<String, dynamic>> gigs = snapshot.data!;
+          List<Map<String, dynamic>> gigs = snapshot.data ?? [];
 
           if (gigs.isEmpty) {
             return Padding(
@@ -51,12 +51,8 @@ class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
                 child: InkWell(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ParticipantDetails(
-                        gig: gig,
-                      ),
-                    );
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CreatedGigInfo(gig: gig)));
                   },
                   child: Card(
                     elevation: 2,

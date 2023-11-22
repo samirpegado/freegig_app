@@ -17,8 +17,6 @@ class SearchGoogleAddress extends StatefulWidget {
 }
 
 class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
-  final _searchController = TextEditingController();
-
   Uuid uuid = const Uuid();
   String sessionToken = "";
   List<dynamic> placeList = [];
@@ -53,14 +51,14 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
     if (sessionToken.isEmpty) {
       sessionToken = uuid.v4();
     } else {
-      getSuggestions(_searchController.text);
+      getSuggestions(widget.addressController.text);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
+    widget.addressController.addListener(() {
       onChange();
     });
   }
@@ -71,7 +69,7 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
       children: [
         TypeAheadField(
           textFieldConfiguration: TextFieldConfiguration(
-            controller: _searchController,
+            controller: widget.addressController,
             decoration: InputDecoration(
               labelText: "Local",
               hintText: "Local, endereço...",
@@ -93,7 +91,6 @@ class _SearchGoogleAddressState extends State<SearchGoogleAddress> {
           },
           onSuggestionSelected: (suggestion) {
             setState(() {
-              _searchController.text = suggestion;
               widget.addressController.text = suggestion;
             });
           },

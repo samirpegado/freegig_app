@@ -3,7 +3,7 @@ import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeCardsRoll extends StatefulWidget {
-  final Future<List<Map<String, dynamic>>> profileListFunction;
+  final Stream<List<Map<String, dynamic>>> profileListFunction;
 
   const HomeCardsRoll({super.key, required this.profileListFunction});
   @override
@@ -11,7 +11,7 @@ class HomeCardsRoll extends StatefulWidget {
 }
 
 class _HomeCardsRollState extends State<HomeCardsRoll> {
-  late Future<List<Map<String, dynamic>>> userDataList;
+  late Stream<List<Map<String, dynamic>>> userDataList;
 
   @override
   void initState() {
@@ -21,17 +21,8 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> openProfileDetails(int index) async {
-      List<Map<String, dynamic>> profiles = await userDataList;
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ProfileDetailsPage(profile: profiles[index]),
-        ),
-      );
-    }
-
-    return FutureBuilder<List<Map<String, dynamic>>>(
-        future: userDataList,
+    return StreamBuilder<List<Map<String, dynamic>>>(
+        stream: userDataList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
@@ -41,7 +32,7 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
           } else if (snapshot.hasError) {
             return Text('Erro: ${snapshot.error}');
           } else {
-            List<Map<String, dynamic>> profiles = snapshot.data!;
+            List<Map<String, dynamic>> profiles = snapshot.data ?? [];
 
             if (profiles.isEmpty) {
               return Padding(
@@ -66,7 +57,12 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                           left: 15, right: 15, bottom: 10),
                       child: InkWell(
                         onTap: () {
-                          openProfileDetails(index);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfileDetailsPage(profile: profiles[index]),
+                            ),
+                          );
                         },
                         child: Card(
                           elevation: 2,

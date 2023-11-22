@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:freegig_app/common_widgets/pickimage.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
@@ -42,19 +40,18 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
 
   final description = TextEditingController();
   final release = TextEditingController();
-  final city = TextEditingController();
+
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
-  final youtube = TextEditingController();
 
   @override
   void dispose() {
     description.dispose();
     release.dispose();
-    city.dispose();
+
     lastReleases.dispose();
     instagram.dispose();
-    youtube.dispose();
+
     super.dispose();
   }
 
@@ -81,9 +78,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
       release: release.text.trim(),
       lastReleases: lastReleases.text.trim(),
       instagram: instagram.text.trim(),
-      youtube: youtube.text.trim(),
       image: _image!,
-      city: city.text.trim(),
     );
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => NavigationMenu(navPage: 3),
@@ -205,6 +200,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
               ),
 
               ///forms
+
               TextFormField(
                 controller: description,
                 textCapitalization: TextCapitalization.sentences,
@@ -250,8 +246,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                       borderRadius: BorderRadius.circular(10.0)),
                 ),
               ),
-              SearchGoogleCity(cityController: city),
-              SizedBox(height: 26),
+
               TextFormField(
                 controller: instagram,
                 decoration: InputDecoration(
@@ -264,20 +259,6 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                       borderRadius: BorderRadius.circular(10.0)),
                 ),
               ),
-              SizedBox(height: 26),
-              TextFormField(
-                controller: youtube,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.video),
-                  labelText: "YouTube",
-                  hintText: "/@SeuCanal",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              SizedBox(height: 30),
             ],
           ),
         ),

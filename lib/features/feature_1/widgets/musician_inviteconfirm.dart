@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/data/services/user_invitation.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
+import 'package:iconsax/iconsax.dart';
 
 class InviteConfirm extends StatefulWidget {
   const InviteConfirm({
@@ -16,17 +19,18 @@ class InviteConfirm extends StatefulWidget {
 }
 
 class _InviteConfirmState extends State<InviteConfirm> {
-  late Future<List<Map<String, dynamic>>> gigsDataList;
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
   String selectedGigUid = '';
 
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getMyActiveGigs();
+    gigsDataList = GigsDataService().getMyActiveGigsStream();
   }
 
   @override
   Widget build(BuildContext context) {
+    late int _gigDataCount = 0;
     return AlertDialog(
       title: Text(
         "Confirmar convite",
@@ -41,11 +45,14 @@ class _InviteConfirmState extends State<InviteConfirm> {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 10),
-            FutureBuilder<List<Map<String, dynamic>>>(
-              future: gigsDataList,
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: gigsDataList,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<Map<String, dynamic>> data = snapshot.data!;
+
+                  _gigDataCount = data.length;
+
                   return SingleChildScrollView(
                     child: Column(
                       children: data.map<Widget>((gig) {
@@ -131,22 +138,70 @@ class _InviteConfirmState extends State<InviteConfirm> {
                         context: context,
                         builder: (context) => AlertDialog(
                               title: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  IconButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      icon: Icon(Icons.close)),
+                                  Text(
+                                    'Atenção!',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  Icon(
+                                    Iconsax.warning_2,
+                                    color: Colors.red,
+                                    size: 30,
+                                  )
                                 ],
                               ),
                               content: Padding(
                                 padding: const EdgeInsets.only(bottom: 30),
-                                child: Text(
-                                  'Por favor, selecione uma GIG',
-                                  style: TextStyle(color: Colors.red),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Visibility(
+                                      visible: _gigDataCount > 0 ? true : false,
+                                      child: Text(
+                                        "Por favor, selecione uma GIG para a qual deseja enviar o convite.",
+                                      ),
+                                    ),
+                                    Visibility(
+                                      visible: _gigDataCount > 0 ? false : true,
+                                      child: Text(
+                                        "Antes de enviar o convite, é necessário criar uma GIG.",
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                              actions: [
+                                Visibility(
+                                  visible: _gigDataCount > 0 ? false : true,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => Dialog.fullscreen(
+                                          backgroundColor: backgroundColor,
+                                          child: CreateNewGig(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Criar GIG',
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'Fechar',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              ],
                             ));
                   }
                 },

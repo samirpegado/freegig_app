@@ -1,48 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/features/feature_0/widgets/home/more_info.dart';
 import 'package:iconsax/iconsax.dart';
 
-class HomeAgenda extends StatelessWidget {
+class HomeAgenda extends StatefulWidget {
   const HomeAgenda({Key? key}) : super(key: key);
+
+  @override
+  State<HomeAgenda> createState() => _HomeAgendaState();
+}
+
+class _HomeAgendaState extends State<HomeAgenda> {
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
+
+  @override
+  void initState() {
+    super.initState();
+    gigsDataList = GigsDataService().getMyAllGigsStream();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              SizedBox(width: 30),
-              Icon(Iconsax.calendar5, color: Color.fromARGB(255, 55, 158, 58)),
-              Padding(
+      child: StreamBuilder<List<Map<String, dynamic>>>(
+          stream: gigsDataList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Text(
-                  "Suas GIGs",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 19.0,
-                    color: Colors.black87,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else if (snapshot.hasError) {
+              return Text('Erro: ${snapshot.error}');
+            } else {
+              List<Map<String, dynamic>> gigs = snapshot.data ?? [];
+
+              if (gigs.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Center(
+                    child: Text(
+                      'Suas próximas GIGs aparecerão aqui',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.25,
-              padding: EdgeInsets.all(35),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 211, 211, 211).withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                "Suas próximas GIGs aparecerão aqui",
-              ),
-            ),
-          ),
-        ],
-      ),
+                );
+              }
+
+              return Column(
+                children: gigs.map((gig) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 25),
+                    child: ListTile(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => MoreInfo(gig: gig));
+                      },
+                      leading: Icon(Iconsax.category_2),
+                      title: Text(gig['gigDescription']),
+                      subtitle: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(gig['gigDate']),
+                            Text(' - ' + gig['gigInitHour'] + 'h'),
+                          ]),
+                      trailing: Icon(Iconsax.arrow_right_3),
+                    ),
+                  );
+                }).toList(),
+              );
+            }
+          }),
     );
   }
 }

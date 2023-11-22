@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +18,10 @@ class _ProfileCompleteState extends State<ProfileComplete> {
   late String _publicName = "";
   late String _category = "";
   late String _description = "";
-  late String _email = "";
   late String _city = "";
   late String _release = "";
   late String _lastReleases = "";
   late String _instagram = "";
-  late String _youtube = "";
   late String _profileImageUrl = "";
   bool? _userStatus;
 
@@ -43,12 +40,10 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         _publicName = userData['publicName'];
         _category = userData['category'];
         _description = userData['description'];
-        _email = userData['email'];
         _city = userData['city'];
         _release = userData['release'];
         _lastReleases = userData['lastReleases'];
         _instagram = userData['instagram'];
-        _youtube = userData['youtube'];
         _profileImageUrl = userData['profileImageUrl'];
       });
     } catch (e) {
@@ -192,10 +187,19 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                               ),
                             ],
                           ),
-                          Text(
-                            _email,
-                            style:
-                                TextStyle(fontSize: 15, color: Colors.black54),
+                          Row(
+                            children: [
+                              Icon(
+                                Iconsax.instagram5,
+                                size: 18,
+                                color: Colors.black54,
+                              ),
+                              Text(
+                                ' ' + _instagram,
+                                style: TextStyle(
+                                    fontSize: 15, color: Colors.black54),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -269,60 +273,6 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                     ],
                   ),
                 ),
-
-                SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Redes Sociais',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10),
-
-                      ///redes icones
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(100)),
-                            child: IconButton(
-                                onPressed: () {
-                                  Link("www.youtube.com/$_youtube");
-                                },
-                                icon: Icon(Iconsax.video5)),
-                          ),
-                          Text(_youtube,
-                              style: TextStyle(fontSize: 15, height: 1.4)),
-                        ],
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(100)),
-                            child: IconButton(
-                                onPressed: () {
-                                  Link("www.instagram.com/$_instagram");
-                                },
-                                icon: Icon(Iconsax.instagram5)),
-                          ),
-                          Text(_instagram,
-                              style: TextStyle(fontSize: 15, height: 1.4)),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
               ],
             ),
           ),

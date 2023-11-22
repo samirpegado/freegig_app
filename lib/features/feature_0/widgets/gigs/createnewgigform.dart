@@ -177,7 +177,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
                     controller: _dateController,
                     decoration: InputDecoration(
                       labelText: 'Data',
-                      prefixIcon: Icon(Iconsax.location),
+                      prefixIcon: Icon(Iconsax.calendar),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(

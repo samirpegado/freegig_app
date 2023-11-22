@@ -1,111 +1,138 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/formatdate.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:iconsax/iconsax.dart';
 
-class ParticipantDetails extends StatefulWidget {
+class MoreInfo extends StatefulWidget {
   final Map<String, dynamic> gig;
-  const ParticipantDetails({
+  const MoreInfo({
     super.key,
     required this.gig,
   });
 
   @override
-  State<ParticipantDetails> createState() => _ParticipantDetailsState();
+  State<MoreInfo> createState() => _MoreInfoState();
 }
 
-class _ParticipantDetailsState extends State<ParticipantDetails> {
+class _MoreInfoState extends State<MoreInfo> {
+  late bool gigStatus = widget.gig['gigCompleted'];
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       actions: [
         TextButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Atenção!', style: TextStyle(color: Colors.red)),
-                  content: Text('Tem certeza que deseja desistir da GIG?'),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          GigsDataService()
-                              .leaveGig(gigUid: widget.gig['gigUid']);
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => NavigationMenu(
-                                    navPage: 1,
-                                  )));
-                        },
-                        child: Text("Confirmar",
-                            style: TextStyle(color: Colors.red))),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          setState(() {});
-                        },
-                        child: Text("Cancelar",
-                            style: TextStyle(color: Colors.black)))
-                  ],
-                ),
-              );
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => NavigationMenu(
+                        navPage: 1,
+                      )));
             },
-            child: Text("Desistir", style: TextStyle(color: Colors.red))),
+            child: Text("Mais detalhes")),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("Voltar", style: TextStyle(color: Colors.black)))
+            child: Text("Fechar", style: TextStyle(color: Colors.black)))
       ],
       content: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 6),
-            Text(
-              "${widget.gig['gigDetails']}",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 15),
-            Text(
-              "Para: ${widget.gig['gigCategorys'].join(', ')}",
-              style: TextStyle(
-                fontSize: 14,
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              "Cachê: ${widget.gig['gigCache']}",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              children: [
+                Icon(
+                  gigStatus ? Iconsax.lock : Iconsax.unlock,
+                  size: 20,
+                  color: gigStatus ? Colors.green : Colors.black,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    gigStatus ? 'Fechada' : 'Aberta',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 6),
-            Text(
-              "Cidade: ${widget.gig['gigLocale']}",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.money,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.gig['gigCache'],
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 6),
-            Text(
-              "Data: ${widget.gig['gigDate']}",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.calendar,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    FormatDate().formatDateString(widget.gig['gigDate']),
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 6),
-            Text(
-              "Horário: ${widget.gig['gigInitHour']} - ${widget.gig['gigFinalHour']}",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.clock,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    "${widget.gig['gigInitHour']}h - ${widget.gig['gigFinalHour']}h",
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 6),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.location,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.gig['gigAdress'],
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 20),
             Text(

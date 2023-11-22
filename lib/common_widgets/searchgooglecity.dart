@@ -17,8 +17,6 @@ class SearchGoogleCity extends StatefulWidget {
 }
 
 class _SearchGoogleCityState extends State<SearchGoogleCity> {
-  final _searchCityController = TextEditingController();
-
   Uuid uuid = const Uuid();
   String sessionToken = "";
   List<dynamic> placeList = [];
@@ -53,60 +51,54 @@ class _SearchGoogleCityState extends State<SearchGoogleCity> {
     if (sessionToken.isEmpty) {
       sessionToken = uuid.v4();
     } else {
-      getSuggestions(_searchCityController.text);
+      getSuggestions(widget.cityController.text);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    _searchCityController.addListener(() {
+    widget.cityController.addListener(() {
       onChange();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TypeAheadField(
-          textFieldConfiguration: TextFieldConfiguration(
-            controller: _searchCityController,
-            decoration: InputDecoration(
-              labelText: "Cidade",
-              prefixIcon: Icon(Iconsax.global),
-              filled: true,
-              fillColor: Colors.white,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-            ),
-          ),
-          suggestionsCallback: (pattern) async {
-            getSuggestions(pattern);
-            return placeList.map((place) => place["description"]).toList();
-          },
-          itemBuilder: (context, suggestion) {
-            return ListTile(
-              title: Text(suggestion),
-            );
-          },
-          onSuggestionSelected: (suggestion) {
-            setState(() {
-              _searchCityController.text = suggestion;
-              widget.cityController.text = suggestion;
-            });
-          },
-          noItemsFoundBuilder: (context) {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                "...",
-                style: TextStyle(fontSize: 22),
-              ),
-            );
-          },
+    return TypeAheadField(
+      textFieldConfiguration: TextFieldConfiguration(
+        controller: widget.cityController,
+        decoration: InputDecoration(
+          labelText: "Cidade",
+          prefixIcon: Icon(Iconsax.global),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
         ),
-      ],
+      ),
+      suggestionsCallback: (pattern) async {
+        getSuggestions(pattern);
+        return placeList.map((place) => place["description"]).toList();
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion),
+        );
+      },
+      onSuggestionSelected: (suggestion) {
+        setState(() {
+          widget.cityController.text = suggestion;
+        });
+      },
+      noItemsFoundBuilder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text(
+            "...",
+            style: TextStyle(fontSize: 22),
+          ),
+        );
+      },
     );
   }
 }

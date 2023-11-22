@@ -4,14 +4,14 @@ import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GigsCard extends StatefulWidget {
-  final Future<List<Map<String, dynamic>>> dataListFunction;
+  final Stream<List<Map<String, dynamic>>> dataListFunction;
   const GigsCard({super.key, required this.dataListFunction});
   @override
   State<GigsCard> createState() => _GigsCardState();
 }
 
 class _GigsCardState extends State<GigsCard> {
-  late Future<List<Map<String, dynamic>>> gigsDataList;
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
 
   @override
   void initState() {
@@ -22,8 +22,8 @@ class _GigsCardState extends State<GigsCard> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: gigsDataList,
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: gigsDataList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
@@ -33,7 +33,7 @@ class _GigsCardState extends State<GigsCard> {
         } else if (snapshot.hasError) {
           return Text('Erro: ${snapshot.error}');
         } else {
-          List<Map<String, dynamic>> gigs = snapshot.data!;
+          List<Map<String, dynamic>> gigs = snapshot.data ?? [];
 
           if (gigs.isEmpty) {
             return Padding(

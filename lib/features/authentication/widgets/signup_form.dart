@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -8,6 +9,7 @@ class SignUpForm extends StatefulWidget {
   final TextEditingController lastName;
   final TextEditingController publicName;
   final TextEditingController category;
+  final TextEditingController city;
   final TextEditingController birthDate;
   final TextEditingController phoneNo;
   final TextEditingController email;
@@ -23,6 +25,7 @@ class SignUpForm extends StatefulWidget {
     required this.phoneNo,
     required this.email,
     required this.password,
+    required this.city,
   });
 
   @override
@@ -83,6 +86,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     controller: widget.firstName,
                     textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       prefixIcon: Icon(Iconsax.user),
                       labelText: "Nome",
                       border: OutlineInputBorder(
@@ -96,6 +101,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     controller: widget.lastName,
                     textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       prefixIcon: Icon(Iconsax.user),
                       labelText: "Sobrenome",
                       border: OutlineInputBorder(
@@ -110,12 +117,16 @@ class _SignUpFormState extends State<SignUpForm> {
               controller: widget.publicName,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 labelText: "Nome artístico",
                 prefixIcon: Icon(Iconsax.magic_star),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0)),
               ),
             ),
+            SizedBox(height: 15),
+            SearchGoogleCity(cityController: widget.city),
             SizedBox(height: 15),
             Row(
               children: [
@@ -124,6 +135,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     textFieldConfiguration: TextFieldConfiguration(
                       controller: widget.category,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
                         labelText: 'Categoria',
                         prefixIcon: Icon(Iconsax.music),
                         border: OutlineInputBorder(
@@ -165,6 +178,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     ],
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
                       prefixIcon: Icon(Iconsax.calendar),
                       labelText: "Nascimento",
                       border: OutlineInputBorder(
@@ -183,6 +198,8 @@ class _SignUpFormState extends State<SignUpForm> {
                     mask: "(XX) XXXXX-XXXX", filter: {"X": RegExp(r'[0-9]')})
               ],
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 prefixIcon: Icon(Iconsax.call),
                 labelText: "Celular",
                 hintText: "(DDD) + Número",
@@ -196,6 +213,8 @@ class _SignUpFormState extends State<SignUpForm> {
             TextFormField(
               controller: widget.email,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 prefixIcon: Icon(Iconsax.direct),
                 labelText: "E-mail",
                 border: OutlineInputBorder(
@@ -207,6 +226,8 @@ class _SignUpFormState extends State<SignUpForm> {
               controller: widget.password,
               obscureText: !showPassword,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 prefixIcon: Icon(Iconsax.password_check),
                 labelText: "Senha",
                 suffixIcon: IconButton(

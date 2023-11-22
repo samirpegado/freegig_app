@@ -22,7 +22,7 @@ class UserDataService {
           return {
             'publicName': userSnapshot['publicName'],
             'category': userSnapshot['category'],
-            // Adicione outros campos conforme necessário
+            'uid': userSnapshot['uid'],
           };
         }
       }
@@ -37,8 +37,6 @@ class UserDataService {
     required String release,
     required String lastReleases,
     required String instagram,
-    required String youtube,
-    required String city,
     required Uint8List image,
   }) async {
     try {
@@ -51,8 +49,6 @@ class UserDataService {
           'release': release,
           'lastReleases': lastReleases,
           'instagram': instagram,
-          'youtube': youtube,
-          'city': city,
           'profileComplete': true,
           'profileImageUrl': imageUrl,
           'userStatus': false,
@@ -68,7 +64,6 @@ class UserDataService {
     required String release,
     required String lastReleases,
     required String instagram,
-    required String youtube,
     required String city,
     required String category,
   }) async {
@@ -81,8 +76,7 @@ class UserDataService {
           'release': release,
           'lastReleases': lastReleases,
           'instagram': instagram,
-          'youtube': youtube,
-          'categoty': category,
+          'category': category,
           'city': city,
           'profileComplete': true,
           'userStatus': false,
@@ -110,8 +104,26 @@ class UserDataService {
             'release': userSnapshot['release'],
             'lastReleases': userSnapshot['lastReleases'],
             'instagram': userSnapshot['instagram'],
-            'youtube': userSnapshot['youtube'],
             'profileImageUrl': userSnapshot['profileImageUrl'],
+          };
+        }
+      }
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e");
+    }
+    return {};
+  }
+
+  Future<Map<String, dynamic>> getCityProfileData() async {
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DocumentSnapshot userSnapshot =
+            await _firestore.collection('users').doc(user.uid).get();
+
+        if (userSnapshot.exists) {
+          return {
+            'city': userSnapshot['city'],
           };
         }
       }

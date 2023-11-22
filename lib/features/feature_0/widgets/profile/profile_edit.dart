@@ -90,8 +90,6 @@ class _ProfileEditState extends State<ProfileEdit> {
               buildAbout(),
               SizedBox(height: 20),
               lastReleases(),
-              SizedBox(height: 20),
-              socialMedia(),
               SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -156,27 +154,6 @@ Widget lastReleases() => Container(
           const SizedBox(height: 10),
           Text(
             "*Nenhum trabalho publicado",
-            style: TextStyle(fontSize: 15, height: 1.4),
-          ),
-        ],
-      ),
-    );
-
-Widget socialMedia() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Redes Sociais',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-
-          ///redes icones
-          Text(
-            "*Nenhuma rede social publicada",
             style: TextStyle(fontSize: 15, height: 1.4),
           ),
         ],

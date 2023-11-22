@@ -32,6 +32,7 @@ class _InvitationsSentState extends State<InvitationsSent> {
           } else {
             List<Map<String, dynamic>> invites = snapshot.data!;
             return ExpansionTile(
+              initiallyExpanded: true,
               title: Text('Convites enviados (${invites.length})'),
               children: [
                 ListView.builder(

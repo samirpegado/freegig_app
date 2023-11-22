@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_1/widgets/musicians_message.dart';
-import 'package:freegig_app/features/feature_1/widgets/musician_inviteconfirm.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ProfileDetailsPage extends StatelessWidget {
+class SimpleShowProfile extends StatelessWidget {
   final Map<String, dynamic> profile;
-  ProfileDetailsPage({required this.profile});
+  SimpleShowProfile({required this.profile});
 
   @override
   Widget build(BuildContext context) {
@@ -13,31 +11,6 @@ class ProfileDetailsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          onPressed: () {
-            openDialog(context);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Text(
-              "Convidar músico",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 16.0,
-              ),
-            ),
-          ),
-        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -142,16 +115,6 @@ class ProfileDetailsPage extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
 
-                TextButton(
-                  onPressed: () {
-                    openMessage(context);
-                  },
-                  child: Text(
-                    "Enviar uma mensagem",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
-
                 buildAbout(profile: profile),
                 SizedBox(height: 20),
                 lastReleases(profile: profile),
@@ -163,13 +126,6 @@ class ProfileDetailsPage extends StatelessWidget {
       ),
     );
   }
-
-  Future openDialog(context) => showDialog(
-      context: context, builder: (context) => InviteConfirm(profile: profile));
-
-  Future openMessage(context) => showDialog(
-      context: context,
-      builder: (context) => MessageToMusician(profile: profile));
 }
 
 Widget buildAbout({required Map<String, dynamic> profile}) => Container(

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/showmygigs.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/showparticipantgigs.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/created_gigs_card.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/participating_gigs_card.dart';
 import 'package:iconsax/iconsax.dart';
 
-class CreateGigs extends StatefulWidget {
+class ListMyGigs extends StatefulWidget {
   @override
-  _CreateGigsState createState() => _CreateGigsState();
+  _ListMyGigsState createState() => _ListMyGigsState();
 }
 
-class _CreateGigsState extends State<CreateGigs> {
+class _ListMyGigsState extends State<ListMyGigs> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,7 +28,8 @@ class _CreateGigsState extends State<CreateGigs> {
                     SizedBox(width: 10),
                     Text(
                       "Criadas",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, color: Colors.blue),
                     )
                   ]),
                   children: [MyGigsCard()],
@@ -47,7 +46,8 @@ class _CreateGigsState extends State<CreateGigs> {
                     SizedBox(width: 10),
                     Text(
                       "Participando",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600, color: Colors.green),
                     )
                   ]),
                   children: [ParticipantGigsCard()],
@@ -72,41 +72,7 @@ class _CreateGigsState extends State<CreateGigs> {
             ),
           ),
         ),
-
-        ///Add gig buton
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            InkWell(
-              onTap: () {
-                openGigCreator(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(100)),
-                  child: Icon(
-                    Iconsax.add,
-                    color: Colors.white,
-                    size: 35,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        )
       ],
     );
   }
 }
-
-Future openGigCreator(context) => showDialog(
-      context: context,
-      builder: (context) => Dialog.fullscreen(
-        backgroundColor: backgroundColor,
-        child: CreateNewGig(),
-      ),
-    );

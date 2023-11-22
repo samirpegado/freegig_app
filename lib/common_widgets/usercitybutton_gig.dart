@@ -51,8 +51,8 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ListGigs(
-                                  dataListFunction:
-                                      GigsDataService().getAllActiveUserGigs(),
+                                  dataListFunction: GigsDataService()
+                                      .getAllActiveUserGigsStream(),
                                   city: _city,
                                 ),
                               ),
@@ -83,7 +83,7 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                               MaterialPageRoute(
                                 builder: (context) => ListGigs(
                                   dataListFunction: GigsDataService()
-                                      .getCityActiveUserGigs(_city),
+                                      .getCityActiveUserGigsStream(_city),
                                   city: _city,
                                 ),
                               ),

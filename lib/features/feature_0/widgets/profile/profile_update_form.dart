@@ -21,7 +21,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   late String _release = "";
   late String _lastReleases = "";
   late String _instagram = "";
-  late String _youtube = "";
 
   String selectedMusician = '';
   Map<String, List<String>> options = {
@@ -65,7 +64,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
         _release = userData['release'];
         _lastReleases = userData['lastReleases'];
         _instagram = userData['instagram'];
-        _youtube = userData['youtube'];
 
         description.text = _description;
         category.text = _category;
@@ -73,7 +71,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
         city.text = _city;
         lastReleases.text = _lastReleases;
         instagram.text = _instagram;
-        youtube.text = _youtube;
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -86,7 +83,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   final city = TextEditingController();
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
-  final youtube = TextEditingController();
 
   Future<void> _completarPerfil() async {
     showDialog(
@@ -102,7 +98,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
       release: release.text.trim(),
       lastReleases: lastReleases.text.trim(),
       instagram: instagram.text.trim(),
-      youtube: youtube.text.trim(),
       city: city.text.trim(),
       category: category.text,
     );
@@ -186,6 +181,8 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
               ),
 
               ///forms
+              SearchGoogleCity(cityController: city),
+              SizedBox(height: 26),
               TextFormField(
                 controller: description,
                 textCapitalization: TextCapitalization.sentences,
@@ -231,8 +228,7 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
                       borderRadius: BorderRadius.circular(10.0)),
                 ),
               ),
-              SearchGoogleCity(cityController: city),
-              SizedBox(height: 26),
+
               TypeAheadField<String>(
                 textFieldConfiguration: TextFieldConfiguration(
                   controller: category,
@@ -283,20 +279,13 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
                       borderRadius: BorderRadius.circular(10.0)),
                 ),
               ),
-              SizedBox(height: 26),
-              TextFormField(
-                controller: youtube,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.video),
-                  labelText: "YouTube",
-                  hintText: "/@SeuCanal",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
               SizedBox(height: 30),
+              TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Excluir conta',
+                    style: TextStyle(color: Colors.red),
+                  ))
             ],
           ),
         ),

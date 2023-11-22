@@ -57,17 +57,7 @@ class UserRequest {
                 .get();
 
         Map<String, dynamic> userRequestData = document.data();
-        Map<String, dynamic> userData = {
-          'publicName': userSnapshot['publicName'],
-          'profileImageUrl': userSnapshot['profileImageUrl'],
-          'city': userSnapshot['city'],
-          'category': userSnapshot['category'],
-          'description': userSnapshot['description'],
-          'lastReleases': userSnapshot['lastReleases'],
-          'instagram': userSnapshot['instagram'],
-          'youtube': userSnapshot['youtube'],
-          'release': userSnapshot['release'],
-        };
+        Map<String, dynamic> userData = userSnapshot.data() ?? {};
 
         requests.add({
           'userRequestData': userRequestData,
@@ -76,6 +66,52 @@ class UserRequest {
       }
 
       return requests;
+    } catch (e) {
+      print('Erro ao listar convites: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> listRequestsByGigOwner() async {
+    try {
+      User? user = _auth.currentUser;
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('userRequest')
+              .where('gigOwnerId', isEqualTo: user!.uid)
+              .get();
+
+      List<Map<String, dynamic>> allRequests = [];
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> document
+          in querySnapshot.docs) {
+        String requesterUid = document['requesterUid'];
+        String gigUid = document['gigUid'];
+
+        DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(requesterUid)
+                .get();
+
+        DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
+            await FirebaseFirestore.instance
+                .collection('gigs')
+                .doc(gigUid)
+                .get();
+
+        Map<String, dynamic> allUserRequestData = document.data();
+        Map<String, dynamic> allUserData = userSnapshot.data() ?? {};
+        Map<String, dynamic> gigData = gigSnapshot.data() ?? {};
+
+        allRequests.add({
+          'allUserRequestData': allUserRequestData,
+          'allUserData': allUserData,
+          'gigData': gigData,
+        });
+      }
+
+      return allRequests;
     } catch (e) {
       print('Erro ao listar convites: $e');
       return [];
@@ -149,6 +185,23 @@ class UserRequest {
       }
     } catch (e) {
       print("Erro ao aceitar a solicitação: $e");
+    }
+  }
+
+  Future<bool> checkUserRequest(String gigUid, String userUid) async {
+    CollectionReference userRequestCollection =
+        FirebaseFirestore.instance.collection('userRequest');
+
+    try {
+      QuerySnapshot querySnapshot = await userRequestCollection
+          .where('gigUid', isEqualTo: gigUid)
+          .where('requesterUid', isEqualTo: userUid)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Erro ao verificar a solicitação do usuário: $e');
+      return false;
     }
   }
 }

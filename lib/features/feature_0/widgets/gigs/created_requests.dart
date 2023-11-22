@@ -34,6 +34,7 @@ class _RequestsSentState extends State<RequestsSent> {
           } else {
             List<Map<String, dynamic>> requests = snapshot.data!;
             return ExpansionTile(
+              initiallyExpanded: true,
               title: Text('Solicitações recebidas (${requests.length})'),
               children: [
                 ListView.builder(
@@ -92,8 +93,12 @@ class _RequestsSentState extends State<RequestsSent> {
                                         onPressed: () async {
                                           await UserRequest().refuseRequest(
                                               requestData['requestUid']);
-                                          setState(() {});
-                                          Navigator.of(context).pop();
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NavigationMenu(
+                                                        navPage: 1,
+                                                      )));
                                         },
                                         child: Text(
                                           'Remover',

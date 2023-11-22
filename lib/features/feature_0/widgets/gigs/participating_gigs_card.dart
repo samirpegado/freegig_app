@@ -1,27 +1,27 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/giginfo.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/participating_giginfo.dart';
 import 'package:iconsax/iconsax.dart';
 
-class MyGigsCard extends StatefulWidget {
+class ParticipantGigsCard extends StatefulWidget {
   @override
-  State<MyGigsCard> createState() => _MyGigsCardState();
+  State<ParticipantGigsCard> createState() => _ParticipantGigsCardState();
 }
 
-class _MyGigsCardState extends State<MyGigsCard> {
-  late Future<List<Map<String, dynamic>>> gigsDataList;
+class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
+  late Stream<List<Map<String, dynamic>>> gigsDataList;
 
   @override
   void initState() {
     super.initState();
-    gigsDataList = GigsDataService().getMyActiveGigs();
+    gigsDataList = GigsDataService().getParticipantGigsStream();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: gigsDataList,
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: gigsDataList,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Padding(
@@ -31,7 +31,7 @@ class _MyGigsCardState extends State<MyGigsCard> {
         } else if (snapshot.hasError) {
           return Text('Erro: ${snapshot.error}');
         } else {
-          List<Map<String, dynamic>> gigs = snapshot.data!;
+          List<Map<String, dynamic>> gigs = snapshot.data ?? [];
 
           if (gigs.isEmpty) {
             return Padding(
@@ -52,7 +52,7 @@ class _MyGigsCardState extends State<MyGigsCard> {
                 child: InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => GigInfo(gig: gig)));
+                        builder: (context) => ParticipatingGigInfo(gig: gig)));
                   },
                   child: Card(
                     elevation: 2,

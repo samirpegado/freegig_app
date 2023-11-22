@@ -5,9 +5,6 @@ import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:intl/intl.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/features/authentication/screens/login.dart';
-
-import 'package:iconsax/iconsax.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -27,6 +24,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final phoneNo = TextEditingController();
   final email = TextEditingController();
   final password = TextEditingController();
+  final city = TextEditingController();
 
   @override
   void dispose() {
@@ -38,6 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     category.dispose();
     birthDate.dispose();
     phoneNo.dispose();
+    city.dispose();
     super.dispose();
   }
 
@@ -72,6 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         birthDate.text.trim(),
         phoneNo.text.trim(),
         email.text.trim(),
+        city.text.trim(),
       );
 
       ///
@@ -95,6 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     String birthDate,
     String phoneNo,
     String email,
+    String city,
   ) async {
     final user = FirebaseAuth.instance.currentUser!;
 
@@ -107,6 +108,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'birthDate': birthDate,
       'phoneNo': phoneNo,
       'email': email,
+      'city': city,
       'profileComplete': false,
     });
   }
@@ -114,6 +116,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          'Vamos criar a sua conta!',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 19.0,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -121,37 +135,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 top: 0.0, left: 24.0, right: 24.0, bottom: 18.0),
             child: Column(
               children: [
-                SizedBox(height: 20),
-                Row(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => LoginScreen()));
-                        },
-                        icon: Icon(
-                          Iconsax.arrow_left,
-                          size: 32,
-                        ))
-                  ],
-                ),
-                Text(
-                  "Vamos criar a sua conta!",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20.0,
-                  ),
-                ),
                 SizedBox(height: 15),
                 SignUpForm(
-                    firstName: firstName,
-                    lastName: lastName,
-                    publicName: publicName,
-                    category: category,
-                    birthDate: birthDate,
-                    phoneNo: phoneNo,
-                    email: email,
-                    password: password),
+                  firstName: firstName,
+                  lastName: lastName,
+                  publicName: publicName,
+                  category: category,
+                  birthDate: birthDate,
+                  phoneNo: phoneNo,
+                  email: email,
+                  password: password,
+                  city: city,
+                ),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

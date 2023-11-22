@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 
-class HomeCustomCard extends StatelessWidget {
+class HomeCustomCard extends StatefulWidget {
   final String imgCard;
   final String buttonText;
   final Widget destination;
@@ -11,6 +11,11 @@ class HomeCustomCard extends StatelessWidget {
       required this.destination,
       required this.imgCard});
 
+  @override
+  State<HomeCustomCard> createState() => _HomeCustomCardState();
+}
+
+class _HomeCustomCardState extends State<HomeCustomCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +41,7 @@ class HomeCustomCard extends StatelessWidget {
               child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              imgCard,
+              widget.imgCard,
               width: 120,
               //fit: BoxFit.cover,
             ),
@@ -48,12 +53,12 @@ class HomeCustomCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
               ),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => destination));
+              onPressed: () async {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => widget.destination));
               },
               child: Text(
-                buttonText,
+                widget.buttonText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
