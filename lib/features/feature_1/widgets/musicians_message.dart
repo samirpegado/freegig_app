@@ -38,22 +38,22 @@ class _MessageToMusicianState extends State<MessageToMusician> {
         "Enviar mensagem",
         textAlign: TextAlign.center,
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Selecione a GIG sobre a qual gostaria de conversar:',
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 15),
-          StreamBuilder<List<Map<String, dynamic>>>(
-            stream: gigsDataList,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Map<String, dynamic>> data = snapshot.data!;
-                _gigDataCount = data.length;
-                return SingleChildScrollView(
-                  child: Column(
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Selecione a GIG sobre a qual gostaria de conversar:',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 15),
+            StreamBuilder<List<Map<String, dynamic>>>(
+              stream: gigsDataList,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<Map<String, dynamic>> data = snapshot.data!;
+                  _gigDataCount = data.length;
+                  return Column(
                     children: data.map<Widget>((gig) {
                       bool isSelected = gig['gigUid'] == selectedGigUid;
 
@@ -79,32 +79,32 @@ class _MessageToMusicianState extends State<MessageToMusician> {
                         ),
                       );
                     }).toList(),
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return Text('Erro ao carregar dados');
-              } else {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
-          SizedBox(height: 15),
-          TextField(
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 3,
-            decoration: InputDecoration(
-              labelText: "Mensagem",
-              hintText: 'Escreva aqui a sua mensagem...',
-              prefixIcon: Icon(Iconsax.device_message),
-              filled: true,
-              fillColor: Colors.white,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Erro ao carregar dados');
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
             ),
-          ),
-        ],
+            SizedBox(height: 15),
+            TextField(
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 3,
+              decoration: InputDecoration(
+                labelText: "Mensagem",
+                hintText: 'Escreva aqui a sua mensagem...',
+                prefixIcon: Icon(Iconsax.device_message),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         Padding(

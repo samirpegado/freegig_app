@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/user_invitation.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
-class InvitationConfirm extends StatefulWidget {
+class ArchivedMoreInfo extends StatefulWidget {
   final Map<String, dynamic> gig;
-  final Map<String, dynamic> inviteData;
-  const InvitationConfirm({
+  const ArchivedMoreInfo({
     super.key,
     required this.gig,
-    required this.inviteData,
   });
 
   @override
-  State<InvitationConfirm> createState() => _InvitationConfirmState();
+  State<ArchivedMoreInfo> createState() => _ArchivedMoreInfoState();
 }
 
-class _InvitationConfirmState extends State<InvitationConfirm> {
+class _ArchivedMoreInfoState extends State<ArchivedMoreInfo> {
   late bool gigStatus = widget.gig['gigCompleted'];
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        "Confirmar convite",
-        textAlign: TextAlign.center,
-      ),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text("Fechar", style: TextStyle(color: Colors.black)))
+      ],
       content: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -36,16 +34,17 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
             Row(
               children: [
                 Icon(
-                  gigStatus ? Iconsax.lock : Iconsax.unlock,
+                  Iconsax.archive,
                   size: 20,
-                  color: gigStatus ? Colors.green : Colors.black,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    gigStatus ? 'Fechada' : 'Aberta',
+                    'Arquivada',
                     style: TextStyle(
                       fontSize: 15,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -57,13 +56,14 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                 Icon(
                   Iconsax.money,
                   size: 20,
-                  color: Colors.green,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     widget.gig['gigCache'],
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 15,
                     ),
                   ),
@@ -76,7 +76,7 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                 Icon(
                   Iconsax.calendar,
                   size: 20,
-                  color: Colors.green,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 10),
                 Expanded(
@@ -84,6 +84,7 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                     FormatDate().formatDateString(widget.gig['gigDate']),
                     style: TextStyle(
                       fontSize: 15,
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -95,13 +96,14 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                 Icon(
                   Iconsax.clock,
                   size: 20,
-                  color: Colors.green,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     "${widget.gig['gigInitHour']}h - ${widget.gig['gigFinalHour']}h",
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 15,
                     ),
                   ),
@@ -114,13 +116,14 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                 Icon(
                   Iconsax.location,
                   size: 20,
-                  color: Colors.green,
+                  color: Colors.black,
                 ),
                 SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     widget.gig['gigAdress'],
                     style: TextStyle(
+                      color: Colors.black,
                       fontSize: 15,
                     ),
                   ),
@@ -187,60 +190,6 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
           ],
         ),
       ),
-      actions: [
-        Center(child: Text('Gostaria de se juntar a esta GIG?')),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () async {
-                    await UserInvitation()
-                        .myInvitationDelete(widget.inviteData['inviteUid']);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NavigationMenu(navPage: 1)));
-                  },
-                  child: Text(
-                    'Recusar',
-                    style: TextStyle(color: Colors.red),
-                  )),
-              SizedBox(width: 20),
-              TextButton(
-                  onPressed: () async {
-                    if (gigStatus == false) {
-                      await UserInvitation().acceptInvitation(
-                          invitationId: widget.inviteData['inviteUid'],
-                          selectedGigUid: widget.gig['gigUid']);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => NavigationMenu(navPage: 1)));
-                    } else {
-                      Navigator.of(context).pop();
-                      Fluttertoast.showToast(
-                        msg: "Esta GIG se encontra fechada.",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
-                    }
-                  },
-                  child: Text('Aceitar')),
-              SizedBox(width: 20),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'Fechar',
-                    style: TextStyle(color: Colors.black),
-                  ))
-            ],
-          ),
-        )
-      ],
     );
   }
 }

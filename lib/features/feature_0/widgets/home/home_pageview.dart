@@ -57,7 +57,11 @@ class _HomeAgendaState extends State<HomeAgenda> {
                             context: context,
                             builder: (context) => MoreInfo(gig: gig));
                       },
-                      leading: Icon(Iconsax.category_2),
+                      leading: Container(
+                        height: double
+                            .infinity, // Define a altura desejada para o ícone
+                        child: Icon(Iconsax.category_2),
+                      ),
                       title: Text(gig['gigDescription']),
                       subtitle: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,

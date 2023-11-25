@@ -50,24 +50,24 @@ class _InviteConfirmState extends State<InviteConfirm> {
         textAlign: TextAlign.center,
       ),
       content: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "Escolha a GIG à qual você deseja enviar o convite para ${widget.profile['publicName']}:",
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 10),
-            StreamBuilder<List<Map<String, dynamic>>>(
-              stream: gigsDataList,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Map<String, dynamic>> data = snapshot.data!;
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Escolha a GIG à qual você deseja enviar o convite para ${widget.profile['publicName']}:",
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 10),
+              StreamBuilder<List<Map<String, dynamic>>>(
+                stream: gigsDataList,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Map<String, dynamic>> data = snapshot.data!;
 
-                  _gigDataCount = data.length;
+                    _gigDataCount = data.length;
 
-                  return SingleChildScrollView(
-                    child: Column(
+                    return Column(
                       children: data.map<Widget>((gig) {
                         bool isSelected = gig['gigUid'] == selectedGigUid;
 
@@ -93,18 +93,18 @@ class _InviteConfirmState extends State<InviteConfirm> {
                           ),
                         );
                       }).toList(),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('Erro ao carregar dados');
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
-          ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Erro ao carregar dados');
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
       actions: [

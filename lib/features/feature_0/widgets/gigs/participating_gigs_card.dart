@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/gigs_card.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/participating_giginfo.dart';
-import 'package:iconsax/iconsax.dart';
 
 class ParticipantGigsCard extends StatefulWidget {
   @override
@@ -54,150 +54,9 @@ class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => ParticipatingGigInfo(gig: gig)));
                   },
-                  child: Card(
-                    elevation: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 240,
-                                child: Text(
-                                  gig['gigDescription'],
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.0,
-                                  ),
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Iconsax.money_recive5,
-                                    size: 20.0,
-                                    color: Color.fromARGB(255, 55, 158, 58),
-                                  ),
-                                  SizedBox(width: 4),
-                                  SizedBox(
-                                    child: Text(
-                                      gig['gigCache'],
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Iconsax.location5,
-                                    size: 14.0,
-                                    color: Colors.black54,
-                                  ),
-                                  SizedBox(width: 4),
-                                  SizedBox(
-                                    width: 300,
-                                    child: Text(
-                                      gig['gigLocale'],
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontSize: 14.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Iconsax.calendar5,
-                                              size: 14.0,
-                                              color: Colors.black54,
-                                            ),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              gig['gigDate'],
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 14.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Iconsax.clock5,
-                                              size: 14.0,
-                                              color: Colors.black54,
-                                            ),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              '${gig['gigInitHour']} - ${gig['gigFinalHour']}',
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 14.0,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          gig['publicName'],
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 15.0,
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        ClipOval(
-                                          child: Image.network(
-                                            gig['profileImageUrl'],
-                                            width: 50,
-                                            height: 50,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: CommonGigsCard(
+                    gig: gig,
+                    moneyColor: Colors.green,
                   ),
                 ),
               );

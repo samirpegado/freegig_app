@@ -40,21 +40,8 @@ class _GigsNotificationState extends State<GigsNotification> {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  icon: Icon(
-                    Icons.close,
-                    size: 30,
-                  ))
-            ],
-          ),
-          SizedBox(height: 15),
           Flexible(
               child: SingleChildScrollView(
             child: _isLoading
@@ -174,7 +161,20 @@ class _GigsNotificationState extends State<GigsNotification> {
                       ),
                     ],
                   ),
-          ))
+          )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Fechar',
+                    style: TextStyle(color: Colors.black),
+                  ))
+            ],
+          )
         ],
       ),
     );

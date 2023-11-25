@@ -1,7 +1,7 @@
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:freegig_app/common_widgets/formatcurrency.dart';
+import 'package:freegig_app/classes/formatcurrency.dart';
 import 'package:freegig_app/common_widgets/musicianmultiselectionform.dart';
 import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
@@ -26,6 +26,8 @@ class _CreateNewGigState extends State<CreateNewGig> {
   final _detailsController = TextEditingController();
   final _initTimeController = TextEditingController();
   final _finalTimeController = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -54,6 +56,7 @@ class _CreateNewGigState extends State<CreateNewGig> {
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Form(
+          key: formKey,
           child: ListView(
             children: [
               Row(
@@ -78,6 +81,13 @@ class _CreateNewGigState extends State<CreateNewGig> {
               SizedBox(height: 15),
 
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Insira uma descrição válida';
+                  } else {
+                    return null;
+                  }
+                },
                 controller: _descriptionController,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
