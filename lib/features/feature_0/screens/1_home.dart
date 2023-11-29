@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/data/services/profiles_data_service.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_customcard.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
@@ -26,10 +25,10 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario();
+    _loadUserData();
   }
 
-  Future<void> _carregarDadosDoUsuario() async {
+  Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData =
           await UserDataService().getCityProfileData();
@@ -96,9 +95,9 @@ class _HomeState extends State<Home> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(),
+                        SizedBox(width: 30),
                         HomeCustomCard(
-                          buttonText: "Encontrar músicos",
+                          buttonText: "Buscar músicos",
                           destination: ListMusicians(
                             profileListFunction: ProfileDataService()
                                 .getActiveUserProfileStream(
@@ -108,8 +107,9 @@ class _HomeState extends State<Home> {
                           ),
                           imgCard: 'assets/images/musicos.png',
                         ),
+                        SizedBox(width: 30),
                         HomeCustomCard(
-                          buttonText: "Encontrar GIGs",
+                          buttonText: "Buscar GIGs",
                           destination: ListGigs(
                             dataListFunction: GigsDataService()
                                 .getCityActiveUserGigsStream(
@@ -119,12 +119,7 @@ class _HomeState extends State<Home> {
                           ),
                           imgCard: 'assets/images/encontrar.png',
                         ),
-                        HomeCustomCard(
-                          buttonText: "Criar Gigs",
-                          destination: CreateNewGig(),
-                          imgCard: 'assets/images/criar.png',
-                        ),
-                        SizedBox(),
+                        SizedBox(width: 30),
                       ],
                     ),
                   ),

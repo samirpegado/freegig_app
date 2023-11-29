@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SimpleShowProfile extends StatelessWidget {
@@ -92,27 +93,7 @@ class SimpleShowProfile extends StatelessWidget {
                 SizedBox(height: 20),
 
                 ///Profile numbers
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          '*Nenhuma avaliação',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    Icon(
-                      Iconsax.arrow_right_3,
-                    ),
-                  ],
-                ),
+                RatingStreamBuilder(profileUid: profile['uid']),
                 SizedBox(height: 10),
 
                 buildAbout(profile: profile),
@@ -134,7 +115,7 @@ Widget buildAbout({required Map<String, dynamic> profile}) => Container(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Release',
+            'Sobre',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),

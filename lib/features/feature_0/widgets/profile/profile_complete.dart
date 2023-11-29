@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/change_profile_image.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_update_form.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileComplete extends StatefulWidget {
@@ -23,7 +25,10 @@ class _ProfileCompleteState extends State<ProfileComplete> {
   late String _lastReleases = "";
   late String _instagram = "";
   late String _profileImageUrl = "";
+  late String _uid = '';
   bool? _userStatus;
+
+  late Widget ratingStreamBuilder = Container();
 
   @override
   void initState() {
@@ -45,6 +50,9 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         _lastReleases = userData['lastReleases'];
         _instagram = userData['instagram'];
         _profileImageUrl = userData['profileImageUrl'];
+        _uid = userData['uid'];
+
+        ratingStreamBuilder = RatingStreamBuilder(profileUid: _uid);
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -204,33 +212,46 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                         ],
                       ),
                     ),
-                    _buildProfileImage(),
+                    InkWell(
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text('Foto do perfil'),
+                                  content: Text(
+                                      'Gostaria de alterar a sua foto do perfil?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        'Cancelar',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChangeProfileImage()));
+                                      },
+                                      child: Text('Alterar'),
+                                    ),
+                                  ],
+                                ));
+                      },
+                      child: _buildProfileImage(),
+                    ),
                   ],
                 ),
 
                 SizedBox(height: 20),
-                //Profile numbers
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        SizedBox(width: 15),
-                        Text(
-                          '* Nenhuma avaliação',
-                          style: TextStyle(fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    Icon(
-                      Iconsax.arrow_right_3,
-                    ),
-                  ],
-                ),
+
+                ///Profile numbers
+                ratingStreamBuilder,
+
                 SizedBox(height: 20),
 
                 ///Release
@@ -240,7 +261,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Release',
+                        'Sobre',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),

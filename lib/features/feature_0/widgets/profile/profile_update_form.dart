@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:freegig_app/classes/city_list.dart';
+import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/delete_account_confirm.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileUpdateForm extends StatefulWidget {
@@ -21,38 +23,18 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   late String _release = "";
   late String _lastReleases = "";
   late String _instagram = "";
-
+  bool cityValidator = false;
+  bool categoryValidator = false;
   String selectedMusician = '';
-  Map<String, List<String>> options = {
-    'Voz': ['Cantor', 'Cantora'],
-    'Cordas': [
-      'Violinista',
-      'Violoncelista',
-      'Guitarrista',
-      'Baixista',
-      'Violonista',
-      'Harpista'
-    ],
-    'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
-    'Sopros': [
-      'Flautista',
-      'Saxofonista',
-      'Trompetista',
-      'Trombonista',
-      'Clarinetista',
-      'Oboísta'
-    ],
-    'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
-  };
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario();
+    _loadUserData();
     setState(() {});
   }
 
-  Future<void> _carregarDadosDoUsuario() async {
+  Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData = await UserDataService().getProfileData();
 
@@ -68,9 +50,10 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
         description.text = _description;
         category.text = _category;
         release.text = _release;
-        city.text = _city;
+        _cityController.text = _city;
         lastReleases.text = _lastReleases;
         instagram.text = _instagram;
+        publicName.text = _publicName;
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -78,13 +61,14 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   }
 
   final description = TextEditingController();
+  final publicName = TextEditingController();
   final release = TextEditingController();
   final category = TextEditingController();
-  final city = TextEditingController();
+  final _cityController = TextEditingController();
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
 
-  Future<void> _completarPerfil() async {
+  Future<void> _updateProfile() async {
     showDialog(
         context: context,
         builder: (context) {
@@ -98,12 +82,37 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
       release: release.text.trim(),
       lastReleases: lastReleases.text.trim(),
       instagram: instagram.text.trim(),
-      city: city.text.trim(),
+      city: _cityController.text.trim(),
       category: category.text,
+      publicName: publicName.text,
     );
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => NavigationMenu(navPage: 3),
     ));
+  }
+
+  void cityValidate(String? city) {
+    if (city!.isEmpty || !CityList().cityList.contains(city)) {
+      setState(() {
+        cityValidator = true;
+      });
+    } else {
+      setState(() {
+        cityValidator = false;
+      });
+    }
+  }
+
+  void categoryValidate(String? category) {
+    if (category!.isEmpty) {
+      setState(() {
+        categoryValidator = true;
+      });
+    } else {
+      setState(() {
+        categoryValidator = false;
+      });
+    }
   }
 
   @override
@@ -120,41 +129,23 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              cityValidate(_cityController.text);
+              if (!cityValidator && !categoryValidator) {
+                _updateProfile();
+              }
             },
-            icon: Icon(Icons.close),
+            icon: Icon(
+              Iconsax.refresh_circle5,
+              color: Colors.green,
+              size: 35,
+            ),
           ),
+          SizedBox(width: 5)
         ],
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
       backgroundColor: backgroundColor,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Color.fromARGB(255, 3, 141, 77),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          onPressed: () {
-            _completarPerfil();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Text(
-              "Atualizar perfil",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 16.0,
-              ),
-            ),
-          ),
-        ),
-      ),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Padding(
@@ -181,8 +172,33 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
               ),
 
               ///forms
-              SearchGoogleCity(cityController: city),
+              TextFormField(
+                controller: publicName,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  filled: true,
+                  prefixIcon: Icon(Iconsax.user),
+                  labelText: "Nome artístico*",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                ),
+              ),
               SizedBox(height: 26),
+              SearchGoogleCity(cityController: _cityController),
+              Visibility(
+                visible: cityValidator,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0, left: 10.0),
+                  child: Text(
+                    'Cidade inválida.',
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 223, 41, 28), fontSize: 12),
+                  ),
+                ),
+              ),
+              SizedBox(height: 26),
+
               TextFormField(
                 controller: description,
                 textCapitalization: TextCapitalization.sentences,
@@ -229,43 +245,19 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
                 ),
               ),
 
-              TypeAheadField<String>(
-                textFieldConfiguration: TextFieldConfiguration(
-                  controller: category,
-                  decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    labelText: 'Categoria',
-                    prefixIcon: Icon(Iconsax.music),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0)),
+              MusicianOnlySelectionForm(categoryController: category),
+              Visibility(
+                visible: categoryValidator,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0, left: 10.0),
+                  child: Text(
+                    'Categoria inválida.',
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 223, 41, 28), fontSize: 12),
                   ),
                 ),
-                suggestionsCallback: (pattern) {
-                  return options.values.expand((e) => e).where(
-                      (e) => e.toLowerCase().contains(pattern.toLowerCase()));
-                },
-                itemBuilder: (context, suggestion) {
-                  return ListTile(
-                    title: Text(suggestion),
-                  );
-                },
-                onSuggestionSelected: (suggestion) {
-                  setState(() {
-                    selectedMusician = suggestion;
-                    category.text = suggestion;
-                  });
-                },
-                noItemsFoundBuilder: (context) {
-                  return Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      "Categoria não encontrada",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  );
-                },
               ),
+
               SizedBox(height: 26),
               TextFormField(
                 controller: instagram,
@@ -281,11 +273,16 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
               ),
               SizedBox(height: 30),
               TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Excluir conta',
-                    style: TextStyle(color: Colors.red),
-                  ))
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => DeleteAccountConfirm());
+                },
+                child: Text(
+                  'Excluir conta',
+                  style: TextStyle(color: Colors.red),
+                ),
+              )
             ],
           ),
         ),

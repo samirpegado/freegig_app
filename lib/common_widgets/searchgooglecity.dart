@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:uuid/uuid.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:freegig_app/classes/city_list.dart';
+import 'package:iconsax/iconsax.dart';
 
 class SearchGoogleCity extends StatefulWidget {
   final TextEditingController cityController;
@@ -17,51 +14,7 @@ class SearchGoogleCity extends StatefulWidget {
 }
 
 class _SearchGoogleCityState extends State<SearchGoogleCity> {
-  Uuid uuid = const Uuid();
-  String sessionToken = "";
-  List<dynamic> placeList = [];
-
-  void getSuggestions(String input) async {
-    String googleApiKey = dotenv.env['CHAVE_GOOGLE_API'].toString();
-    String baseUrl =
-        "https://maps.googleapis.com/maps/api/place/autocomplete/json";
-    String request =
-        "$baseUrl?input=$input&key=$googleApiKey&sessiontoken=$sessionToken&components=country:BR&language=pt-BR&types=(cities)&inputtype=textquery";
-
-    var response = await http.get(Uri.parse(request));
-
-    if (response.statusCode == 200) {
-      setState(() {
-        placeList = jsonDecode(response.body.toString())["predictions"];
-
-        /// Remove a palavra "Brasil" da descrição
-        placeList.forEach((place) {
-          if (place.containsKey("description")) {
-            place["description"] =
-                place["description"].replaceAll(", Brasil", "");
-          }
-        });
-      });
-    } else {
-      throw Exception("Falha ao carregar os dados");
-    }
-  }
-
-  void onChange() {
-    if (sessionToken.isEmpty) {
-      sessionToken = uuid.v4();
-    } else {
-      getSuggestions(widget.cityController.text);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    widget.cityController.addListener(() {
-      onChange();
-    });
-  }
+  List<String> cityList = CityList().cityList;
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +30,16 @@ class _SearchGoogleCityState extends State<SearchGoogleCity> {
         ),
       ),
       suggestionsCallback: (pattern) async {
-        getSuggestions(pattern);
-        return placeList.map((place) => place["description"]).toList();
+        if (pattern.length >= 3) {
+          // Retorna a lista cityList filtrada pelo padrão
+          return cityList
+              .where(
+                  (city) => city.toLowerCase().contains(pattern.toLowerCase()))
+              .toList();
+        } else {
+          // Retorna uma lista vazia se o padrão não tiver pelo menos 3 caracteres
+          return [];
+        }
       },
       itemBuilder: (context, suggestion) {
         return ListTile(

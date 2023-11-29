@@ -3,6 +3,7 @@ import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/show_profile.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/data/services/user_rate.dart';
 import 'package:freegig_app/data/services/user_request.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_invitations.dart';
@@ -156,7 +157,7 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                           )
                         ],
                       ),
-                      content: Text('Tem certeza que deseja excluir essa GIG?'),
+                      content: Text('Tem certeza que deseja excluir esta GIG?'),
                       actions: [
                         TextButton(
                             onPressed: () {
@@ -191,6 +192,66 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                     padding: const EdgeInsets.all(10.0),
                     child: Icon(
                       Iconsax.trash,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 15),
+              InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Arquivar GIG',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                          Icon(
+                            Iconsax.archive,
+                            color: Colors.grey,
+                            size: 30,
+                          )
+                        ],
+                      ),
+                      content: Text('Gostaria de arquivar esta GIG?'),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Fechar',
+                              style: TextStyle(color: Colors.black),
+                            )),
+                        TextButton(
+                            onPressed: () async {
+                              UserRateService()
+                                  .createRateNotificationsAndArchive(
+                                      widget.gig['gigUid']);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      NavigationMenu(navPage: 1)));
+                            },
+                            child: Text(
+                              'Arquivar',
+                            ))
+                      ],
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(100)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Icon(
+                      Iconsax.archive,
                       color: Colors.white,
                     ),
                   ),

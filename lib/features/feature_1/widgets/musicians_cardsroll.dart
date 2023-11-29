@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
+import 'package:freegig_app/features/feature_1/widgets/musician_rate.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeCardsRoll extends StatefulWidget {
@@ -12,6 +13,7 @@ class HomeCardsRoll extends StatefulWidget {
 
 class _HomeCardsRollState extends State<HomeCardsRoll> {
   late Stream<List<Map<String, dynamic>>> userDataList;
+  double media = 0;
 
   @override
   void initState() {
@@ -110,13 +112,8 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                           Row(
                                             children: [
                                               /// Avaliacao
-                                              Text(
-                                                "N/A",
-                                                style: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 80, 78, 78),
-                                                    fontSize: 14.0),
-                                              ),
+                                              MusicianRateNumber(
+                                                  profileUid: profile['uid']),
                                               SizedBox(width: 3),
                                               Icon(
                                                 Icons.star,

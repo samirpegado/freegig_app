@@ -17,13 +17,12 @@ class ProfileEditForm extends StatefulWidget {
 class _ProfileEditFormState extends State<ProfileEditForm> {
   late String _publicName = "";
   Uint8List? _image;
-  bool _isImageSelected =
-      false; // Variable to track whether an image is selected
+  bool _isImageSelected = false;
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario(); // Load user data
+    _carregarDadosDoUsuario();
   }
 
   Future<void> _carregarDadosDoUsuario() async {
@@ -40,7 +39,6 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
 
   final description = TextEditingController();
   final release = TextEditingController();
-
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
 
@@ -48,15 +46,13 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
   void dispose() {
     description.dispose();
     release.dispose();
-
     lastReleases.dispose();
     instagram.dispose();
-
     super.dispose();
   }
 
   Future<void> _completarPerfil() async {
-    if (!_isImageSelected) {
+    if (!_isImageSelected || _image == null) {
       // Check if an image is selected
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -86,10 +82,10 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
   }
 
   void _pickImage() async {
-    Uint8List img = await pickImage(ImageSource.gallery);
+    Uint8List? img = await pickImage(ImageSource.gallery);
     setState(() {
       _image = img;
-      _isImageSelected = true; // Set the flag when an image is selected
+      _isImageSelected = true;
     });
   }
 

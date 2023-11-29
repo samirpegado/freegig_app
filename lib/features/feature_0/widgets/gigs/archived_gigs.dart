@@ -24,7 +24,7 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'GIGs Arquivadas',
+          'GIGs arquivadas',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 19.0,

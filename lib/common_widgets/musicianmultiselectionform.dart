@@ -133,6 +133,13 @@ class _MusicianMultiSelectionFormState
   Widget build(BuildContext context) {
     return TextFormField(
       controller: _textController,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return 'Categoria inválida.';
+        } else {
+          return null;
+        }
+      },
       readOnly: true,
       onTap: () {
         _showSelectionDialog();

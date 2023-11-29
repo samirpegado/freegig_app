@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/user_invitation.dart';
+import 'package:freegig_app/data/services/user_rate.dart';
 import 'package:freegig_app/data/services/user_request.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/archived_gigs.dart';
@@ -21,6 +22,7 @@ class _GIGsState extends State<GIGs> {
   int notification = 0;
   late Future<List<Map<String, dynamic>>> requestForMyGigs;
   late Future<List<Map<String, dynamic>>> invitationToOtherGigs;
+  late Future<List<Map<String, dynamic>>> getRateNotifications;
 
   @override
   void initState() {
@@ -31,14 +33,18 @@ class _GIGsState extends State<GIGs> {
   Future<void> loadNotifications() async {
     requestForMyGigs = UserRequest().listRequestsByGigOwner();
     invitationToOtherGigs = UserInvitation().getReceivedInvitation();
+    getRateNotifications = UserRateService().getRateNotifications();
 
     List<Map<String, dynamic>> requests =
         await UserRequest().listRequestsByGigOwner();
     List<Map<String, dynamic>> invitations =
         await UserInvitation().getReceivedInvitation();
+    List<Map<String, dynamic>> rateNotifications =
+        await UserRateService().getRateNotifications();
 
     setState(() {
-      notification = requests.length + invitations.length;
+      notification =
+          requests.length + invitations.length + rateNotifications.length;
     });
   }
 
@@ -132,10 +138,12 @@ class _GIGsState extends State<GIGs> {
                   );
                 },
                 icon: Icon(
-                  Iconsax.add_circle,
+                  Iconsax.add_circle5,
                   color: Colors.blue,
+                  size: 35,
                 ),
               ),
+              SizedBox(width: 5)
             ],
             title: Text(
               'GIGs',
@@ -159,7 +167,7 @@ class _GIGsState extends State<GIGs> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Iconsax.calendar_add5,
+                          Iconsax.note_add,
                           size: 26,
                           color: Colors.blue,
                         ),
@@ -178,7 +186,7 @@ class _GIGsState extends State<GIGs> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Iconsax.calendar_tick5,
+                            Iconsax.share,
                             size: 26,
                             color: Colors.green,
                           ),

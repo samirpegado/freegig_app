@@ -60,7 +60,25 @@ class UserDataService {
     }
   }
 
+  Future<void> updateProfileImage({
+    required Uint8List image,
+  }) async {
+    try {
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        String imageUrl = await uploadImagetoStorage(user.uid, image);
+        await _firestore.collection('users').doc(user.uid).update({
+          'profileImageUrl': imageUrl,
+        });
+      }
+    } catch (e) {
+      print("Erro ao atualizar dados do usuário: $e");
+    }
+  }
+
   Future<void> updateProfile({
+    required String publicName,
     required String description,
     required String release,
     required String lastReleases,
@@ -73,6 +91,7 @@ class UserDataService {
 
       if (user != null) {
         await _firestore.collection('users').doc(user.uid).update({
+          'publicName': publicName,
           'description': description,
           'release': release,
           'lastReleases': lastReleases,
@@ -80,7 +99,7 @@ class UserDataService {
           'category': category,
           'city': city,
           'profileComplete': true,
-          'userStatus': false,
+          'userStatus': true,
         });
       }
     } catch (e) {
@@ -97,6 +116,7 @@ class UserDataService {
 
         if (userSnapshot.exists) {
           return {
+            'uid': user.uid,
             'publicName': userSnapshot['publicName'],
             'category': userSnapshot['category'],
             'description': userSnapshot['description'],
