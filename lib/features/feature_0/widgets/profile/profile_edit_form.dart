@@ -22,10 +22,10 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario();
+    _loadUserData();
   }
 
-  Future<void> _carregarDadosDoUsuario() async {
+  Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData = await UserDataService().getUserData();
 
@@ -42,6 +42,8 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
 
+  final formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     description.dispose();
@@ -51,7 +53,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
     super.dispose();
   }
 
-  Future<void> _completarPerfil() async {
+  Future<void> _completeProfile() async {
     if (!_isImageSelected || _image == null) {
       // Check if an image is selected
       ScaffoldMessenger.of(context).showSnackBar(
@@ -60,25 +62,26 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         ),
       );
       return;
-    }
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        });
+    } else if (formKey.currentState!.validate()) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
 
-    await UserDataService().updateUserProfile(
-      description: description.text.trim(),
-      release: release.text.trim(),
-      lastReleases: lastReleases.text.trim(),
-      instagram: instagram.text.trim(),
-      image: _image!,
-    );
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => NavigationMenu(navPage: 3),
-    ));
+      await UserDataService().updateUserProfile(
+        description: description.text.trim(),
+        release: release.text.trim(),
+        lastReleases: lastReleases.text.trim(),
+        instagram: instagram.text.trim(),
+        image: _image!,
+      );
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => NavigationMenu(navPage: 3),
+      ));
+    }
   }
 
   void _pickImage() async {
@@ -123,7 +126,7 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
             ),
           ),
           onPressed: () {
-            _completarPerfil();
+            _completeProfile();
           },
           child: Padding(
             padding: const EdgeInsets.all(14.0),
@@ -196,65 +199,115 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
               ),
 
               ///forms
-
-              TextFormField(
-                controller: description,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 30,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.message_minus),
-                  labelText: "Descrição*",
-                  hintText: "Ex: Versátil, criativo e pontual",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              TextFormField(
-                controller: release,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.edit),
-                  labelText: "Sobre*",
-                  hintText: "Um breve resumo sobre você e sua carreira",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              TextFormField(
-                controller: lastReleases,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.medal_star),
-                  labelText: "Últimos trabalhos",
-                  hintText:
-                      "Com quem tocou recentemente, os trabalhos que gravou...",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-
-              TextFormField(
-                controller: instagram,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.instagram),
-                  labelText: "Instagram",
-                  hintText: "@seuperfil",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
+              Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: description,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Campo obrigatório';
+                          } else {
+                            return null;
+                          }
+                        },
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLength: 30,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          prefixIcon: Icon(Iconsax.message_minus),
+                          labelText: "Descrição*",
+                          hintText: "Ex: Versátil, criativo e pontual",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: release,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Campo obrigatório';
+                          } else {
+                            return null;
+                          }
+                        },
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLength: 200,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          prefixIcon: Icon(Iconsax.edit),
+                          labelText: "Sobre*",
+                          hintText: "Um breve resumo sobre você e sua carreira",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: lastReleases,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Campo obrigatório';
+                          } else {
+                            return null;
+                          }
+                        },
+                        textCapitalization: TextCapitalization.sentences,
+                        maxLength: 200,
+                        maxLines: 2,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          prefixIcon: Icon(Iconsax.medal_star),
+                          labelText: "Últimos trabalhos",
+                          hintText:
+                              "Com quem tocou recentemente, os trabalhos que gravou...",
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: instagram,
+                        onChanged: (value) {
+                          if (value.startsWith('@')) {
+                            // Remove o "@" se já estiver no início do texto
+                            instagram.value = TextEditingValue(
+                              text: value.substring(1),
+                              selection: TextSelection.collapsed(
+                                  offset: value.length - 1),
+                            );
+                          }
+                        },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return null; // Campo não é obrigatório, então retorna null se estiver vazio
+                          } else {
+                            // Verifica se o valor corresponde ao formato desejado
+                            bool isValid = RegExp(r'^[\w.]+$').hasMatch(value);
+                            if (!isValid) {
+                              return 'Formato inválido. Use apenas caracteres alfanuméricos.';
+                            }
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          filled: true,
+                          prefixIcon: Icon(Iconsax.instagram),
+                          prefix:
+                              Text('@'), // Exibe o "@" dentro da caixa de texto
+                          labelText: "Instagram",
+                          hintText: "seuperfil",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                      )
+                    ],
+                  ))
             ],
           ),
         ),

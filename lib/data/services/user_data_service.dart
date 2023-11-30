@@ -52,7 +52,7 @@ class UserDataService {
           'instagram': instagram,
           'profileComplete': true,
           'profileImageUrl': imageUrl,
-          'userStatus': false,
+          'userStatus': true,
         });
       }
     } catch (e) {
@@ -146,6 +146,7 @@ class UserDataService {
           return {
             'city': userSnapshot['city'],
             'category': userSnapshot['category'],
+            'profileComplete': userSnapshot['profileComplete'],
           };
         }
       }

@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/classes/city_list.dart';
+import 'package:freegig_app/data/services/auth_service.dart';
 import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:intl/intl.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -14,7 +14,9 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final _auth = FirebaseAuthService();
   bool showPassword = false;
+  bool isSigningUp = false;
 
   final firstName = TextEditingController();
   final lastName = TextEditingController();
@@ -25,6 +27,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final email = TextEditingController();
   final password = TextEditingController();
   final city = TextEditingController();
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -40,76 +44,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  Future signUp() async {
-    try {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          });
-      //create user
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email.text.trim(),
-        password: password.text.trim(),
-      );
-      // Se a conta foi criada com sucesso, navegue para a tela desejada
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => NavigationMenu(),
-        ),
-      );
-
-      //add user details
-      addUserDetails(
-        firstName.text.trim(),
-        lastName.text.trim(),
-        publicName.text.trim(),
-        category.text.trim(),
-        birthDate.text.trim(),
-        phoneNo.text.trim(),
-        email.text.trim(),
-        city.text.trim(),
-      );
-
-      ///
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString(),
-          ),
-        ),
-      );
+  bool cityValidator = false;
+  void cityValidate(String? city) {
+    if (city!.isEmpty || !CityList().cityList.contains(city)) {
+      setState(() {
+        cityValidator = true;
+      });
+    } else {
+      setState(() {
+        cityValidator = false;
+      });
     }
   }
 
-  ///
-  Future addUserDetails(
-    String firstName,
-    String lastName,
-    String publicName,
-    String category,
-    String birthDate,
-    String phoneNo,
-    String email,
-    String city,
-  ) async {
-    final user = FirebaseAuth.instance.currentUser!;
+  void signUp() async {
+    cityValidate(city.text);
+    setState(() {
+      isSigningUp = true;
+    });
+    String _email = email.text;
+    String _password = password.text;
+    if (formKey.currentState!.validate() && !cityValidator) {
+      // create user
+      User? user = await _auth.signUpWithEmailAndPassword(
+        context,
+        _email.trim(),
+        _password.trim(),
+      );
+      setState(() {
+        isSigningUp = false;
+      });
 
-    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-      'uid': user.uid,
-      'firstName': firstName,
-      'lastName': lastName,
-      'publicName': publicName,
-      'category': category,
-      'birthDate': birthDate,
-      'phoneNo': phoneNo,
-      'email': email,
-      'city': city,
-      'profileComplete': false,
+      if (user != null) {
+        _auth.addUserDetails(
+          firstName.text.trim(),
+          lastName.text.trim(),
+          publicName.text.trim(),
+          category.text.trim(),
+          birthDate.text.trim(),
+          phoneNo.text.trim(),
+          email.text.trim(),
+          city.text.trim(),
+        );
+        print('User is successfully created');
+        ;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NavigationMenu(),
+          ),
+        );
+      } else {
+        print('Some error happened');
+      }
+    }
+    setState(() {
+      isSigningUp = false;
     });
   }
 
@@ -146,6 +137,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   email: email,
                   password: password,
                   city: city,
+                  formKey: formKey,
+                  cityValidator: cityValidator,
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -157,51 +150,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     onPressed: () {
-                      if (_isOver18(birthDate.text.trim())) {
-                        signUp();
-                      } else {
-                        _showErrorSnackBar(context);
-                      }
+                      signUp();
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.all(14.0),
-                      child: Text(
-                        "Criar conta",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                    ),
+                    child: isSigningUp
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(14.0),
+                            child: Text(
+                              "Criar conta",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(height: 15),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  bool _isOver18(String birthDate) {
-    // verifica se o usuário é maior de idade
-    try {
-      DateTime parsedDate = DateFormat("dd-MM-yyyy").parse(birthDate);
-      int age = DateTime.now().year - parsedDate.year;
-
-      return age >= 18;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  void _showErrorSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Erro ao criar conta. Verifique se concordou com os termos e se você tem mais de 18 anos.",
         ),
       ),
     );

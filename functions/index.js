@@ -3,10 +3,11 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 exports.archiveOldGigs = functions.pubsub
-  .schedule('59 23 * * *')
+  .schedule('0 2 * * *') // Executa todos os dias às 2h da madrugada
   .timeZone('America/Sao_Paulo')
   .onRun(async (context) => {
     const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1); // Subtrai 1 dia da data atual
 
     const gigsSnapshot = await admin.firestore().collection('gigs').get();
 
@@ -17,7 +18,7 @@ exports.archiveOldGigs = functions.pubsub
       const gigData = gigDoc.data();
       const gigDate = parseDate(gigData.gigDate);
 
-      if (gigDate < currentDate && gigData.gigArchived === false) {
+      if (gigDate <= currentDate && gigData.gigArchived === false) {
         const gigRef = admin.firestore().collection('gigs').doc(gigDoc.id);
         batch.update(gigRef, { gigArchived: true });
 

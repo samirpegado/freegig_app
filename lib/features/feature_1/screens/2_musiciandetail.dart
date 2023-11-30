@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_message.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_inviteconfirm.dart';
 import 'package:iconsax/iconsax.dart';
 
-class ProfileDetailsPage extends StatelessWidget {
+class ProfileDetailsPage extends StatefulWidget {
   final Map<String, dynamic> profile;
   ProfileDetailsPage({required this.profile});
+
+  @override
+  State<ProfileDetailsPage> createState() => _ProfileDetailsPageState();
+}
+
+class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
+  late bool _profileStatus = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      Map<String, dynamic> userData =
+          await UserDataService().getCityProfileData();
+
+      setState(() {
+        _profileStatus = userData['profileComplete'];
+      });
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +53,15 @@ class ProfileDetailsPage extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            openDialog(context);
+            if (_profileStatus == true) {
+              showDialog(
+                  context: context,
+                  builder: (context) => InviteConfirm(profile: widget.profile));
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (context) => ProfileCompleteConfirm());
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(14.0),
@@ -59,7 +95,7 @@ class ProfileDetailsPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            profile['publicName'],
+                            widget.profile['publicName'],
                             style: TextStyle(
                               height: 1,
                               fontSize: 26,
@@ -68,7 +104,7 @@ class ProfileDetailsPage extends StatelessWidget {
                           ),
                           SizedBox(height: 5),
                           Text(
-                            profile['category'],
+                            widget.profile['category'],
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
@@ -81,7 +117,7 @@ class ProfileDetailsPage extends StatelessWidget {
                                 size: 18,
                               ),
                               Text(
-                                ' ' + profile['city'],
+                                ' ' + widget.profile['city'],
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.black),
                               ),
@@ -94,14 +130,14 @@ class ProfileDetailsPage extends StatelessWidget {
                                 size: 18,
                               ),
                               Text(
-                                ' ' + profile['instagram'],
+                                ' ' + widget.profile['instagram'],
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.black),
                               ),
                             ],
                           ),
                           Text(
-                            profile['description'],
+                            widget.profile['description'],
                             style: TextStyle(fontSize: 15, color: Colors.black),
                           ),
                         ],
@@ -109,7 +145,7 @@ class ProfileDetailsPage extends StatelessWidget {
                     ),
                     ClipOval(
                       child: Image.network(
-                        profile['profileImageUrl'],
+                        widget.profile['profileImageUrl'],
                         fit: BoxFit.cover,
                         width: 100,
                         height: 100,
@@ -120,12 +156,21 @@ class ProfileDetailsPage extends StatelessWidget {
                 SizedBox(height: 20),
 
                 ///Profile numbers
-                RatingStreamBuilder(profileUid: profile['uid']),
+                RatingStreamBuilder(profileUid: widget.profile['uid']),
                 SizedBox(height: 10),
 
                 TextButton(
                   onPressed: () {
-                    openMessage(context);
+                    if (_profileStatus == true) {
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              MessageToMusician(profile: widget.profile));
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (context) => ProfileCompleteConfirm());
+                    }
                   },
                   child: Text(
                     "Enviar uma mensagem",
@@ -133,9 +178,9 @@ class ProfileDetailsPage extends StatelessWidget {
                   ),
                 ),
 
-                buildAbout(profile: profile),
+                buildAbout(profile: widget.profile),
                 SizedBox(height: 20),
-                lastReleases(profile: profile),
+                lastReleases(profile: widget.profile),
                 SizedBox(height: 20),
               ],
             ),
@@ -144,13 +189,6 @@ class ProfileDetailsPage extends StatelessWidget {
       ),
     );
   }
-
-  Future openDialog(context) => showDialog(
-      context: context, builder: (context) => InviteConfirm(profile: profile));
-
-  Future openMessage(context) => showDialog(
-      context: context,
-      builder: (context) => MessageToMusician(profile: profile));
 }
 
 Widget buildAbout({required Map<String, dynamic> profile}) => Container(

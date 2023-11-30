@@ -165,7 +165,7 @@ class _GigsNotificationState extends State<GigsNotification> {
         } else if (snapshot.hasError) {
           return Text('Erro ao carregar notificações: ${snapshot.error}');
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Text('Nenhuma notificação encontrada.');
+          return Container();
         } else {
           List<Map<String, dynamic>> rateNotifications = snapshot.data!;
           return ListView.builder(

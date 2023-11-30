@@ -11,11 +11,13 @@ class ListMusicians extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> profileListFunction;
   final String city;
   final String category;
-  const ListMusicians(
-      {super.key,
-      required this.profileListFunction,
-      required this.city,
-      required this.category});
+  final bool profileStatus = true;
+  const ListMusicians({
+    super.key,
+    required this.profileListFunction,
+    required this.city,
+    required this.category,
+  });
 
   @override
   _ListMusiciansState createState() => _ListMusiciansState();

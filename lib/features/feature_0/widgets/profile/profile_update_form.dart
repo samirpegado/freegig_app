@@ -5,7 +5,6 @@ import 'package:freegig_app/common_widgets/searchgooglecity.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/delete_account_confirm.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileUpdateForm extends StatefulWidget {
@@ -68,27 +67,31 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   final lastReleases = TextEditingController();
   final instagram = TextEditingController();
 
-  Future<void> _updateProfile() async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        });
+  final formKey = GlobalKey<FormState>();
 
-    await UserDataService().updateProfile(
-      description: description.text.trim(),
-      release: release.text.trim(),
-      lastReleases: lastReleases.text.trim(),
-      instagram: instagram.text.trim(),
-      city: _cityController.text.trim(),
-      category: category.text,
-      publicName: publicName.text,
-    );
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => NavigationMenu(navPage: 3),
-    ));
+  Future<void> _updateProfile() async {
+    if (formKey.currentState!.validate()) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+
+      await UserDataService().updateProfile(
+        description: description.text.trim(),
+        release: release.text.trim(),
+        lastReleases: lastReleases.text.trim(),
+        instagram: instagram.text.trim(),
+        city: _cityController.text.trim(),
+        category: category.text,
+        publicName: publicName.text,
+      );
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => NavigationMenu(navPage: 3),
+      ));
+    }
   }
 
   void cityValidate(String? city) {
@@ -99,18 +102,6 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
     } else {
       setState(() {
         cityValidator = false;
-      });
-    }
-  }
-
-  void categoryValidate(String? category) {
-    if (category!.isEmpty) {
-      setState(() {
-        categoryValidator = true;
-      });
-    } else {
-      setState(() {
-        categoryValidator = false;
       });
     }
   }
@@ -135,7 +126,7 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
               }
             },
             icon: Icon(
-              Iconsax.refresh_circle5,
+              Icons.check_circle,
               color: Colors.green,
               size: 35,
             ),
@@ -172,117 +163,158 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
               ),
 
               ///forms
-              TextFormField(
-                controller: publicName,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.user),
-                  labelText: "Nome artístico*",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: publicName,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else {
+                          return null;
+                        }
+                      },
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon: Icon(Iconsax.user),
+                        labelText: "Nome artístico*",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                    ),
+                    SizedBox(height: 26),
+                    SearchGoogleCity(cityController: _cityController),
+                    Visibility(
+                      visible: cityValidator,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0, left: 10.0),
+                            child: Text(
+                              'Cidade inválida.',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 223, 41, 28),
+                                  fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 26),
+                    TextFormField(
+                      controller: description,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else {
+                          return null;
+                        }
+                      },
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLength: 30,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon: Icon(Iconsax.message_minus),
+                        labelText: "Descrição*",
+                        hintText: "Ex: Versátil, criativo e pontual",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: release,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else {
+                          return null;
+                        }
+                      },
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLength: 200,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon: Icon(Iconsax.edit),
+                        labelText: "Sobre*",
+                        hintText: "Um breve resumo sobre você e sua carreira",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: lastReleases,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Campo obrigatório';
+                        } else {
+                          return null;
+                        }
+                      },
+                      textCapitalization: TextCapitalization.sentences,
+                      maxLength: 200,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon: Icon(Iconsax.medal_star),
+                        labelText: "Últimos trabalhos",
+                        hintText:
+                            "Com quem tocou recentemente, os trabalhos que gravou...",
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                      ),
+                    ),
+                    MusicianOnlySelectionForm(categoryController: category),
+                    SizedBox(height: 26),
+                    TextFormField(
+                      controller: instagram,
+                      onChanged: (value) {
+                        if (value.startsWith('@')) {
+                          // Remove o "@" se já estiver no início do texto
+                          instagram.value = TextEditingValue(
+                            text: value.substring(1),
+                            selection: TextSelection.collapsed(
+                                offset: value.length - 1),
+                          );
+                        }
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return null; // Campo não é obrigatório, então retorna null se estiver vazio
+                        } else {
+                          // Verifica se o valor corresponde ao formato desejado
+                          bool isValid = RegExp(r'^[\w.]+$').hasMatch(value);
+                          if (!isValid) {
+                            return 'Formato inválido. Apenas caracteres alfanuméricos.';
+                          }
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        prefixIcon: Icon(Iconsax.instagram),
+                        prefix:
+                            Text('@'), // Exibe o "@" dentro da caixa de texto
+                        labelText: "Instagram",
+                        hintText: "seuperfil",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
-              SizedBox(height: 26),
-              SearchGoogleCity(cityController: _cityController),
-              Visibility(
-                visible: cityValidator,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 10.0),
-                  child: Text(
-                    'Cidade inválida.',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 223, 41, 28), fontSize: 12),
-                  ),
-                ),
-              ),
-              SizedBox(height: 26),
-
-              TextFormField(
-                controller: description,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 30,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.message_minus),
-                  labelText: "Descrição*",
-                  hintText: "Ex: Versátil, criativo e pontual",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              TextFormField(
-                controller: release,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.edit),
-                  labelText: "Sobre*",
-                  hintText: "Um breve resumo sobre você e sua carreira",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              TextFormField(
-                controller: lastReleases,
-                textCapitalization: TextCapitalization.sentences,
-                maxLength: 200,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.medal_star),
-                  labelText: "Últimos trabalhos",
-                  hintText:
-                      "Com quem tocou recentemente, os trabalhos que gravou...",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-
-              MusicianOnlySelectionForm(categoryController: category),
-              Visibility(
-                visible: categoryValidator,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0, left: 10.0),
-                  child: Text(
-                    'Categoria inválida.',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 223, 41, 28), fontSize: 12),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 26),
-              TextFormField(
-                controller: instagram,
-                decoration: InputDecoration(
-                  fillColor: Colors.white,
-                  filled: true,
-                  prefixIcon: Icon(Iconsax.instagram),
-                  labelText: "Instagram",
-                  hintText: "@seuperfil",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0)),
-                ),
-              ),
-              SizedBox(height: 30),
-              TextButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => DeleteAccountConfirm());
-                },
-                child: Text(
-                  'Excluir conta',
-                  style: TextStyle(color: Colors.red),
-                ),
-              )
+              SizedBox(height: 20),
             ],
           ),
         ),

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common_widgets/toast.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/change_profile_image.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_update_form.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/profile_settings.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -89,24 +89,8 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         setState(() {
           _userStatus = newStatus;
           newStatus
-              ? Fluttertoast.showToast(
-                  msg: "Disponível para Free",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                )
-              : Fluttertoast.showToast(
-                  msg: "Indisponível para Free",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.CENTER,
-                  timeInSecForIosWeb: 1,
-                  backgroundColor: Colors.grey,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
+              ? showToast(message: "Disponível para Free")
+              : showToast(message: "Indisponível para Free");
         });
       }
     } catch (e) {
@@ -129,14 +113,12 @@ class _ProfileCompleteState extends State<ProfileComplete> {
           IconButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ProfileUpdateForm()));
+                    builder: (context) => ProfileSettings(
+                          profileImageUrl: _profileImageUrl,
+                          publicName: _publicName,
+                        )));
               },
-              icon: Icon(Iconsax.user_edit)),
-          IconButton(
-              onPressed: () {
-                UserDataService().logOut(context);
-              },
-              icon: Icon(Iconsax.logout_1))
+              icon: Icon(Iconsax.setting_2))
         ],
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -212,37 +194,9 @@ class _ProfileCompleteState extends State<ProfileComplete> {
                         ],
                       ),
                     ),
-                    InkWell(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                                  title: Text('Foto do perfil'),
-                                  content: Text(
-                                      'Gostaria de alterar a sua foto do perfil?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        'Cancelar',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ChangeProfileImage()));
-                                      },
-                                      child: Text('Alterar'),
-                                    ),
-                                  ],
-                                ));
-                      },
-                      child: _buildProfileImage(),
+                    BuildProfileImage(
+                      profileImageUrl: _profileImageUrl,
+                      imageSize: 100,
                     ),
                   ],
                 ),
@@ -300,48 +254,5 @@ class _ProfileCompleteState extends State<ProfileComplete> {
         ),
       ),
     );
-  }
-
-  Widget _buildProfileImage() {
-    return _profileImageUrl.isNotEmpty
-        ? ClipOval(
-            child: Image.network(
-              _profileImageUrl,
-              fit: BoxFit.cover,
-              width: 100,
-              height: 100,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                (loadingProgress.expectedTotalBytes ?? 1)
-                            : null,
-                      ),
-                    ),
-                  );
-                }
-              },
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                return CircleAvatar(
-                  radius: 50,
-                  backgroundImage:
-                      AssetImage('assets/profiles/default-user-image.png'),
-                );
-              },
-            ),
-          )
-        : CircleAvatar(
-            radius: 50,
-            backgroundImage:
-                AssetImage('assets/profiles/default-user-image.png'),
-          );
   }
 }

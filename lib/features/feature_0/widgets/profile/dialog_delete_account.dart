@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/data/services/delete_account.dart';
 import 'package:iconsax/iconsax.dart';
 
 class DeleteAccountConfirm extends StatelessWidget {
@@ -108,7 +109,7 @@ class DeleteAccountDetails extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(context);
+            DeleteUserService().deleteUserAndRelatedData(context);
           },
           child: Text(
             'Exluir conta',

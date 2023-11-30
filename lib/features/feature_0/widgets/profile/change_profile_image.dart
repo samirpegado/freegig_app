@@ -72,130 +72,119 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NavigationMenu(
-                  navPage: 3,
-                )));
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Alterar foto do perfil',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 19.0,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Alterar foto do perfil',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 19.0,
           ),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
         ),
-        backgroundColor: backgroundColor,
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black54,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => NavigationMenu(navPage: 3),
-                  ));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Cancelar",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  _changeImage();
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "Alterar foto",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        body: SafeArea(
-            child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                SizedBox(height: 20),
-                Stack(
-                  children: [
-                    InkWell(
-                      onTap: _pickImage,
-                      child: _image != null
-                          ? CircleAvatar(
-                              radius: 100,
-                              backgroundImage: MemoryImage(_image!),
-                            )
-                          : CircleAvatar(
-                              radius: 100,
-                              backgroundImage: AssetImage(
-                                  'assets/profiles/default-user-image.png'),
-                            ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 120,
-                      child: Icon(Icons.add_a_photo, size: 40),
-                    )
-                  ],
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "$_publicName,",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Por favor, clique na imagem acima para selecionar uma nova foto para o seu perfil.",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18),
-                ),
-              ],
-            ),
-          ),
-        )),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
+      backgroundColor: backgroundColor,
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black54,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Cancelar",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                _changeImage();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  "Alterar foto",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+          child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              Stack(
+                children: [
+                  InkWell(
+                    onTap: _pickImage,
+                    child: _image != null
+                        ? CircleAvatar(
+                            radius: 100,
+                            backgroundImage: MemoryImage(_image!),
+                          )
+                        : CircleAvatar(
+                            radius: 100,
+                            backgroundImage: AssetImage(
+                                'assets/profiles/default-user-image.png'),
+                          ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 120,
+                    child: Icon(Icons.add_a_photo, size: 40),
+                  )
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                "$_publicName,",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Por favor, clique na imagem acima para selecionar uma nova foto para o seu perfil.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+      )),
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/data/services/user_invitation.dart';
 import 'package:freegig_app/data/services/user_rate.dart';
 import 'package:freegig_app/data/services/user_request.dart';
@@ -23,11 +25,13 @@ class _GIGsState extends State<GIGs> {
   late Future<List<Map<String, dynamic>>> requestForMyGigs;
   late Future<List<Map<String, dynamic>>> invitationToOtherGigs;
   late Future<List<Map<String, dynamic>>> getRateNotifications;
+  late bool _profileStatus = true;
 
   @override
   void initState() {
     super.initState();
     loadNotifications();
+    _loadUserData();
   }
 
   Future<void> loadNotifications() async {
@@ -42,10 +46,26 @@ class _GIGsState extends State<GIGs> {
     List<Map<String, dynamic>> rateNotifications =
         await UserRateService().getRateNotifications();
 
-    setState(() {
-      notification =
-          requests.length + invitations.length + rateNotifications.length;
-    });
+    if (mounted) {
+      setState(() {
+        // Atualize o estado apenas se a página estiver montada
+        notification =
+            requests.length + invitations.length + rateNotifications.length;
+      });
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      Map<String, dynamic> userData =
+          await UserDataService().getCityProfileData();
+
+      setState(() {
+        _profileStatus = userData['profileComplete'];
+      });
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e");
+    }
   }
 
   @override
@@ -67,12 +87,8 @@ class _GIGsState extends State<GIGs> {
                     child: IconButton(
                       onPressed: () {
                         notification != 0
-                            ? showDialog(
-                                context: context,
-                                builder: (context) => Dialog(
-                                  child: GigsNotification(),
-                                ),
-                              )
+                            ? Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => GigsNotification()))
                             : showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -129,13 +145,19 @@ class _GIGsState extends State<GIGs> {
               ),
               IconButton(
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => Dialog.fullscreen(
-                      backgroundColor: backgroundColor,
-                      child: CreateNewGig(),
-                    ),
-                  );
+                  if (_profileStatus == true) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Dialog.fullscreen(
+                        backgroundColor: backgroundColor,
+                        child: CreateNewGig(),
+                      ),
+                    );
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) => ProfileCompleteConfirm());
+                  }
                 },
                 icon: Icon(
                   Iconsax.add_circle5,

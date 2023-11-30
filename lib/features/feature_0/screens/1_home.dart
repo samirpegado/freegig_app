@@ -38,6 +38,7 @@ class _HomeState extends State<Home> {
         _category = userData['category'];
         _profileCategory = 'Todos';
       });
+      // Adiciona a lógica para exibir o AlertDialog se o perfil não estiver completo
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
     }

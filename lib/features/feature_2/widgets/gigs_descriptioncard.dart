@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/gigs_card.dart';
+import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 
 class GigsCard extends StatefulWidget {
@@ -12,12 +14,26 @@ class GigsCard extends StatefulWidget {
 
 class _GigsCardState extends State<GigsCard> {
   late Stream<List<Map<String, dynamic>>> gigsDataList;
+  late bool _profileStatus = true;
 
   @override
   void initState() {
     super.initState();
+    _loadUserData();
     gigsDataList = widget.dataListFunction;
-    setState(() {});
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      Map<String, dynamic> userData =
+          await UserDataService().getCityProfileData();
+
+      setState(() {
+        _profileStatus = userData['profileComplete'];
+      });
+    } catch (e) {
+      print("Erro ao buscar dados do usuário: $e");
+    }
   }
 
   @override
@@ -55,8 +71,15 @@ class _GigsCardState extends State<GigsCard> {
                       const EdgeInsets.only(left: 15, right: 15, bottom: 10),
                   child: InkWell(
                     onTap: () {
-                      // Ação ao tocar
-                      gigJoin(context, gig);
+                      if (_profileStatus == true) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => ConfirmRequest(gig: gig));
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) => ProfileCompleteConfirm());
+                      }
                     },
                     child: CommonGigsCard(
                       gig: gig,
@@ -72,10 +95,3 @@ class _GigsCardState extends State<GigsCard> {
     );
   }
 }
-
-Future gigJoin(context, Map<String, dynamic> gig) => showDialog(
-      context: context,
-      builder: (context) => ConfirmRequest(
-        gig: gig,
-      ),
-    );

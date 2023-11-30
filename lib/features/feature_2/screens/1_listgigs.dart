@@ -24,13 +24,13 @@ class ListGigs extends StatefulWidget {
 }
 
 class _ListGigsState extends State<ListGigs> {
+  final _dateController = TextEditingController();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     widget.dataListFunction;
   }
-
-  final _dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
