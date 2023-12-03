@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
-import 'package:freegig_app/features/feature_1/widgets/musicians_message.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_inviteconfirm.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -143,14 +143,9 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                         ],
                       ),
                     ),
-                    ClipOval(
-                      child: Image.network(
-                        widget.profile['profileImageUrl'],
-                        fit: BoxFit.cover,
-                        width: 100,
-                        height: 100,
-                      ),
-                    ),
+                    BuildProfileImage(
+                        profileImageUrl: widget.profile['profileImageUrl'],
+                        imageSize: 100)
                   ],
                 ),
                 SizedBox(height: 20),
@@ -158,25 +153,6 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                 ///Profile numbers
                 RatingStreamBuilder(profileUid: widget.profile['uid']),
                 SizedBox(height: 10),
-
-                TextButton(
-                  onPressed: () {
-                    if (_profileStatus == true) {
-                      showDialog(
-                          context: context,
-                          builder: (context) =>
-                              MessageToMusician(profile: widget.profile));
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (context) => ProfileCompleteConfirm());
-                    }
-                  },
-                  child: Text(
-                    "Enviar uma mensagem",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ),
 
                 buildAbout(profile: widget.profile),
                 SizedBox(height: 20),

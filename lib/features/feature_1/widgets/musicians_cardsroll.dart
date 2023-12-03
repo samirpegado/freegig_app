@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_rate.dart';
 import 'package:iconsax/iconsax.dart';
@@ -74,14 +75,9 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 /// Imagem do perfil
-                                ClipOval(
-                                  child: Image.network(
-                                    profile['profileImageUrl'],
-                                    fit: BoxFit.cover,
-                                    width: 70,
-                                    height: 70,
-                                  ),
-                                ),
+                                BuildProfileImage(
+                                    profileImageUrl: profile['profileImageUrl'],
+                                    imageSize: 70),
                                 SizedBox(width: 15),
                                 Expanded(
                                   child: Column(
@@ -93,36 +89,32 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            profile['publicName'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15.0,
+                                          Expanded(
+                                            child: Text(
+                                              profile['publicName'],
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15.0,
+                                              ),
                                             ),
                                           ),
-                                          Icon(Iconsax.arrow_right_3)
-                                        ],
-                                      ),
-
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Text(profile['category']),
                                           Row(
                                             children: [
                                               /// Avaliacao
-                                              MusicianRateNumber(
-                                                  profileUid: profile['uid']),
-                                              SizedBox(width: 3),
                                               Icon(
                                                 Icons.star,
                                                 color: Colors.amber,
                                               ),
+                                              SizedBox(width: 3),
+                                              MusicianRateNumber(
+                                                  profileUid: profile['uid']),
                                             ],
                                           ),
                                         ],
                                       ),
+
+                                      Text(profile['category']),
                                       SizedBox(height: 6),
                                       Row(
                                         children: [
@@ -137,10 +129,19 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                                       SizedBox(height: 6),
 
                                       /// Descricao
-                                      Text(
-                                        profile['description'],
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(fontSize: 14.0),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              profile['description'],
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 14.0),
+                                            ),
+                                          ),
+                                          Icon(Iconsax.arrow_right_3)
+                                        ],
                                       ),
                                     ],
                                   ),

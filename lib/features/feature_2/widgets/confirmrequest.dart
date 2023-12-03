@@ -5,6 +5,7 @@ import 'package:freegig_app/common_widgets/show_profile.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/features/chat/chat_page.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ConfirmRequest extends StatefulWidget {
@@ -24,6 +25,7 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
   late List _participants = widget.gig['gigParticipants'];
   late String userUid = '';
   late String userCategory = '';
+  late String userProfileName = '';
   late bool userProfileStatus = false;
   late bool _isAlreadyRequested = false;
 
@@ -252,7 +254,16 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
                                       ? true
                                       : false,
                               child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => ChatPage(
+                                                receiverUid:
+                                                    widget.gig['gigOwner'],
+                                                gigSubjectUid:
+                                                    widget.gig['gigUid'])));
+                                  },
                                   child: Text('Enviar mensagem')),
                             ),
                           ],

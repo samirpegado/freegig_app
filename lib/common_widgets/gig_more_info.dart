@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MoreInfo extends StatefulWidget {
@@ -21,14 +21,6 @@ class _MoreInfoState extends State<MoreInfo> {
   Widget build(BuildContext context) {
     return AlertDialog(
       actions: [
-        TextButton(
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => NavigationMenu(
-                        navPage: 1,
-                      )));
-            },
-            child: Text("Mais detalhes")),
         TextButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -164,14 +156,9 @@ class _MoreInfoState extends State<MoreInfo> {
                   return Column(
                     children: participantsData.map((participant) {
                       return ListTile(
-                        leading: ClipOval(
-                          child: Image.network(
-                            participant['profileImageUrl'],
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                          ),
-                        ),
+                        leading: BuildProfileImage(
+                            profileImageUrl: participant['profileImageUrl'],
+                            imageSize: 50),
                         title: Text(
                           participant['publicName'],
                           style: TextStyle(fontSize: 15),

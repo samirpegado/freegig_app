@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/features/feature_0/widgets/messages/gig_messages_list.dart';
+import 'package:freegig_app/features/feature_0/widgets/messages/messages_list.dart';
 
 class Messages extends StatelessWidget {
   const Messages({super.key});
@@ -25,7 +27,10 @@ class Messages extends StatelessWidget {
           children: [
             Expanded(
               child: Column(
-                children: [],
+                children: [
+                  GigListMessages(),
+                  ListMessages(),
+                ],
               ),
             )
           ],

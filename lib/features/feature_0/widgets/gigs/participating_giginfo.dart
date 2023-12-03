@@ -3,6 +3,7 @@ import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/show_profile.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -24,6 +25,17 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) =>
+                      GigChatPage(gigSubjectUid: widget.gig['gigUid'])));
+            },
+            icon: Icon(
+              Iconsax.messages,
+              color: Colors.blue,
+            ),
+          ),
           IconButton(
               onPressed: () {
                 showDialog(

@@ -183,6 +183,8 @@ class UserRateService {
         FirebaseFirestore.instance.collection('gigs');
     final CollectionReference rateNotificationsCollection =
         FirebaseFirestore.instance.collection('rateNotification');
+    final CollectionReference chatRoomsCollection =
+        FirebaseFirestore.instance.collection('chat_rooms');
 
     // Obtém o documento da coleção 'gigs' pelo ID
     DocumentReference gigDocumentRef = gigsCollection.doc(gigId);
@@ -193,12 +195,21 @@ class UserRateService {
       String gigDescription = gigDocument['gigDescription'];
       List<String> gigParticipants =
           List<String>.from(gigDocument['gigParticipants']);
+      // Atualiza o campo gigArchived para true
+      await gigDocumentRef.update({'gigArchived': true});
+
+      // Atualiza o campo gigArchived na coleção 'chat_rooms'
+      await chatRoomsCollection
+          .where('gigSubjectUid', isEqualTo: gigId)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) async {
+          await doc.reference.update({'gigArchived': true});
+        });
+      });
 
       // Cria os rateNotifications apenas se houver mais de um participante
       if (gigParticipants.length > 1) {
-        // Atualiza o campo gigArchived para true
-        await gigDocumentRef.update({'gigArchived': true});
-
         // Cria um novo documento para cada participante na coleção 'rateNotifications'
         for (String participantUid in gigParticipants) {
           // Cria um novo documento com um ID automático

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/features/feature_0/widgets/home/more_info.dart';
+import 'package:freegig_app/common_widgets/gig_more_info.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeAgenda extends StatefulWidget {

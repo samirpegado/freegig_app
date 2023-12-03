@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common_widgets/toast.dart';
 import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/data/services/user_invitation.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -216,15 +216,7 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                           builder: (context) => NavigationMenu(navPage: 1)));
                     } else {
                       Navigator.of(context).pop();
-                      Fluttertoast.showToast(
-                        msg: "Esta GIG se encontra fechada.",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
+                      showToast(message: "Esta GIG se encontra fechada.");
                     }
                   },
                   child: Text('Aceitar')),

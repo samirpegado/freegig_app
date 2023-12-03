@@ -195,7 +195,7 @@ class _GIGsState extends State<GIGs> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          "Criadas",
+                          "Suas GIGs",
                           style: TextStyle(
                               fontWeight: FontWeight.w600, color: Colors.blue),
                         )

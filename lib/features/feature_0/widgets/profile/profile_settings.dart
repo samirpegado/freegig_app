@@ -60,6 +60,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                   ],
                 ),
               ),
+              SizedBox(height: 20),
 
               ///Lista de servicos
               ListTile(

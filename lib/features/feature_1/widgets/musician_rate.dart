@@ -35,7 +35,7 @@ class _MusicianRateNumberState extends State<MusicianRateNumber> {
   Widget build(BuildContext context) {
     String mediaFormatada = media.toStringAsFixed(1);
     return Text(
-      media > 0 ? mediaFormatada : '* N/A',
+      media > 0 ? mediaFormatada : 'N/A',
       style: TextStyle(color: Color.fromARGB(255, 80, 78, 78), fontSize: 14.0),
     );
   }

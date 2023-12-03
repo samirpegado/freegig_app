@@ -34,14 +34,6 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
         foregroundColor: Colors.black,
       ),
       backgroundColor: backgroundColor,
-      /* bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          'Todas as GIGs arquivadas serão automaticamente excluídas após 30 dias.',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.black54),
-        ),
-      ),*/
       body: SingleChildScrollView(
         child: Column(
           children: [

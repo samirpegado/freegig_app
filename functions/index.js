@@ -12,15 +12,26 @@ exports.archiveOldGigs = functions.pubsub
     const gigsSnapshot = await admin.firestore().collection('gigs').get();
 
     const batch = admin.firestore().batch();
-    const notificationsBatch = admin.firestore().batch();
+    const notificationsBatch = admin.firestore().batch();  
+    const chatRoomsBatch = admin.firestore().batch(); // Batch para chat_rooms
 
-    gigsSnapshot.forEach((gigDoc) => {
+    gigsSnapshot.forEach(async (gigDoc) => {
       const gigData = gigDoc.data();
       const gigDate = parseDate(gigData.gigDate);
 
       if (gigDate <= currentDate && gigData.gigArchived === false) {
         const gigRef = admin.firestore().collection('gigs').doc(gigDoc.id);
         batch.update(gigRef, { gigArchived: true });
+
+        // Obtém os documentos da query chat_rooms
+        const chatRoomQuery = admin.firestore().collection('chat_rooms').where('gigSubjectUid', '==', gigDoc.id);
+        const chatRoomDocs = await chatRoomQuery.get();
+
+        // Itera sobre os documentos para criar batch de atualização
+        chatRoomDocs.forEach((chatRoomDoc) => {
+          const chatRoomRef = admin.firestore().collection('chat_rooms').doc(chatRoomDoc.id);
+          chatRoomsBatch.update(chatRoomRef, { gigArchived: true });
+        });
 
         // Criação de notificações apenas quando há mais de um participante na GIG recém-arquivada
         const gigParticipants = gigData.gigParticipants || [];
@@ -41,6 +52,7 @@ exports.archiveOldGigs = functions.pubsub
     // Executa as operações em lote
     await batch.commit();
     await notificationsBatch.commit();
+    await chatRoomsBatch.commit();
 
     return null; // Retornamos null, pois não precisamos de um valor específico ao concluir a função.
   });

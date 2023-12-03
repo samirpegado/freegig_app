@@ -69,7 +69,17 @@ class _UserRatingState extends State<UserRating> {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('Sair da avaliação?'),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text('Sair da avaliação?')),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          icon: Icon(Icons.close))
+                    ],
+                  ),
                   content: Text(
                       "Deseja sair da avaliação antes de finalizá-la? Selecione uma das opções abaixo."),
                   actions: [

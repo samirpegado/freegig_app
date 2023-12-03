@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/data/services/user_rate.dart';
 
 class GetProfileRater extends StatefulWidget {
@@ -37,23 +38,21 @@ class _GetProfileRaterState extends State<GetProfileRater> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: profileImageUrl.isNotEmpty
-          ? ClipOval(
-              child: Image.network(
-                profileImageUrl,
-                fit: BoxFit.cover,
-                width: 50,
-                height: 50,
-              ),
-            )
-          : CircularProgressIndicator(),
       title: Text(
         widget.comments,
         style: TextStyle(
             fontSize: 16, fontWeight: FontWeight.w500, color: Colors.blue),
       ),
-      subtitle: Text(
-        publicName,
+      subtitle: Row(
+        children: [
+          Expanded(
+            child: Text(
+              publicName,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          BuildProfileImage(profileImageUrl: profileImageUrl, imageSize: 40)
+        ],
       ),
     );
   }

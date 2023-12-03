@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CommonGigsCard extends StatefulWidget {
@@ -23,8 +24,7 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 240,
+                Expanded(
                   child: Text(
                     widget.gig['gigDescription'],
                     overflow: TextOverflow.ellipsis,
@@ -42,14 +42,12 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                       color: widget.moneyColor,
                     ),
                     SizedBox(width: 4),
-                    SizedBox(
-                      child: Text(
-                        widget.gig['gigCache'],
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
-                        ),
+                    Text(
+                      widget.gig['gigCache'],
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
                       ),
                     ),
                   ],
@@ -68,8 +66,7 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                       color: Colors.black54,
                     ),
                     SizedBox(width: 4),
-                    SizedBox(
-                      width: 240,
+                    Expanded(
                       child: Text(
                         "${widget.gig['gigCategorys'].join(', ')}",
                         overflow: TextOverflow.ellipsis,
@@ -101,11 +98,11 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -146,30 +143,26 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                           )
                         ],
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            widget.gig['publicName'],
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 15.0,
-                            ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          widget.gig['publicName'],
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15.0,
                           ),
-                          SizedBox(width: 8),
-                          ClipOval(
-                            child: Image.network(
-                              widget.gig['profileImageUrl'],
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(width: 8),
+                    BuildProfileImage(
+                        profileImageUrl: widget.gig['profileImageUrl'],
+                        imageSize: 40),
+                  ],
                 ),
               ],
             ),

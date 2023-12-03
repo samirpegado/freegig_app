@@ -24,27 +24,42 @@ class _UserRateCommentsState extends State<UserRateComments> {
         widget.comments.where((comment) => comment.isNotEmpty).toList();
 
     return AlertDialog(
-      title: Text('Avaliações e comentários'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Fechar',
+              style: TextStyle(color: Colors.black),
+            ))
+      ],
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: Text('Avaliações')),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.star,
+                color: Colors.amber,
+                size: 35,
+              ),
+              SizedBox(width: 10),
+              Text(
+                widget.formatedRate,
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+              ),
+            ],
+          ),
+        ],
+      ),
       content: Container(
         width: double.maxFinite,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.amber,
-                    size: 35,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    widget.formatedRate,
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
-                  ),
-                ],
-              ),
               nonEmptyComments.isNotEmpty
                   ? ListView.builder(
                       shrinkWrap: true,
