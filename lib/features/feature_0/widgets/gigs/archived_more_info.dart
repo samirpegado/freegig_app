@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ArchivedMoreInfo extends StatefulWidget {

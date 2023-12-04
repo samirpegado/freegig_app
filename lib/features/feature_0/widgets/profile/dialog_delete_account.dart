@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/delete_account.dart';
+import 'package:freegig_app/services/common/delete_account.dart';
 import 'package:iconsax/iconsax.dart';
 
 class DeleteAccountConfirm extends StatelessWidget {

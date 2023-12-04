@@ -46,7 +46,7 @@ class _GigListMessagesState extends State<GigListMessages> {
             children: documents.map((document) {
               Map<String, dynamic> data = document.data()!;
 
-              String gigSubjectUid = data['gigSubjectUid'];
+              String gigUid = data['gigUid'];
 
               return ListTile(
                 title: Column(
@@ -56,7 +56,7 @@ class _GigListMessagesState extends State<GigListMessages> {
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) =>
-                                GigChatPage(gigSubjectUid: gigSubjectUid)));
+                                GigChatPage(gigSubjectUid: gigUid)));
                       },
                       child: ListTile(
                         title: Text(data['gigDescription']),

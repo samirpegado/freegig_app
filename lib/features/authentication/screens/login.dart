@@ -2,7 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:freegig_app/data/services/auth_service.dart';
+import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
@@ -93,10 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Text(
-                        "Descubra músicos, crie GIGs e faça seu som acontecer",
+                        "Descubra músicos, bandas, crie GIGs e faça seu som acontecer",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          //fontWeight: FontWeight.w700,
                           fontSize: 18.0,
                         ),
                       ),

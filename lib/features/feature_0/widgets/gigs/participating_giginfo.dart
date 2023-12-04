@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/show_profile.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';

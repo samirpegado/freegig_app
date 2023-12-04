@@ -1,17 +1,14 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:freegig_app/features/authentication/screens/login.dart';
 
 class UserDataService {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
 
-  Future<Map<String, dynamic>> getUserData() async {
+  Future<Map<String, dynamic>> getCurrentUserData() async {
     try {
       User? user = _auth.currentUser;
       if (user != null) {
@@ -19,12 +16,7 @@ class UserDataService {
             await _firestore.collection('users').doc(user.uid).get();
 
         if (userSnapshot.exists) {
-          return {
-            'publicName': userSnapshot['publicName'],
-            'category': userSnapshot['category'],
-            'profileComplete': userSnapshot['profileComplete'],
-            'uid': userSnapshot['uid'],
-          };
+          return userSnapshot.data() as Map<String, dynamic>;
         }
       }
     } catch (e) {
@@ -33,7 +25,7 @@ class UserDataService {
     return {};
   }
 
-  Future<void> updateUserProfile({
+  Future<void> completeUserProfile({
     required String description,
     required String release,
     required String lastReleases,
@@ -105,69 +97,6 @@ class UserDataService {
     } catch (e) {
       print("Erro ao atualizar dados do usuário: $e");
     }
-  }
-
-  Future<Map<String, dynamic>> getProfileData() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userSnapshot =
-            await _firestore.collection('users').doc(user.uid).get();
-
-        if (userSnapshot.exists) {
-          return {
-            'uid': user.uid,
-            'publicName': userSnapshot['publicName'],
-            'category': userSnapshot['category'],
-            'description': userSnapshot['description'],
-            'city': userSnapshot['city'],
-            'email': userSnapshot['email'],
-            'release': userSnapshot['release'],
-            'lastReleases': userSnapshot['lastReleases'],
-            'instagram': userSnapshot['instagram'],
-            'profileImageUrl': userSnapshot['profileImageUrl'],
-          };
-        }
-      }
-    } catch (e) {
-      print("Erro ao buscar dados do usuário: $e");
-    }
-    return {};
-  }
-
-  Future<Map<String, dynamic>> getCityProfileData() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user != null) {
-        DocumentSnapshot userSnapshot =
-            await _firestore.collection('users').doc(user.uid).get();
-
-        if (userSnapshot.exists) {
-          return {
-            'city': userSnapshot['city'],
-            'category': userSnapshot['category'],
-            'profileComplete': userSnapshot['profileComplete'],
-          };
-        }
-      }
-    } catch (e) {
-      print("Erro ao buscar dados do usuário: $e");
-    }
-    return {};
-  }
-
-  void logOut(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-    FirebaseAuth.instance.signOut();
-
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 
   Future<String> uploadImagetoStorage(String childName, Uint8List file) async {

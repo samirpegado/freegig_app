@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:freegig_app/classes/datetime_convert.dart';
-import 'package:freegig_app/data/services/data_common_task.dart';
+import 'package:flutter/material.dart';
+import 'package:freegig_app/services/chat/chat_service.dart';
+import 'package:freegig_app/services/common/common_service.dart';
 
-class GigsDataService {
+class GigsDataService extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
+  ///Cria um nova gig
   Future<void> createNewGig({
     required String gigDescription,
     required String gigCity,
@@ -49,81 +51,6 @@ class GigsDataService {
     }
   }
 
-  Stream<List<Map<String, dynamic>>> getCityActiveUserGigsStream({
-    String? city,
-    String? category,
-    String? cache,
-    String? data,
-  }) {
-    try {
-      User? user = _auth.currentUser;
-
-      if (user != null) {
-        Query query = _firestore
-            .collection('gigs')
-            .where('gigArchived', isEqualTo: false)
-            .where('gigOwner', isNotEqualTo: user.uid);
-
-        if (city != null && city != 'Brasil') {
-          query = query.where('gigLocale', isEqualTo: city);
-        }
-
-        if (category != null && category != 'Todos') {
-          query = query.where('gigCategorys', arrayContains: category);
-        }
-
-        return query.snapshots().asyncExpand((gigsSnapshot) async* {
-          /// Comparar
-          List<Map<String, dynamic>> gigsDataList = [];
-
-          for (QueryDocumentSnapshot gigDocument in gigsSnapshot.docs) {
-            Map<String, dynamic> gigData =
-                gigDocument.data() as Map<String, dynamic>;
-
-            DocumentSnapshot userSnapshot = await _firestore
-                .collection('users')
-                .doc(gigData['gigOwner'])
-                .get();
-
-            Map<String, dynamic> userData =
-                userSnapshot.data() as Map<String, dynamic>;
-
-            bool dataCondition =
-                data != null ? gigData['gigDate'] == data : true;
-
-            if (dataCondition) {
-              gigsDataList.add({
-                ...gigData,
-                'profileImageUrl': userData['profileImageUrl'],
-                'publicName': userData['publicName'],
-                'category': userData['category'],
-              });
-            }
-          }
-
-          if (cache == 'decreasing') {
-            gigsDataList.sort((b, a) => a['gigCache'].compareTo(b['gigCache']));
-          } else if (cache == 'increasing') {
-            gigsDataList.sort((a, b) => a['gigCache'].compareTo(b['gigCache']));
-          } else {
-            gigsDataList.sort((a, b) {
-              DateTime dateA = DateTimeConvert().parseDate(a['gigDate']);
-              DateTime dateB = DateTimeConvert().parseDate(b['gigDate']);
-
-              return dateA.compareTo(dateB);
-            });
-          }
-
-          yield gigsDataList;
-        });
-      }
-    } catch (e) {
-      print("Erro ao buscar dados das GIGs: $e");
-    }
-
-    return Stream.value([]);
-  }
-
   ///Funcao para listar as gigs que o usuário criou
   Stream<List<Map<String, dynamic>>> getMyActiveGigsStream() {
     try {
@@ -136,7 +63,7 @@ class GigsDataService {
             .where('gigOwner', isEqualTo: user.uid)
             .snapshots()
             .asyncMap((gigsSnapshot) async {
-          return DataCommonTask().processGigData(gigsSnapshot);
+          return CommonServices().processGigData(gigsSnapshot);
         });
       }
     } catch (e) {
@@ -159,7 +86,7 @@ class GigsDataService {
             .where('gigOwner', isNotEqualTo: user.uid)
             .snapshots()
             .asyncMap((gigsSnapshot) async {
-          return DataCommonTask().processGigData(gigsSnapshot);
+          return CommonServices().processGigData(gigsSnapshot);
         });
       }
     } catch (e) {
@@ -181,7 +108,7 @@ class GigsDataService {
             .where('gigParticipants', arrayContains: user.uid)
             .snapshots()
             .asyncMap((gigsSnapshot) async {
-          return DataCommonTask().processGigData(gigsSnapshot);
+          return CommonServices().processGigData(gigsSnapshot);
         });
       }
     } catch (e) {
@@ -192,15 +119,33 @@ class GigsDataService {
   }
 
   // Funcao para deletar uma gig criada
-  Future<void> myGigDelete(String documentId) async {
+  Future<void> deleteGig(String documentId) async {
     try {
+      // Exclui a coleção 'group_messages' associada a cada documento da coleção 'gigs'
+      await FirebaseFirestore.instance
+          .collection('gigs')
+          .doc(documentId)
+          .collection('group_messages')
+          .get()
+          .then((messagesSnapshot) {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> messageSnapshot
+            in messagesSnapshot.docs) {
+          messageSnapshot.reference.delete();
+        }
+      });
+
+      // Exclui o documento principal da coleção 'gigs'
       await FirebaseFirestore.instance
           .collection('gigs')
           .doc(documentId)
           .delete();
-      print('Documento removido com sucesso!');
+
+      // Chama a função para excluir a sala de chat (chat_room) associada à gig
+      await ChatService().deleteChatRoom(documentId);
+
+      print('Gig e subcoleção de mensagens removidas com sucesso!');
     } catch (e) {
-      print('Erro ao remover documento: $e');
+      print('Erro ao remover gig: $e');
     }
   }
 
@@ -227,14 +172,7 @@ class GigsDataService {
           Map<String, dynamic> participantData =
               participantSnapshot.data() ?? {};
           participantsData.add({
-            'publicName': participantData['publicName'],
-            'profileImageUrl': participantData['profileImageUrl'],
-            'category': participantData['category'],
-            'city': participantData['city'],
-            'instagram': participantData['instagram'],
-            'description': participantData['description'],
-            'release': participantData['release'],
-            'lastReleases': participantData['lastReleases'],
+            ...participantData,
             'uid': participantUid,
           });
         } else {

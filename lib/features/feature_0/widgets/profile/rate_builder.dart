@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_comments.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
 
 class RatingStreamBuilder extends StatefulWidget {

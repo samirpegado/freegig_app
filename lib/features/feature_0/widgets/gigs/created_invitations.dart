@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_invitation.dart';
+import 'package:freegig_app/services/relationship/user_invitation.dart';
 
 class InvitationsSent extends StatefulWidget {
   final String gigUid;

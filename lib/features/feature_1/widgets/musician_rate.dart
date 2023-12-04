@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
 
 class MusicianRateNumber extends StatefulWidget {
   final String profileUid;

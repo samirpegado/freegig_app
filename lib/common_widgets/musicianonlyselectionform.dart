@@ -39,6 +39,7 @@ class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
         'Oboísta',
       ],
       'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
+      'Outras': ['Banda'],
     };
 
     await showDialog(

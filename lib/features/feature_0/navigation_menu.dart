@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:freegig_app/features/feature_0/screens/4_profileswitcher.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:freegig_app/features/feature_0/screens/2_gigs.dart';
@@ -30,37 +31,52 @@ class _NavigationMenuState extends State<NavigationMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.black,
-        iconSize: 30,
-        unselectedItemColor: Colors.black45,
-        currentIndex: selectedIndex,
-        onTap: onDestinationSelected,
-        items: const [
-          BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: Icon(Iconsax.home5),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: Icon(Iconsax.music_dashboard5),
-            label: 'GIGs',
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: Icon(Iconsax.message5),
-            label: 'Mensagens',
-          ),
-          BottomNavigationBarItem(
-            backgroundColor: Colors.white,
-            icon: Icon(Iconsax.tag_user5),
-            label: 'Perfil',
-          ),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (selectedIndex == 0) {
+          // Se a página atual for a Home, chama SystemNavigator.pop()
+          SystemNavigator.pop();
+          return false;
+        } else {
+          // Se não, navega para outra instância de NavigationMenu com navPage: 0
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => NavigationMenu(navPage: 0),
+          ));
+          return false;
+        }
+      },
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          fixedColor: Colors.black,
+          iconSize: 30,
+          unselectedItemColor: Colors.black45,
+          currentIndex: selectedIndex,
+          onTap: onDestinationSelected,
+          items: const [
+            BottomNavigationBarItem(
+              backgroundColor: Colors.white,
+              icon: Icon(Iconsax.home5),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.white,
+              icon: Icon(Iconsax.music_dashboard5),
+              label: 'GIGs',
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.white,
+              icon: Icon(Iconsax.message5),
+              label: 'Mensagens',
+            ),
+            BottomNavigationBarItem(
+              backgroundColor: Colors.white,
+              icon: Icon(Iconsax.tag_user5),
+              label: 'Perfil',
+            ),
+          ],
+        ),
+        body: _buildPage(selectedIndex),
       ),
-      body: _buildPage(selectedIndex),
     );
   }
 

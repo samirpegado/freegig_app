@@ -37,6 +37,7 @@ class _MusicianMultiSelectionFormState
         'Oboísta',
       ],
       'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
+      'Outras': ['Banda'],
     };
 
     // Inicialize os conjuntos para cada categoria

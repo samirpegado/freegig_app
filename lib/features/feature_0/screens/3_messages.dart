@@ -23,17 +23,13 @@ class Messages extends StatelessWidget {
       ),
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  GigListMessages(),
-                  ListMessages(),
-                ],
-              ),
-            )
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GigListMessages(),
+              ListMessages(),
+            ],
+          ),
         ),
       ),
     );

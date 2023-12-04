@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:freegig_app/services/chat/chat_service.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
 
-class UserRateService {
+class UserRateService extends ChangeNotifier {
   Future<Map<String, dynamic>> getGigData(String gigUid) async {
     try {
       User? user = _auth.currentUser;
@@ -178,16 +180,14 @@ class UserRateService {
     return {};
   }
 
-  Future<void> createRateNotificationsAndArchive(String gigId) async {
+  Future<void> createRateNotificationsAndArchive(String gigUid) async {
     final CollectionReference gigsCollection =
         FirebaseFirestore.instance.collection('gigs');
     final CollectionReference rateNotificationsCollection =
         FirebaseFirestore.instance.collection('rateNotification');
-    final CollectionReference chatRoomsCollection =
-        FirebaseFirestore.instance.collection('chat_rooms');
 
     // Obtém o documento da coleção 'gigs' pelo ID
-    DocumentReference gigDocumentRef = gigsCollection.doc(gigId);
+    DocumentReference gigDocumentRef = gigsCollection.doc(gigUid);
     DocumentSnapshot gigDocument = await gigDocumentRef.get();
 
     if (gigDocument.exists) {
@@ -197,16 +197,7 @@ class UserRateService {
           List<String>.from(gigDocument['gigParticipants']);
       // Atualiza o campo gigArchived para true
       await gigDocumentRef.update({'gigArchived': true});
-
-      // Atualiza o campo gigArchived na coleção 'chat_rooms'
-      await chatRoomsCollection
-          .where('gigSubjectUid', isEqualTo: gigId)
-          .get()
-          .then((querySnapshot) {
-        querySnapshot.docs.forEach((doc) async {
-          await doc.reference.update({'gigArchived': true});
-        });
-      });
+      await ChatService().deleteChatRoom(gigUid);
 
       // Cria os rateNotifications apenas se houver mais de um participante
       if (gigParticipants.length > 1) {
@@ -219,7 +210,7 @@ class UserRateService {
           // Define os campos do novo documento
           Map<String, dynamic> data = {
             'gigDescription': gigDescription,
-            'gigUid': gigId,
+            'gigUid': gigUid,
             'participantUid': participantUid,
             'rateNotificationUid': rateNotificationDocument.id,
           };
@@ -229,7 +220,7 @@ class UserRateService {
         }
       }
     } else {
-      print('Documento de gig não encontrado para o ID: $gigId');
+      print('Documento de gig não encontrado para o ID: $gigUid');
     }
   }
 

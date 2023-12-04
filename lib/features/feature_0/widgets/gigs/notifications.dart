@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_invitation.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
-import 'package:freegig_app/data/services/user_request.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_giginfo.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/invitationconfirm.dart';
 import 'package:freegig_app/features/feature_3/screens/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_invitation.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_request.dart';
 
 class GigsNotification extends StatefulWidget {
   const GigsNotification({super.key});

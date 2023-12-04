@@ -30,7 +30,7 @@ exports.archiveOldGigs = functions.pubsub
         // Itera sobre os documentos para criar batch de atualização
         chatRoomDocs.forEach((chatRoomDoc) => {
           const chatRoomRef = admin.firestore().collection('chat_rooms').doc(chatRoomDoc.id);
-          chatRoomsBatch.update(chatRoomRef, { gigArchived: true });
+          chatRoomsBatch.delete(chatRoomRef); // Alteração aqui: use delete() em vez de update()
         });
 
         // Criação de notificações apenas quando há mais de um participante na GIG recém-arquivada

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/data/services/user_invitation.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
-import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/archived_gigs.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_gigs_card.dart';
@@ -11,6 +8,9 @@ import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/participating_gigs_card.dart';
+import 'package:freegig_app/services/relationship/user_invitation.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GIGs extends StatefulWidget {
@@ -58,7 +58,7 @@ class _GIGsState extends State<GIGs> {
   Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData =
-          await UserDataService().getCityProfileData();
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _profileStatus = userData['profileComplete'];

@@ -1,11 +1,11 @@
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_usercategorybutton.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_descriptioncard.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
@@ -25,6 +25,7 @@ class ListGigs extends StatefulWidget {
 
 class _ListGigsState extends State<ListGigs> {
   final _dateController = TextEditingController();
+  final _searchService = SearchService();
 
   @override
   void didChangeDependencies() {
@@ -43,7 +44,7 @@ class _ListGigsState extends State<ListGigs> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'GIGs para o seu Free',
+            'GIGs disponíveis',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 19.0,
@@ -52,8 +53,8 @@ class _ListGigsState extends State<ListGigs> {
           actions: [
             IconButton(
               onPressed: () {
-                openFilter(
-                    context, _dateController, widget.city, widget.category);
+                openFilter(context, _dateController, widget.city,
+                    widget.category, _searchService);
               },
               icon: Icon(
                 Iconsax.setting_4,
@@ -99,7 +100,7 @@ class _ListGigsState extends State<ListGigs> {
 }
 
 Future openFilter(context, TextEditingController dateController, String city,
-        String category) =>
+        String category, SearchService searchService) =>
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -132,8 +133,8 @@ Future openFilter(context, TextEditingController dateController, String city,
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ListGigs(
-                                  dataListFunction: GigsDataService()
-                                      .getCityActiveUserGigsStream(
+                                  dataListFunction:
+                                      searchService.getAvalibleGigs(
                                     cache: 'decreasing',
                                     category: category,
                                     city: city,
@@ -150,8 +151,8 @@ Future openFilter(context, TextEditingController dateController, String city,
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ListGigs(
-                                  dataListFunction: GigsDataService()
-                                      .getCityActiveUserGigsStream(
+                                  dataListFunction:
+                                      searchService.getAvalibleGigs(
                                     cache: 'increasing',
                                     category: category,
                                     city: city,
@@ -197,11 +198,10 @@ Future openFilter(context, TextEditingController dateController, String city,
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ListGigs(
-                          dataListFunction: GigsDataService()
-                              .getCityActiveUserGigsStream(
-                                  category: category,
-                                  city: city,
-                                  data: dateController.text),
+                          dataListFunction: searchService.getAvalibleGigs(
+                              category: category,
+                              city: city,
+                              data: dateController.text),
                           city: city,
                           category: category,
                         ),

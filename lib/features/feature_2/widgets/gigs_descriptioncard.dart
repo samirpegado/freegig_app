@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/gigs_card.dart';
 import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 
 class GigsCard extends StatefulWidget {
@@ -26,7 +26,7 @@ class _GigsCardState extends State<GigsCard> {
   Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData =
-          await UserDataService().getCityProfileData();
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _profileStatus = userData['profileComplete'];

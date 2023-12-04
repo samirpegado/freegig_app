@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
 
-class DeleteUserService {
+class DeleteUserService extends ChangeNotifier {
   Future<void> deleteUserAndRelatedData(BuildContext context) async {
     showDialog(
         context: context,

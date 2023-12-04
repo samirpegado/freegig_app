@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/gigs_card.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/gigs_archived_service.dart';
+import 'package:freegig_app/services/archive/archive_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/archived_more_info.dart';
 
 class ArchivedGigs extends StatefulWidget {

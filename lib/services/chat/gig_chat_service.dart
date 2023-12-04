@@ -21,43 +21,27 @@ class GigChatService extends ChangeNotifier {
 
     //adiciona a mensagem a base de dados
     await _firestore
-        .collection('chat_rooms')
+        .collection('gigs')
         .doc(gigUid)
-        .collection('messages')
+        .collection('group_messages')
         .add({
       'message': message,
       'timestamp': timestamp,
       'senderId': currentUserId,
       'senderPublicName': senderPublicName,
     });
-
-    //pegar a lista de participantes da GIG
-    DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
-        await _firestore.collection('gigs').doc(gigUid).get();
-
-    List<String> participants =
-        List<String>.from(gigSnapshot['gigParticipants'] ?? []);
-    String gigDescription = gigSnapshot['gigDescription'];
-    String gigDate = gigSnapshot['gigDate'];
-    String gigInitHour = gigSnapshot['gigInitHour'];
-    bool gigArchived = gigSnapshot['gigArchived'];
-
-    await _firestore.collection('chat_rooms').doc(gigUid).set({
-      'gigParticipants': participants, // Participantes da GIG
-      'gigSubjectUid': gigUid,
-      'gigDescription': gigDescription,
-      'gigDate': gigDate,
-      'gigInitHour': gigInitHour,
-      'gigArchived': gigArchived,
+    //adiciona a mensagem a base de dados
+    await _firestore.collection('gigs').doc(gigUid).update({
+      'gigChat': true,
     });
   }
 
   //RECEBE MENSAGEM
   Stream<QuerySnapshot> getGigMessages(String gigUid) {
     return _firestore
-        .collection('chat_rooms')
+        .collection('gigs')
         .doc(gigUid)
-        .collection('messages')
+        .collection('group_messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
   }
@@ -69,9 +53,10 @@ class GigChatService extends ChangeNotifier {
 
     // Cria a consulta
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('chat_rooms')
+        .collection('gigs')
         .where('gigArchived', isEqualTo: false)
-        .where('gigParticipants', arrayContains: userId);
+        .where('gigParticipants', arrayContains: userId)
+        .where('gigChat', isEqualTo: true);
 
     // Retorna o stream da consulta
     return query.snapshots();
@@ -97,7 +82,7 @@ class GigChatService extends ChangeNotifier {
 
       return gigDataList;
     } catch (e) {
-      print('Erro ao listar convites: $e');
+      print('Erro ao listar: $e');
       return [];
     }
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/build_profile_image.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
 
 class GetProfileRater extends StatefulWidget {
   final String profileUid;

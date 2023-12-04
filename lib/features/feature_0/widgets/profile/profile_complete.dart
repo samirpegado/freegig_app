@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/common_widgets/toast.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_settings.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:iconsax/iconsax.dart';
@@ -39,7 +39,8 @@ class _ProfileCompleteState extends State<ProfileComplete> {
 
   Future<void> _carregarDadosDoUsuario() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getProfileData();
+      Map<String, dynamic> userData =
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _publicName = userData['publicName'];

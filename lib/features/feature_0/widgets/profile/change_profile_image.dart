@@ -4,7 +4,7 @@ import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:freegig_app/common_widgets/pickimage.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 
 class ChangeProfileImage extends StatefulWidget {
   const ChangeProfileImage({super.key});
@@ -26,7 +26,8 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
 
   Future<void> _carregarDadosDoUsuario() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getUserData();
+      Map<String, dynamic> userData =
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _publicName = userData['publicName'];

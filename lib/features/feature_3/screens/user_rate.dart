@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserRating extends StatefulWidget {

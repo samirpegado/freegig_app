@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/build_profile_image.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/change_profile_image.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_ads.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_delete_account.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_report.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_update_form.dart';
+import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileSettings extends StatefulWidget {
@@ -111,7 +111,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               ),
               ListTile(
                 onTap: () {
-                  UserDataService().logOut(context);
+                  FirebaseAuthService().logOut(context);
                 },
                 leading: Icon(Iconsax.logout_1),
                 title: Text('Sair'),

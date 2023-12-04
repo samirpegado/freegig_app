@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/profile_edit_form.dart';
+import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ProfileEdit extends StatefulWidget {
@@ -25,7 +26,8 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   Future<void> _carregarDadosDoUsuario() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getUserData();
+      Map<String, dynamic> userData =
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _publicName = userData['publicName'];
@@ -50,7 +52,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         actions: [
           IconButton(
               onPressed: () {
-                UserDataService().logOut(context);
+                FirebaseAuthService().logOut(context);
               },
               icon: Icon(Iconsax.logout_1))
         ],

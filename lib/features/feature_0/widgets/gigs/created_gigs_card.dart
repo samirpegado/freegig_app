@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/gigs_card.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_giginfo.dart';
 
 class MyGigsCard extends StatefulWidget {

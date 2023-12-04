@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/show_profile.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
-import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/chat/chat_page.dart';
+import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ConfirmRequest extends StatefulWidget {
@@ -37,7 +37,8 @@ class _ConfirmRequestState extends State<ConfirmRequest> {
 
   Future<void> _loadUserData() async {
     try {
-      Map<String, dynamic> userData = await UserDataService().getUserData();
+      Map<String, dynamic> userData =
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         userUid = userData['uid'];

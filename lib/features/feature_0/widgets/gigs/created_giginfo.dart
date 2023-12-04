@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common_widgets/show_profile.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/user_rate.dart';
-import 'package:freegig_app/data/services/user_request.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_invitations.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_requests.dart';
+import 'package:freegig_app/services/relationship/user_rate.dart';
+import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CreatedGigInfo extends StatefulWidget {
@@ -182,7 +182,7 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                         TextButton(
                             onPressed: () async {
                               await GigsDataService()
-                                  .myGigDelete(widget.gig['gigUid']);
+                                  .deleteGig(widget.gig['gigUid']);
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
                                       NavigationMenu(navPage: 1)));

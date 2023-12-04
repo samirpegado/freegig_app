@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freegig_app/classes/datetime_convert.dart';
-import 'package:freegig_app/data/services/data_common_task.dart';
+import 'package:freegig_app/services/common/common_service.dart';
 
 class GigsArchived {
   final _auth = FirebaseAuth.instance;
@@ -16,7 +16,7 @@ class GigsArchived {
       String ownerId = gigData['gigOwner'];
 
       Map<String, dynamic> userData =
-          await DataCommonTask().getGigUserData(ownerId);
+          await CommonServices().getGigUserData(ownerId);
 
       gigsDataList.add({
         ...gigData,

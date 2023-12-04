@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/user_invitation.dart';
+import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
+import 'package:freegig_app/services/relationship/user_invitation.dart';
 import 'package:iconsax/iconsax.dart';
 
 class InviteConfirm extends StatefulWidget {

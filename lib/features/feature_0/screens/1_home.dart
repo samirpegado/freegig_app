@@ -1,8 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
-import 'package:freegig_app/data/services/profiles_data_service.dart';
-import 'package:freegig_app/data/services/user_data_service.dart';
+import 'package:flutter/services.dart';
+import 'package:freegig_app/services/search/search_service.dart';
+import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_customcard.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';
@@ -18,6 +18,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final _searchService = SearchService();
+  late Map<String, dynamic> userData = {};
   late String _city = "";
   late String _category = "";
   late String _profileCategory = "";
@@ -31,7 +33,7 @@ class _HomeState extends State<Home> {
   Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData =
-          await UserDataService().getCityProfileData();
+          await UserDataService().getCurrentUserData();
 
       setState(() {
         _city = userData['city'];
@@ -47,21 +49,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      body: Column(
-        children: [
-          SafeArea(
-            child: Container(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
               height: 420,
               child: Stack(
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 370,
-                    child: Image.asset(
-                      'assets/images/backimg.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
                   CarouselSlider(
                     options: CarouselOptions(
                       height: 370,
@@ -99,8 +93,8 @@ class _HomeState extends State<Home> {
                         HomeCustomCard(
                           buttonText: "Buscar músicos",
                           destination: ListMusicians(
-                            profileListFunction: ProfileDataService()
-                                .getActiveUserProfileStream(
+                            profileListFunction:
+                                _searchService.getAvalibleProfiles(
                                     category: _profileCategory, city: _city),
                             city: _city,
                             category: _profileCategory,
@@ -111,9 +105,8 @@ class _HomeState extends State<Home> {
                         HomeCustomCard(
                           buttonText: "Buscar GIGs",
                           destination: ListGigs(
-                            dataListFunction: GigsDataService()
-                                .getCityActiveUserGigsStream(
-                                    city: _city, category: _category),
+                            dataListFunction: _searchService.getAvalibleGigs(
+                                city: _city, category: _category),
                             city: _city,
                             category: _category,
                           ),
@@ -126,34 +119,33 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-          ),
-          //BOTTOM SHEET??
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    SizedBox(width: 30),
-                    Icon(Iconsax.calendar5,
-                        color: Color.fromARGB(255, 55, 158, 58)),
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Text(
-                        "Suas GIGs",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 19.0,
-                          color: Colors.black87,
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: 30),
+                      Icon(Iconsax.calendar5,
+                          color: Color.fromARGB(255, 55, 158, 58)),
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          "Suas GIGs",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 19.0,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Expanded(child: HomeAgenda()),
-              ],
-            ),
-          )
-        ],
+                    ],
+                  ),
+                  Expanded(child: HomeAgenda()),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/city_list.dart';
-import 'package:freegig_app/data/services/auth_service.dart';
+import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/common_widgets/themeapp.dart';

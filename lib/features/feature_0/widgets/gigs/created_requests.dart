@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/data/services/user_request.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
 
 class RequestsSent extends StatefulWidget {

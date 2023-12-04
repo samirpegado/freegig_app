@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/features/authentication/screens/login.dart';
 
 class FirebaseAuthService {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -82,7 +83,6 @@ class FirebaseAuthService {
         case 'wrong-password':
           errorMessage = 'Senha incorreta. Tente novamente.';
           break;
-        // Adicione mais casos conforme necessário
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -92,5 +92,19 @@ class FirebaseAuthService {
       );
     }
     return null;
+  }
+
+  void logOut(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+    _auth.signOut();
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
   }
 }

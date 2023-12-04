@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
-import 'package:freegig_app/data/services/profiles_data_service.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
+import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class MusicianCategoryButton extends StatefulWidget {
@@ -15,6 +15,7 @@ class MusicianCategoryButton extends StatefulWidget {
 }
 
 class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
+  final _searchService = SearchService();
   final categoryController = TextEditingController();
 
   @override
@@ -54,8 +55,8 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (context) => ListMusicians(
-                                      profileListFunction: ProfileDataService()
-                                          .getActiveUserProfileStream(
+                                      profileListFunction:
+                                          _searchService.getAvalibleProfiles(
                                               city: _city, category: _category),
                                       city: _city,
                                       category: _category)),
@@ -91,10 +92,9 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                                 MaterialPageRoute(
                                     builder: (context) => ListMusicians(
                                         profileListFunction:
-                                            ProfileDataService()
-                                                .getActiveUserProfileStream(
-                                                    city: _city,
-                                                    category: _category),
+                                            _searchService.getAvalibleProfiles(
+                                                city: _city,
+                                                category: _category),
                                         city: _city,
                                         category: _category)),
                               );

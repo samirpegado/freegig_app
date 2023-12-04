@@ -13,19 +13,12 @@ class HomeCardsRoll extends StatefulWidget {
 }
 
 class _HomeCardsRollState extends State<HomeCardsRoll> {
-  late Stream<List<Map<String, dynamic>>> userDataList;
   double media = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    userDataList = widget.profileListFunction;
-  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Map<String, dynamic>>>(
-        stream: userDataList,
+        stream: widget.profileListFunction,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(

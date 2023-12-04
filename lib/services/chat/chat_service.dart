@@ -40,10 +40,10 @@ class ChatService extends ChangeNotifier {
         await _firestore.collection('gigs').doc(gigUid).get();
 
     List<String> participants = [currentUserId, receiverId];
+    participants.sort();
     String gigDescription = gigSnapshot['gigDescription'];
     String gigDate = gigSnapshot['gigDate'];
     String gigInitHour = gigSnapshot['gigInitHour'];
-    bool gigArchived = gigSnapshot['gigArchived'];
 
     await _firestore.collection('chat_rooms').doc(chatRoomId).set({
       'participants': participants, // Participantes do Chat
@@ -51,7 +51,6 @@ class ChatService extends ChangeNotifier {
       'gigDescription': gigDescription,
       'gigDate': gigDate,
       'gigInitHour': gigInitHour,
-      'gigArchived': gigArchived,
     });
   }
 
@@ -75,18 +74,37 @@ class ChatService extends ChangeNotifier {
   }
 
   //RECEBE DADOS DOS CHATS
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomsData() {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomsData() async* {
     // Obtém o ID do usuário logado
     String userId = _auth.currentUser!.uid;
 
-    // Cria a consulta
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('chat_rooms')
-        //.where('receiverId', isEqualTo: userId)
-        .where('participants', arrayContains: userId);
+    // Obtém os documentos da coleção 'chat_rooms'
+    QuerySnapshot<Map<String, dynamic>> chatRoomsSnapshot =
+        await FirebaseFirestore.instance
+            .collection('chat_rooms')
+            .where('participants', arrayContains: userId)
+            .get();
 
-    // Retorna o stream da consulta
-    return query.snapshots();
+    // Itera sobre os documentos
+    for (QueryDocumentSnapshot<Map<String, dynamic>> chatRoomDoc
+        in chatRoomsSnapshot.docs) {
+      // Obtém o valor de gigSubjectUid
+      String gigSubjectUid = chatRoomDoc['gigSubjectUid'];
+
+      // Verifica a coleção 'gigs' para o documento com o mesmo valor de gigSubjectUid
+      DocumentSnapshot<Map<String, dynamic>> gigDoc = await FirebaseFirestore
+          .instance
+          .collection('gigs')
+          .doc(gigSubjectUid)
+          .get();
+
+      // Verifica se gigArchived é false
+      if (gigDoc.exists && gigDoc['gigArchived'] == false) {
+        // Se gigArchived for false, retorna o documento da coleção 'chat_rooms'
+        yield chatRoomsSnapshot;
+      }
+      // Se gigArchived for true, não faz nada e continua para o próximo documento
+    }
   }
 
   Future<List<Map<String, dynamic>>> getReceiverAndGigData(
@@ -162,6 +180,36 @@ class ChatService extends ChangeNotifier {
     } catch (e) {
       print('Erro ao listar convites: $e');
       return [];
+    }
+  }
+
+  Future<void> deleteChatRoom(String gigSubjectUid) async {
+    // Cria a referência para a coleção 'chat_rooms' com base no gigSubjectUid
+    CollectionReference<Map<String, dynamic>> chatRoomsRef =
+        FirebaseFirestore.instance.collection('chat_rooms');
+
+    // Consulta para obter o documento com o gigSubjectUid específico
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await chatRoomsRef
+        .where('gigSubjectUid', isEqualTo: gigSubjectUid)
+        .get();
+
+    // Itera sobre os documentos encontrados (deveria ser no máximo um)
+    for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot
+        in querySnapshot.docs) {
+      // Exclui a subcoleção 'messages' do documento
+      await documentSnapshot.reference
+          .collection('messages')
+          .get()
+          .then((messagesSnapshot) {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> messageSnapshot
+            in messagesSnapshot.docs) {
+          // Exclui cada documento da subcoleção 'messages'
+          messageSnapshot.reference.delete();
+        }
+      });
+
+      // Exclui o documento principal da coleção 'chat_rooms'
+      await documentSnapshot.reference.delete();
     }
   }
 }

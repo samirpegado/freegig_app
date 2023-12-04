@@ -35,7 +35,7 @@ class _ListMusiciansState extends State<ListMusicians> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Músicos para sua GIG',
+            'Músicos disponíveis',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 19.0,

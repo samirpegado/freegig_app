@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common_widgets/searchgooglecity.dart';
-import 'package:freegig_app/data/services/gigs_data_services.dart';
 import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
+import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserCityButtonGig extends StatefulWidget {
@@ -16,6 +16,7 @@ class UserCityButtonGig extends StatefulWidget {
 
 class _UserCityButtonGigState extends State<UserCityButtonGig> {
   final cityController = TextEditingController();
+  final _searchService = SearchService();
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +55,8 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => ListGigs(
-                                  dataListFunction: GigsDataService()
-                                      .getCityActiveUserGigsStream(
+                                  dataListFunction:
+                                      _searchService.getAvalibleGigs(
                                           category: _category, city: _city),
                                   city: _city,
                                   category: _category,
@@ -90,8 +91,8 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => ListGigs(
-                                    dataListFunction: GigsDataService()
-                                        .getCityActiveUserGigsStream(
+                                    dataListFunction:
+                                        _searchService.getAvalibleGigs(
                                             category: _category, city: _city),
                                     city: _city,
                                     category: _category,
