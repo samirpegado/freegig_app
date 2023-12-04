@@ -5,7 +5,7 @@ import 'package:freegig_app/services/search/search_service.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_customcard.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
 import 'package:iconsax/iconsax.dart';
@@ -53,12 +53,12 @@ class _HomeState extends State<Home> {
         child: Column(
           children: [
             Container(
-              height: 420,
+              height: 390,
               child: Stack(
                 children: [
                   CarouselSlider(
                     options: CarouselOptions(
-                      height: 370,
+                      height: 350,
                       viewportFraction: 1,
                       initialPage: 0,
                       autoPlay: true,
@@ -73,7 +73,6 @@ class _HomeState extends State<Home> {
                         builder: (BuildContext context) {
                           return SizedBox(
                             width: double.infinity,
-                            height: 400,
                             child: Image.asset(
                               i,
                               fit: BoxFit.cover,
@@ -84,7 +83,7 @@ class _HomeState extends State<Home> {
                     }).toList(),
                   ),
                   Positioned(
-                    bottom: 10,
+                    bottom: 0,
                     width: MediaQuery.of(context).size.width,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

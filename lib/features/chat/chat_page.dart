@@ -43,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: ChatPageAppBar(receiverUid: widget.receiverUid),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

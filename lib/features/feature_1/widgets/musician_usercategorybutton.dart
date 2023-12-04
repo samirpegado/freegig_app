@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
+import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
@@ -35,17 +35,7 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Alterar categoria'),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: Icon(Icons.close))
-                      ],
-                    ),
+                    title: Text('Alterar categoria'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -81,6 +71,14 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                       ],
                     ),
                     actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Fechar',
+                            style: TextStyle(color: Colors.black),
+                          )),
                       TextButton(
                           onPressed: () {
                             if (categoryController.text.isEmpty) {

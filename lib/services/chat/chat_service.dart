@@ -74,7 +74,7 @@ class ChatService extends ChangeNotifier {
   }
 
   //RECEBE DADOS DOS CHATS
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomsData() async* {
+  Stream<List<Map<String, dynamic>>> getChatRoomsData() async* {
     // Obtém o ID do usuário logado
     String userId = _auth.currentUser!.uid;
 
@@ -85,11 +85,25 @@ class ChatService extends ChangeNotifier {
             .where('participants', arrayContains: userId)
             .get();
 
+    // Lista para armazenar os dados combinados de chatRoomDoc e userSnapshot
+    List<Map<String, dynamic>> combinedDataList = [];
+
     // Itera sobre os documentos
     for (QueryDocumentSnapshot<Map<String, dynamic>> chatRoomDoc
         in chatRoomsSnapshot.docs) {
       // Obtém o valor de gigSubjectUid
       String gigSubjectUid = chatRoomDoc['gigSubjectUid'];
+
+      //Pega a lista dos participantes do chat e decide quem vai receber a mensagem
+      List<dynamic> participants = chatRoomDoc['participants'];
+      String receiverUid =
+          participants.firstWhere((id) => id != userId, orElse: () => '');
+
+      DocumentSnapshot<Map<String, dynamic>> userSnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(receiverUid)
+              .get();
 
       // Verifica a coleção 'gigs' para o documento com o mesmo valor de gigSubjectUid
       DocumentSnapshot<Map<String, dynamic>> gigDoc = await FirebaseFirestore
@@ -100,11 +114,17 @@ class ChatService extends ChangeNotifier {
 
       // Verifica se gigArchived é false
       if (gigDoc.exists && gigDoc['gigArchived'] == false) {
-        // Se gigArchived for false, retorna o documento da coleção 'chat_rooms'
-        yield chatRoomsSnapshot;
+        // Adiciona os dados combinados à lista
+        combinedDataList.add({
+          'chatRoomDoc': chatRoomDoc.data(),
+          'userSnapshot': userSnapshot.data(),
+        });
       }
       // Se gigArchived for true, não faz nada e continua para o próximo documento
     }
+
+    // Retorna a lista completa após a iteração
+    yield combinedDataList;
   }
 
   Future<List<Map<String, dynamic>>> getReceiverAndGigData(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
+import 'package:freegig_app/common/widgets/search_list_city.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';

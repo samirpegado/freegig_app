@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common_widgets/show_profile.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/screens/show_profile.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -110,6 +110,7 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
       },
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
           actions: [
             IconButton(
               onPressed: () {

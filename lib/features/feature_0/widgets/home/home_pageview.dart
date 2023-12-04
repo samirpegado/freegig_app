@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
-import 'package:freegig_app/common_widgets/gig_more_info.dart';
+import 'package:freegig_app/common/widgets/gig_more_info.dart';
 import 'package:iconsax/iconsax.dart';
 
 class HomeAgenda extends StatefulWidget {
@@ -67,7 +67,8 @@ class _HomeAgendaState extends State<HomeAgenda> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(gig['gigDate']),
-                            Text(' - ' + gig['gigInitHour'] + 'h'),
+                            Expanded(
+                                child: Text(' - ' + gig['gigInitHour'] + 'h')),
                           ]),
                       trailing: Icon(Iconsax.arrow_right_3),
                     ),

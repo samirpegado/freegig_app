@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/common/widgets/profile_complete_confirm.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/archived_gigs.dart';
+import 'package:freegig_app/features/feature_0/screens/gigs/gigs_archived.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/created_gigs_card.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/participating_gigs_card.dart';
@@ -80,6 +80,7 @@ class _GIGsState extends State<GIGs> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            elevation: 0,
             actions: [
               Stack(
                 children: [

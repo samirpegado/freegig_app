@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/classes/city_list.dart';
 import 'package:freegig_app/classes/formatcurrency.dart';
-import 'package:freegig_app/common_widgets/musicianmultiselectionform.dart';
-import 'package:freegig_app/common_widgets/searchgoogleaddress.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/common/widgets/musicianmultiselectionform.dart';
+import 'package:freegig_app/common/widgets/searchgoogleaddress.dart';
+import 'package:freegig_app/common/widgets/search_list_city.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 

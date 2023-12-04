@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/created_giginfo.dart';
+import 'package:freegig_app/features/feature_0/screens/gigs/gigs_created.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/invitationconfirm.dart';
-import 'package:freegig_app/features/feature_3/screens/user_rate.dart';
+import 'package:freegig_app/common/screens/user_rate.dart';
 import 'package:freegig_app/services/relationship/user_invitation.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:freegig_app/services/relationship/user_request.dart';

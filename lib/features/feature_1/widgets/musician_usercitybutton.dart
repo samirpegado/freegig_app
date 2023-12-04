@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/common/widgets/search_list_city.dart';
 
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:freegig_app/services/search/search_service.dart';
@@ -36,17 +36,7 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Alterar cidade'),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            icon: Icon(Icons.close))
-                      ],
-                    ),
+                    title: Text('Alterar cidade'),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -83,6 +73,14 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                       ],
                     ),
                     actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'Fechar',
+                            style: TextStyle(color: Colors.black),
+                          )),
                       TextButton(
                           onPressed: () {
                             if (cityController.text.isEmpty) {

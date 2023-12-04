@@ -4,7 +4,7 @@ import 'package:freegig_app/features/feature_2/widgets/gigs_usercategorybutton.d
 import 'package:freegig_app/features/feature_2/widgets/gigs_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_descriptioncard.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -43,6 +43,7 @@ class _ListGigsState extends State<ListGigs> {
       },
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
           title: Text(
             'GIGs disponíveis',
             style: TextStyle(
@@ -72,12 +73,16 @@ class _ListGigsState extends State<ListGigs> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  UserCityButtonGig(
-                    city: widget.city,
-                    category: widget.category,
+                  Expanded(
+                    child: UserCityButtonGig(
+                      city: widget.city,
+                      category: widget.category,
+                    ),
                   ),
-                  UserCategoryButton(
-                      city: widget.city, category: widget.category)
+                  Expanded(
+                    child: UserCategoryButton(
+                        city: widget.city, category: widget.category),
+                  )
                 ],
               ),
               Expanded(

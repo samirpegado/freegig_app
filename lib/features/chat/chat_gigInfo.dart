@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common_widgets/gig_more_info.dart';
+import 'package:freegig_app/common/widgets/gig_more_info.dart';
 import 'package:freegig_app/services/chat/chat_service.dart';
 import 'package:iconsax/iconsax.dart';
 

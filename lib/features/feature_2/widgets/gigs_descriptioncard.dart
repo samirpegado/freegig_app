@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/gigs_card.dart';
-import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/common/widgets/gigs_card.dart';
+import 'package:freegig_app/common/widgets/profile_complete_confirm.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
 

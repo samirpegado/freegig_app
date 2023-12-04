@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 
 class GetProfileRater extends StatefulWidget {

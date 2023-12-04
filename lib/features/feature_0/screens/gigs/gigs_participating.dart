@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common_widgets/show_profile.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/widgets/participants_list.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -24,6 +24,7 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () {
@@ -227,62 +228,7 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
                     color: Colors.green),
               ),
               SizedBox(height: 6),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future:
-                    GigsDataService().getParticipantsData(widget.gig['gigUid']),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text(
-                      'Erro ao carregar participantes: ${snapshot.error}',
-                      style: TextStyle(fontSize: 15),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text(
-                      'Nenhum participante encontrado.',
-                      style: TextStyle(fontSize: 15),
-                    );
-                  } else {
-                    List<Map<String, dynamic>> participantsData =
-                        snapshot.data!;
-                    return Column(
-                      children: participantsData.map((participant) {
-                        return ListTile(
-                          leading: ClipOval(
-                            child: Image.network(
-                              participant['profileImageUrl'],
-                              fit: BoxFit.cover,
-                              width: 50,
-                              height: 50,
-                            ),
-                          ),
-                          trailing: IconButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SimpleShowProfile(
-                                        profile: participant)));
-                              },
-                              icon: Icon(Iconsax.arrow_right_3)),
-                          title: Text(
-                            participant['publicName'],
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                participant['category'],
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  }
-                },
-              ),
+              ParticipantList(gigUid: widget.gig['gigUid'])
             ],
           ),
         ),

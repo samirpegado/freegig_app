@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/change_profile_image.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_change_image.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_ads.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_delete_account.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_report.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_update_form.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_update_form.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -24,6 +24,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'Configurações',
           style: TextStyle(

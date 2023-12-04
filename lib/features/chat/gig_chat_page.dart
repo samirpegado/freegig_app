@@ -40,6 +40,7 @@ class _GigChatPageState extends State<GigChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text('Chat da GIG'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,

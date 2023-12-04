@@ -59,20 +59,18 @@ class _RatingStreamBuilderState extends State<RatingStreamBuilder> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    SizedBox(width: 15),
-                    Text(
-                      media > 0
-                          ? '$mediaFormatada/5.0 - $total ${total == '1' ? 'Avaliação' : 'Avaliações'} '
-                          : '* Nenhuma avaliação',
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  ],
+                Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                SizedBox(width: 15),
+                Expanded(
+                  child: Text(
+                    media > 0
+                        ? '$mediaFormatada/5.0 - $total ${total == '1' ? 'Avaliação' : 'Avaliações'} '
+                        : '* Nenhuma avaliação',
+                    style: TextStyle(fontSize: 15),
+                  ),
                 ),
                 Icon(
                   Iconsax.arrow_right_3,

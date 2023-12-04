@@ -45,7 +45,7 @@ class DeleteAccountConfirm extends StatelessWidget {
                 context: context, builder: (context) => DeleteAccountDetails());
           },
           child: Text(
-            'Exluir',
+            'Excluir',
             style: TextStyle(color: Colors.red),
           ),
         ),
@@ -68,34 +68,28 @@ class DeleteAccountDetails extends StatelessWidget {
         textAlign: TextAlign.center,
         style: TextStyle(color: Colors.red),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '😢',
-            style: TextStyle(fontSize: 30),
-          ),
-          SizedBox(height: 15),
-          Text(
-            "Lamentamos saber que você está considerando sair. Por favor, compartilhe o que não atendeu às suas expectativas, para que possamos trabalhar para melhorar no futuro.",
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20),
-          TextFormField(
-            //controller: commentController,
-            maxLength: 100,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 2,
-            decoration: InputDecoration(
-              labelText: "Comentário",
-              prefixIcon: Icon(Iconsax.device_message),
-              filled: true,
-              fillColor: Colors.white,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '😢',
+              style: TextStyle(fontSize: 30),
             ),
-          ),
-        ],
+            SizedBox(height: 15),
+            Text(
+              "Lamentamos saber que você está considerando sair. Por favor, compartilhe o que não atendeu às suas expectativas, para que possamos trabalhar para melhorar no futuro. Clique no e-mail abaixo para nos enviar uma mensagem.",
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 10),
+            Text(
+              "faleconosco@freegig.com.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.blue),
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -112,7 +106,7 @@ class DeleteAccountDetails extends StatelessWidget {
             DeleteUserService().deleteUserAndRelatedData(context);
           },
           child: Text(
-            'Exluir conta',
+            'Excluir conta',
             style: TextStyle(color: Colors.red),
           ),
         ),

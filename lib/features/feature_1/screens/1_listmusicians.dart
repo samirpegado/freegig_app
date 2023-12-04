@@ -4,7 +4,7 @@ import 'package:freegig_app/features/feature_1/widgets/musician_usercategorybutt
 import 'package:freegig_app/features/feature_1/widgets/musician_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ListMusicians extends StatefulWidget {
@@ -52,6 +52,7 @@ class _ListMusiciansState extends State<ListMusicians> {
               ),
             )
           ],
+          elevation: 0,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
         ),
@@ -62,12 +63,16 @@ class _ListMusiciansState extends State<ListMusicians> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  UserCityButtonProfile(
-                    city: widget.city,
-                    category: widget.category,
+                  Expanded(
+                    child: UserCityButtonProfile(
+                      city: widget.city,
+                      category: widget.category,
+                    ),
                   ),
-                  MusicianCategoryButton(
-                      city: widget.city, category: widget.category)
+                  Expanded(
+                    child: MusicianCategoryButton(
+                        city: widget.city, category: widget.category),
+                  )
                 ],
               ),
               Expanded(

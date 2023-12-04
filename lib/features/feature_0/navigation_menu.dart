@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:freegig_app/features/feature_0/screens/4_profileswitcher.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profileswitcher.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:freegig_app/features/feature_0/screens/2_gigs.dart';
-import 'package:freegig_app/features/feature_0/screens/1_home.dart';
-import 'package:freegig_app/features/feature_0/screens/3_messages.dart';
+import 'package:freegig_app/features/feature_0/screens/gigs/gigs.dart';
+import 'package:freegig_app/features/feature_0/screens/home/home.dart';
+import 'package:freegig_app/features/feature_0/screens/messages/messages.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int navPage;

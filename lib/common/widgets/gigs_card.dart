@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:iconsax/iconsax.dart';
 
 class CommonGigsCard extends StatefulWidget {
@@ -100,6 +100,7 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                       child: Column(
@@ -140,25 +141,19 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                                 ),
                               ),
                             ],
+                          ),
+                          Text(
+                            '${widget.gig['publicName']}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15.0,
+                            ),
                           )
                         ],
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          widget.gig['publicName'],
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 8),
                     BuildProfileImage(
                         profileImageUrl: widget.gig['profileImageUrl'],
                         imageSize: 40),

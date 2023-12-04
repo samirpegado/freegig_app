@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/city_list.dart';
-import 'package:freegig_app/common_widgets/musicianonlyselectionform.dart';
-import 'package:freegig_app/common_widgets/searchgooglecity.dart';
+import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
+import 'package:freegig_app/common/widgets/search_list_city.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -111,6 +111,7 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'Atualizar perfil',
           style: TextStyle(

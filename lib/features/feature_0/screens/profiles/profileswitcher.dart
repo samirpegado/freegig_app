@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:freegig_app/features/authentication/screens/login.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_complete.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_edit.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_complete.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_edit.dart';
 
 class ProfileSwitcher extends StatefulWidget {
   @override

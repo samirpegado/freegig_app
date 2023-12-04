@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_edit_form.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_edit_form.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -42,6 +42,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'Perfil',
           style: TextStyle(

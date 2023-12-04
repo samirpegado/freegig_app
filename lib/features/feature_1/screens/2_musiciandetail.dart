@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
-import 'package:freegig_app/common_widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/common/widgets/profile_complete_confirm.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_inviteconfirm.dart';
@@ -40,6 +40,7 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
@@ -116,6 +116,7 @@ class _UserRatingState extends State<UserRating> {
       },
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
           title: Text(
             'Avaliar participantes',
             style: TextStyle(

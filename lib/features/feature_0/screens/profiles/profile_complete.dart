@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
-import 'package:freegig_app/common_widgets/toast.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/functions/toast.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/profile_settings.dart';
+import 'package:freegig_app/features/feature_0/screens/profiles/profile_settings.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/rate_builder.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -103,6 +103,7 @@ class _ProfileCompleteState extends State<ProfileComplete> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Switch(
           activeColor: Colors.green,
           value: _userStatus ?? false,

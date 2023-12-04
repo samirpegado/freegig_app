@@ -12,6 +12,7 @@ class SimpleShowProfile extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
+        elevation: 0,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

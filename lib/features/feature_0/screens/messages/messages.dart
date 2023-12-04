@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/messages/gig_messages_list.dart';
-import 'package:freegig_app/features/feature_0/widgets/messages/messages_list.dart';
 
 class Messages extends StatelessWidget {
   const Messages({super.key});
@@ -10,6 +9,7 @@ class Messages extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'Mensagens',
           style: TextStyle(
@@ -23,14 +23,7 @@ class Messages extends StatelessWidget {
       ),
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              GigListMessages(),
-              ListMessages(),
-            ],
-          ),
-        ),
+        child: ListMessages(),
       ),
     );
   }

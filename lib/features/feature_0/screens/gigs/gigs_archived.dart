@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/gigs_card.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/widgets/gigs_card.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/services/archive/archive_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/archived_more_info.dart';
 
@@ -23,6 +23,7 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'GIGs arquivadas',
           style: TextStyle(

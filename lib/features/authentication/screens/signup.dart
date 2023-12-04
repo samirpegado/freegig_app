@@ -4,7 +4,7 @@ import 'package:freegig_app/classes/city_list.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);

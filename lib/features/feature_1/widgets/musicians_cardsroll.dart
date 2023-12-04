@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common_widgets/build_profile_image.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_rate.dart';
 import 'package:iconsax/iconsax.dart';

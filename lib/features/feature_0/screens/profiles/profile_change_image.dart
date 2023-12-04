@@ -2,8 +2,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:freegig_app/common_widgets/pickimage.dart';
-import 'package:freegig_app/common_widgets/themeapp.dart';
+import 'package:freegig_app/common/functions/pickimage.dart';
+import 'package:freegig_app/common/functions/themeapp.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 
 class ChangeProfileImage extends StatefulWidget {
@@ -75,6 +75,7 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           'Alterar foto do perfil',
           style: TextStyle(
@@ -89,31 +90,6 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
       bottomNavigationBar: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black54,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  "Cancelar",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(

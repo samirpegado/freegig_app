@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common_widgets/show_profile.dart';
+import 'package:freegig_app/common/screens/show_profile.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/chat/chat_page.dart';
