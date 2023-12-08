@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/messages/gig_messages_list.dart';
 
 class Messages extends StatelessWidget {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/screens/show_profile.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -102,10 +103,9 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NavigationMenu(
-                  navPage: 1,
-                )));
+        navigationFadeTo(
+            context: context, destination: NavigationMenu(navPage: 1));
+
         return false;
       },
       child: Scaffold(
@@ -114,9 +114,10 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        GigChatPage(gigSubjectUid: widget.gig['gigUid'])));
+                navigationFadeTo(
+                    context: context,
+                    destination:
+                        GigChatPage(gigSubjectUid: widget.gig['gigUid']));
               },
               icon: Icon(
                 Iconsax.messages,
@@ -184,9 +185,10 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                             onPressed: () async {
                               await GigsDataService()
                                   .deleteGig(widget.gig['gigUid']);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      NavigationMenu(navPage: 1)));
+
+                              navigationFadeTo(
+                                  context: context,
+                                  destination: NavigationMenu(navPage: 1));
                             },
                             child: Text(
                               'Excluir',
@@ -245,9 +247,9 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                               UserRateService()
                                   .createRateNotificationsAndArchive(
                                       widget.gig['gigUid']);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      NavigationMenu(navPage: 1)));
+                              navigationFadeTo(
+                                  context: context,
+                                  destination: NavigationMenu(navPage: 1));
                             },
                             child: Text(
                               'Arquivar',
@@ -408,7 +410,7 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                   future: participantsData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       return Text(
                         'Erro ao carregar participantes: ${snapshot.error}',

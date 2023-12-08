@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/screens/show_profile.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -18,7 +20,7 @@ class _ParticipantListState extends State<ParticipantList> {
       future: GigsDataService().getParticipantsData(widget.gigUid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return Center(heightFactor: 2, child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Text(
             'Erro ao carregar participantes: ${snapshot.error}',
@@ -35,18 +37,13 @@ class _ParticipantListState extends State<ParticipantList> {
             children: participantsData.map((participant) {
               return ListTile(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          SimpleShowProfile(profile: participant)));
+                  navigationFadeTo(
+                      context: context,
+                      destination: SimpleShowProfile(profile: participant));
                 },
-                leading: ClipOval(
-                  child: Image.network(
-                    participant['profileImageUrl'],
-                    fit: BoxFit.cover,
-                    width: 50,
-                    height: 50,
-                  ),
-                ),
+                leading: BuildProfileImage(
+                    profileImageUrl: participant['profileImageUrl'],
+                    imageSize: 40),
                 trailing: Icon(Iconsax.arrow_right_3),
                 title: Text(
                   participant['publicName'],

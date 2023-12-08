@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/search_list_city.dart';
 import 'package:freegig_app/features/feature_2/screens/1_listgigs.dart';
 import 'package:freegig_app/services/search/search_service.dart';
@@ -42,17 +43,15 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                         ElevatedButton(
                           onPressed: () {
                             _city = 'Brasil';
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListGigs(
+                            navigationFadeTo(
+                                context: context,
+                                destination: ListGigs(
                                   dataListFunction:
                                       _searchService.getAvalibleGigs(
                                           category: _category, city: _city),
                                   city: _city,
                                   category: _category,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -86,17 +85,15 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                               Navigator.of(context).pop();
                             } else {
                               _city = cityController.text;
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ListGigs(
+                              navigationFadeTo(
+                                  context: context,
+                                  destination: ListGigs(
                                     dataListFunction:
                                         _searchService.getAvalibleGigs(
                                             category: _category, city: _city),
                                     city: _city,
                                     category: _category,
-                                  ),
-                                ),
-                              );
+                                  ));
                             }
                           },
                           child: Text('Selecionar'))

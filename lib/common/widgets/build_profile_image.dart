@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BuildProfileImage extends StatelessWidget {
@@ -13,35 +14,26 @@ class BuildProfileImage extends StatelessWidget {
             height: imageSize,
             width: imageSize,
             child: ClipOval(
-              child: Image.network(
-                profileImageUrl,
+              child: Image(
+                image: CachedNetworkImageProvider(profileImageUrl),
                 fit: BoxFit.cover,
-                width: imageSize,
-                height: imageSize,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
+                loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
                   } else {
                     return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                (loadingProgress.expectedTotalBytes ?? 1)
-                            : null,
-                      ),
+                      child: CircularProgressIndicator(),
                     );
                   }
                 },
-                errorBuilder: (BuildContext context, Object error,
-                    StackTrace? stackTrace) {
+                errorBuilder: (context, error, stackTrace) {
                   return Container(
                     height: imageSize,
                     width: imageSize,
-                    child: CircleAvatar(
-                      radius: imageSize / 2,
-                      backgroundImage:
-                          AssetImage('assets/profiles/default-user-image.png'),
+                    child: ClipOval(
+                      child: Container(
+                        color: Colors.grey[400],
+                      ),
                     ),
                   );
                 },
@@ -51,10 +43,10 @@ class BuildProfileImage extends StatelessWidget {
         : Container(
             height: imageSize,
             width: imageSize,
-            child: CircleAvatar(
-              radius: imageSize / 2,
-              backgroundImage:
-                  AssetImage('assets/profiles/default-user-image.png'),
+            child: ClipOval(
+              child: Container(
+                color: Colors.grey[400],
+              ),
             ),
           );
   }

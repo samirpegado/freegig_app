@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/widgets/gigs_card.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/archive/archive_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/archived_more_info.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ArchivedGigs extends StatefulWidget {
   @override
@@ -11,14 +13,6 @@ class ArchivedGigs extends StatefulWidget {
 }
 
 class _ArchivedGigsState extends State<ArchivedGigs> {
-  late Stream<List<Map<String, dynamic>>> gigsDataList;
-
-  @override
-  void initState() {
-    super.initState();
-    gigsDataList = GigsArchived().getMyAllArchivedGigsStream();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,12 +33,14 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
         child: Column(
           children: [
             StreamBuilder<List<Map<String, dynamic>>>(
-              stream: gigsDataList,
+              stream: GigsArchived().getMyAllArchivedGigsStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Center(child: CircularProgressIndicator()),
+                  return Container(
+                    height: MediaQuery.sizeOf(context).height * 0.6,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Text('Erro: ${snapshot.error}');
@@ -66,7 +62,7 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
                     children: gigs.map((gig) {
                       return Padding(
                         padding:
-                            const EdgeInsets.only(left: 15, right: 15, top: 5),
+                            const EdgeInsets.only(left: 10, right: 10, top: 10),
                         child: InkWell(
                             onTap: () {
                               showDialog(
@@ -74,9 +70,60 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
                                   builder: (context) =>
                                       ArchivedMoreInfo(gig: gig));
                             },
-                            child: CommonGigsCard(
-                              gig: gig,
-                              moneyColor: Colors.black54,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 10),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Iconsax.archive,
+                                      color: Colors.grey[500],
+                                    ),
+                                    SizedBox(width: 25),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            gig['gigDescription'],
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
+                                          ),
+                                          Text(
+                                            FormatDate().formatDateString(
+                                                    gig['gigDate']) +
+                                                ', ' +
+                                                gig['gigInitHour'],
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                          Text(
+                                            gig['gigLocale'],
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: 25),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        BuildProfileImage(
+                                            profileImageUrl:
+                                                gig['profileImageUrl'],
+                                            imageSize: 40),
+                                        SizedBox(width: 10),
+                                        Icon(Iconsax.arrow_right_3)
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             )),
                       );
                     }).toList(),

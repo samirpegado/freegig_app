@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profile_edit_form.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:iconsax/iconsax.dart';
@@ -102,8 +103,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ProfileEditForm()));
+                  navigationFadeTo(
+                      context: context, destination: ProfileEditForm());
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(14.0),

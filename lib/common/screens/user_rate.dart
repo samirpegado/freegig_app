@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
@@ -37,6 +38,7 @@ class _UserRatingState extends State<UserRating> {
     initializeStarColors();
   }
 
+  // Carrega os dados da GIG e do usuário logado
   Future<void> _loadGigData() async {
     try {
       Map<String, dynamic> gigData =
@@ -53,8 +55,8 @@ class _UserRatingState extends State<UserRating> {
     }
   }
 
+  // Inicializa starColors com o mesmo tamanho que a lista de participantes
   void initializeStarColors() {
-    // Inicializa starColors com o mesmo tamanho que a lista de participantes
     participantsData.then((participants) {
       setState(() {
         starColors = List.filled(participants.length, false);
@@ -66,51 +68,8 @@ class _UserRatingState extends State<UserRating> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text('Sair da avaliação?')),
-                      IconButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: Icon(Icons.close))
-                    ],
-                  ),
-                  content: Text(
-                      "Deseja sair da avaliação antes de finalizá-la? Selecione uma das opções abaixo."),
-                  actions: [
-                    TextButton(
-                      onPressed: () async {
-                        await UserRateService().rateNotificationDelete(
-                            widget.docData['rateNotificationUid']);
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => NavigationMenu(
-                                  navPage: 1,
-                                )));
-                      },
-                      child: Text(
-                        'Sair sem avaliar',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => NavigationMenu(
-                                  navPage: 1,
-                                )));
-                      },
-                      child: Text(
-                        'Avaliar depois',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ));
+        /// Confirmacoes de saida da pagina
+        showDialog(context: context, builder: (context) => _exitAlert());
 
         return false;
       },
@@ -128,47 +87,14 @@ class _UserRatingState extends State<UserRating> {
           foregroundColor: Colors.black,
         ),
         backgroundColor: backgroundColor,
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () async {
-                  await UserRateService().rateNotificationDelete(
-                      widget.docData['rateNotificationUid']);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => NavigationMenu(
-                            navPage: 1,
-                          )));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text(
-                    "Concluir",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        bottomNavigationBar: _evaluationButton(),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// Header com as informacoes da GIG
                 SizedBox(height: 10),
                 Text(
                   _gigDescription,
@@ -212,6 +138,8 @@ class _UserRatingState extends State<UserRating> {
                       color: Colors.black87),
                 ),
                 SizedBox(height: 6),
+
+                /// Carrega a lista de participantes a serem avaliados
                 FutureBuilder<List<Map<String, dynamic>>>(
                   future: participantsData,
                   builder: (context, snapshot) {
@@ -243,99 +171,8 @@ class _UserRatingState extends State<UserRating> {
                                 commentController.clear();
                                 showDialog(
                                   context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                      'Como você avalia este participante?',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          participant['publicName'],
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Text(
-                                          participant['category'],
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black54),
-                                        ),
-                                        SizedBox(height: 10),
-                                        RatingBar(
-                                          minRating: 1,
-                                          maxRating: 5,
-                                          initialRating: 5,
-                                          ratingWidget: RatingWidget(
-                                            full: Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
-                                            ),
-                                            half: Icon(
-                                              Icons.star_half,
-                                              color: Colors.amber,
-                                            ),
-                                            empty: Icon(
-                                              Icons.star,
-                                              color: Colors.grey,
-                                            ),
-                                          ),
-                                          onRatingUpdate: (value) {
-                                            starValue = value;
-                                          },
-                                        ),
-                                        SizedBox(height: 10),
-                                        TextFormField(
-                                          controller: commentController,
-                                          maxLength: 50,
-                                          textCapitalization:
-                                              TextCapitalization.sentences,
-                                          maxLines: 2,
-                                          decoration: InputDecoration(
-                                            labelText: "Comentário",
-                                            prefixIcon:
-                                                Icon(Iconsax.device_message),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.0)),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          'Fechar',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await UserRateService()
-                                              .sendParticipantRate(
-                                            rate: starValue,
-                                            gigUid: widget.docData['gigUid'],
-                                            ratedParticipantUid:
-                                                participant['uid'],
-                                            comment: commentController.text,
-                                          );
-                                          setState(() {
-                                            starColors[index] = true;
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text(
-                                          'Enviar',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  builder: (context) =>
+                                      _evaluationDialog(participant, index),
                                 );
                               },
                               leading: ClipOval(
@@ -379,6 +216,174 @@ class _UserRatingState extends State<UserRating> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _exitAlert() {
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: Text('Sair da avaliação?')),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Icon(Icons.close))
+        ],
+      ),
+      content: Text(
+          "Deseja sair da avaliação antes de finalizá-la? Selecione uma das opções abaixo."),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await UserRateService()
+                .rateNotificationDelete(widget.docData['rateNotificationUid']);
+            navigationFadeTo(
+                context: context, destination: NavigationMenu(navPage: 1));
+          },
+          child: Text(
+            'Sair sem avaliar',
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            navigationFadeTo(
+                context: context, destination: NavigationMenu(navPage: 1));
+          },
+          child: Text(
+            'Avaliar depois',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _evaluationButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+            onPressed: () async {
+              await UserRateService().rateNotificationDelete(
+                  widget.docData['rateNotificationUid']);
+              navigationFadeTo(
+                  context: context, destination: NavigationMenu(navPage: 1));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Text(
+                "Concluir",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _evaluationDialog(Map<String, dynamic> participant, int index) {
+    return AlertDialog(
+      title: Text(
+        'Como você avalia este participante?',
+        textAlign: TextAlign.center,
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              participant['publicName'],
+              style: TextStyle(fontSize: 20),
+            ),
+            Text(
+              participant['category'],
+              style: TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            SizedBox(height: 10),
+            RatingBar(
+              minRating: 1,
+              maxRating: 5,
+              initialRating: 5,
+              ratingWidget: RatingWidget(
+                full: Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                ),
+                half: Icon(
+                  Icons.star_half,
+                  color: Colors.amber,
+                ),
+                empty: Icon(
+                  Icons.star,
+                  color: Colors.grey,
+                ),
+              ),
+              onRatingUpdate: (value) {
+                starValue = value;
+              },
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: commentController,
+              maxLength: 50,
+              textCapitalization: TextCapitalization.sentences,
+              maxLines: 2,
+              decoration: InputDecoration(
+                labelText: "Comentário",
+                prefixIcon: Icon(Iconsax.device_message),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            'Fechar',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            await UserRateService().sendParticipantRate(
+              rate: starValue,
+              gigUid: widget.docData['gigUid'],
+              ratedParticipantUid: participant['uid'],
+              comment: commentController.text,
+            );
+            setState(() {
+              starColors[index] = true;
+            });
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            'Enviar',
+          ),
+        ),
+      ],
     );
   }
 }

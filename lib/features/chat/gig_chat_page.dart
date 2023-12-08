@@ -37,6 +37,20 @@ class _GigChatPageState extends State<GigChatPage> {
   }
 
   @override
+  void initState() {
+    _chatService.lastSeen(widget.gigSubjectUid);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _chatService.lastSeen(widget.gigSubjectUid);
+
+    _messageFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -50,12 +64,25 @@ class _GigChatPageState extends State<GigChatPage> {
           //header
           ChatGigInfo(gigSubjectUid: widget.gigSubjectUid),
 
-          //messages
+          /// informacao
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Os futuros participantes que ingressarem nesta GIG terão acesso a todas as mensagens.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black54, fontSize: 12),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+
+          ///messages
           Expanded(
             child: _buildMessageList(),
           ),
 
-          // user input
+          /// user input
           _buildMessageInput(),
         ],
       ),
@@ -122,14 +149,49 @@ class _GigChatPageState extends State<GigChatPage> {
       child: Column(
         crossAxisAlignment: columnAlignment,
         children: [
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), color: colorContainer),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                data['message'],
-                style: TextStyle(color: colorText, fontWeight: FontWeight.w500),
+          InkWell(
+            onLongPress: () {
+              if (data['senderId'] == _firebaseAuth.currentUser!.uid) {
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          actionsAlignment: MainAxisAlignment.center,
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Fechar',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _chatService.deleteGigMessages(
+                                    widget.gigSubjectUid, data['msgUid']);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Apagar',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ));
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: colorContainer),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  data['message'],
+                  style:
+                      TextStyle(color: colorText, fontWeight: FontWeight.w500),
+                ),
               ),
             ),
           ),
@@ -151,12 +213,6 @@ class _GigChatPageState extends State<GigChatPage> {
 
   // build message input
   FocusNode _messageFocusNode = FocusNode();
-  @override
-  void dispose() {
-    // Certifique-se de descartar o FocusNode ao sair do widget
-    _messageFocusNode.dispose();
-    super.dispose();
-  }
 
   Widget _buildMessageInput() {
     return Container(

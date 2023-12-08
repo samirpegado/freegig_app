@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/common/widgets/participants_list.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
@@ -28,9 +29,10 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      GigChatPage(gigSubjectUid: widget.gig['gigUid'])));
+              navigationFadeTo(
+                  context: context,
+                  destination:
+                      GigChatPage(gigSubjectUid: widget.gig['gigUid']));
             },
             icon: Icon(
               Iconsax.messages,
@@ -57,10 +59,9 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
                           onPressed: () async {
                             await GigsDataService()
                                 .leaveGig(gigUid: widget.gig['gigUid']);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => NavigationMenu(
-                                      navPage: 1,
-                                    )));
+                            navigationFadeTo(
+                                context: context,
+                                destination: NavigationMenu(navPage: 1));
                           },
                           child: Text("Confirmar",
                               style: TextStyle(color: Colors.red))),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/classes/city_list.dart';
 import 'package:freegig_app/classes/formatcurrency.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/musicianmultiselectionform.dart';
 import 'package:freegig_app/common/widgets/searchgoogleaddress.dart';
 import 'package:freegig_app/common/widgets/search_list_city.dart';
@@ -341,53 +342,59 @@ class _CreateNewGigState extends State<CreateNewGig> {
 
               ///Botao
               SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF274b99),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  cityValidate(_cityController.text);
-                  addressValidate(_addressController.text);
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF274b99),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onPressed: () {
+                      cityValidate(_cityController.text);
+                      addressValidate(_addressController.text);
 
-                  if (formKey.currentState!.validate() &&
-                      !cityValidator &&
-                      !addressValidator) {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        });
-                    GigsDataService().createNewGig(
-                      gigDescription: _descriptionController.text,
-                      gigCity: _cityController.text,
-                      gigAddress: _addressController.text,
-                      gigInitHour: _initTimeController.text,
-                      gigFinalHour: _finalTimeController.text,
-                      gigDate: _dateController.text,
-                      gigCache: _cacheController.text,
-                      gigCategorys: _categoryController.text.split(', '),
-                      gigDetails: _detailsController.text,
-                    );
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NavigationMenu(navPage: 1)));
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: Text(
-                    "Criar GIG",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16.0,
+                      if (formKey.currentState!.validate() &&
+                          !cityValidator &&
+                          !addressValidator) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            });
+                        GigsDataService().createNewGig(
+                          gigDescription: _descriptionController.text,
+                          gigCity: _cityController.text,
+                          gigAddress: _addressController.text,
+                          gigInitHour: _initTimeController.text,
+                          gigFinalHour: _finalTimeController.text,
+                          gigDate: _dateController.text,
+                          gigCache: _cacheController.text,
+                          gigCategorys: _categoryController.text.split(', '),
+                          gigDetails: _detailsController.text,
+                        );
+                        navigationFadeTo(
+                            context: context,
+                            destination: NavigationMenu(navPage: 1));
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: Text(
+                        "Criar GIG",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16.0,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

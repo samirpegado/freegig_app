@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/city_list.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/common/widgets/search_list_city.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -89,9 +90,8 @@ class _ProfileUpdateFormState extends State<ProfileUpdateForm> {
         category: category.text,
         publicName: publicName.text,
       );
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => NavigationMenu(navPage: 3),
-      ));
+      navigationFadeTo(
+          context: context, destination: NavigationMenu(navPage: 3));
     }
   }
 

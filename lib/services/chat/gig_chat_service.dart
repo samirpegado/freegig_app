@@ -18,19 +18,21 @@ class GigChatService extends ChangeNotifier {
         await _firestore.collection('users').doc(currentUserId).get();
 
     String senderPublicName = userSnapshot['publicName'];
-
     //adiciona a mensagem a base de dados
-    await _firestore
+    DocumentReference msg = _firestore
         .collection('gigs')
         .doc(gigUid)
         .collection('group_messages')
-        .add({
+        .doc();
+
+    await msg.set({
       'message': message,
       'timestamp': timestamp,
       'senderId': currentUserId,
       'senderPublicName': senderPublicName,
+      'msgUid': msg.id,
     });
-    //adiciona a mensagem a base de dados
+
     await _firestore.collection('gigs').doc(gigUid).update({
       'gigChat': true,
     });
@@ -44,6 +46,72 @@ class GigChatService extends ChangeNotifier {
         .collection('group_messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
+  }
+
+  //APAGAR MENSAGEM
+  Future<void> deleteGigMessages(String gigUid, String msgUid) {
+    return _firestore
+        .collection('gigs')
+        .doc(gigUid)
+        .collection('group_messages')
+        .doc(msgUid)
+        .delete();
+  }
+
+  //CRIA O CAMPO DE ULTIMA VISUALIZACAO DO USUARIO
+  Future<void> lastSeen(String gigUid) async {
+    // pega informacao do usuario logado
+    final String currentUserId = _auth.currentUser!.uid;
+    final Timestamp timestamp = Timestamp.now();
+
+    DocumentReference msg = _firestore
+        .collection('gigs')
+        .doc(gigUid)
+        .collection('group_messages')
+        .doc('00ls_' + currentUserId);
+
+    await msg.set({
+      'lastSeen': timestamp,
+    });
+  }
+
+  Stream<Map<String, DateTime?>> getTimestampsStream(String gigUid) async* {
+    final String currentUserId = _auth.currentUser!.uid;
+
+    try {
+      final DocumentReference<Map<String, dynamic>> userDocumentRef = _firestore
+          .collection('gigs')
+          .doc(gigUid)
+          .collection('group_messages')
+          .doc('00ls_' + currentUserId);
+
+      final Query<Map<String, dynamic>> query = _firestore
+          .collection('gigs')
+          .doc(gigUid)
+          .collection('group_messages')
+          .orderBy('timestamp', descending: true)
+          .limit(1);
+
+      await for (final _ in userDocumentRef.snapshots()) {
+        final userDocument = await userDocumentRef.get();
+        final userLastSeen =
+            (userDocument.data()?['lastSeen'] as Timestamp?)?.toDate() ??
+                DateTime(1990, 6, 23);
+
+        final querySnapshot = await query.get();
+        final lastTimestamp = querySnapshot.docs.isNotEmpty
+            ? (querySnapshot.docs.first.get('timestamp') as Timestamp?)
+                ?.toDate()
+            : DateTime(1990, 6, 23);
+
+        yield {
+          'userLastSeen': userLastSeen,
+          'lastTimestamp': lastTimestamp,
+        };
+      }
+    } catch (e) {
+      print("Erro ao obter timestamps: $e");
+    }
   }
 
   //RECEBE DADOS DOS CHATS

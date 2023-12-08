@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
 
 class FirebaseAuthService {
@@ -68,6 +69,7 @@ class FirebaseAuthService {
     try {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
+
       return credential.user;
     } on FirebaseAuthException catch (e) {
       print('some error occured');
@@ -91,10 +93,12 @@ class FirebaseAuthService {
         ),
       );
     }
+
     return null;
   }
 
-  void logOut(BuildContext context) {
+  Future<void> logOut(BuildContext context) async {
+    final String currentUserId = _auth.currentUser!.uid;
     showDialog(
         context: context,
         builder: (context) {
@@ -102,9 +106,14 @@ class FirebaseAuthService {
             child: CircularProgressIndicator(),
           );
         });
+    if (currentUserId.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUserId)
+          .update({'token': ''});
+    }
     _auth.signOut();
 
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    navigationFadeTo(context: context, destination: LoginScreen());
   }
 }

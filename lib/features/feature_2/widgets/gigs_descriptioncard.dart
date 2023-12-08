@@ -1,9 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/widgets/gigs_card.dart';
+import 'package:freegig_app/features/feature_2/widgets/gigs_card.dart';
 import 'package:freegig_app/common/widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/features/feature_2/screens/2_confirm_request.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
-import 'package:freegig_app/features/feature_2/widgets/confirmrequest.dart';
+import 'package:page_transition/page_transition.dart';
 
 class GigsCard extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> dataListFunction;
@@ -72,9 +73,14 @@ class _GigsCardState extends State<GigsCard> {
                   child: InkWell(
                     onTap: () {
                       if (_profileStatus == true) {
-                        showDialog(
-                            context: context,
-                            builder: (context) => ConfirmRequest(gig: gig));
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                duration: Duration(milliseconds: 300),
+                                type: PageTransitionType.rightToLeft,
+                                child: ConfirmRequestPage(
+                                  gig: gig,
+                                )));
                       } else {
                         showDialog(
                             context: context,

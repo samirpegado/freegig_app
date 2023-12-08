@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 
 import 'package:freegig_app/features/authentication/screens/login.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profile_complete.dart';
@@ -42,9 +43,7 @@ class _ProfileSwitcherState extends State<ProfileSwitcher> {
     try {
       await FirebaseAuth.instance.signOut();
       Navigator.of(context).pop(); // Pop the current screen
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => LoginScreen(), // Navigate to the login page
-      ));
+      navigationFadeTo(context: context, destination: LoginScreen());
     } catch (e) {
       print("Erro ao fazer logout: $e");
     }

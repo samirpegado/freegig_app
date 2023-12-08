@@ -4,8 +4,9 @@ import 'package:freegig_app/features/feature_1/widgets/musician_usercategorybutt
 import 'package:freegig_app/features/feature_1/widgets/musician_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ListMusicians extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> profileListFunction;
@@ -28,8 +29,19 @@ class _ListMusiciansState extends State<ListMusicians> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => NavigationMenu()));
+        Navigator.push(
+          context,
+          PageTransition(
+            duration: Duration(milliseconds: 300),
+            type: PageTransitionType.fade,
+            childCurrent: ListMusicians(
+                profileListFunction: widget.profileListFunction,
+                city: widget.city,
+                category: widget.category),
+            child: NavigationMenu(),
+          ),
+        );
+
         return false;
       },
       child: Scaffold(
@@ -63,6 +75,7 @@ class _ListMusiciansState extends State<ListMusicians> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(width: 20),
                   Expanded(
                     child: UserCityButtonProfile(
                       city: widget.city,
@@ -72,7 +85,8 @@ class _ListMusiciansState extends State<ListMusicians> {
                   Expanded(
                     child: MusicianCategoryButton(
                         city: widget.city, category: widget.category),
-                  )
+                  ),
+                  SizedBox(width: 20),
                 ],
               ),
               Expanded(

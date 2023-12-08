@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/city_list.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -86,15 +88,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           email.text.trim(),
           city.text.trim(),
         );
+        await FirebaseApi().updateUserToken();
         print('User is successfully created');
         ;
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NavigationMenu(),
-          ),
-        );
+        navigationFadeTo(context: context, destination: NavigationMenu());
       } else {
         print('Some error happened');
       }

@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:freegig_app/common/functions/pickimage.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 
 class ChangeProfileImage extends StatefulWidget {
@@ -15,16 +18,16 @@ class ChangeProfileImage extends StatefulWidget {
 
 class _ChangeProfileImageState extends State<ChangeProfileImage> {
   late String _publicName = "";
-  Uint8List? _image;
+  File? _image;
   bool _isImageSelected = false;
 
   @override
   void initState() {
     super.initState();
-    _carregarDadosDoUsuario();
+    _loadUserData();
   }
 
-  Future<void> _carregarDadosDoUsuario() async {
+  Future<void> _loadUserData() async {
     try {
       Map<String, dynamic> userData =
           await UserDataService().getCurrentUserData();
@@ -58,17 +61,61 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
     await UserDataService().updateProfileImage(
       image: _image!,
     );
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => NavigationMenu(navPage: 3),
-    ));
+    navigationFadeTo(context: context, destination: NavigationMenu(navPage: 3));
   }
 
-  void _pickImage() async {
-    Uint8List? img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-      _isImageSelected = true; // Set the flag when an image is selected
-    });
+  void _pickAndCropImage() async {
+    final picker = ImagePicker();
+
+    // Passo 1: Obter imagem da galeria
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Passo 2: Abrir o ImageCropper
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cortar',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: 'Cortar',
+          ),
+        ],
+      );
+
+      if (croppedFile != null) {
+        // Passo 3: Redimensionar a imagem
+        File resizedImage = await resizeImage(croppedFile.path, 600, 600);
+
+        // Passo 4: Atualizar o estado com a imagem redimensionada
+        setState(() {
+          _image = resizedImage;
+          _isImageSelected = true;
+        });
+      }
+    }
+  }
+
+// Função para redimensionar a imagem
+  Future<File> resizeImage(String imagePath, int width, int height) async {
+    File imageFile = File(imagePath);
+    Uint8List imageBytes = await imageFile.readAsBytes();
+
+    img.Image? image = img.decodeImage(imageBytes);
+    img.Image resizedImage =
+        img.copyResize(image!, width: width, height: height);
+
+    File resizedFile = File(imagePath)
+      ..writeAsBytesSync(
+          img.encodeJpg(resizedImage, quality: 50)); // Ajusta a qualidade
+
+    return resizedFile;
   }
 
   @override
@@ -103,9 +150,9 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
                 _changeImage();
               },
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(14.0),
                 child: Text(
-                  "Alterar foto",
+                  "Alterar",
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -127,16 +174,18 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
               Stack(
                 children: [
                   InkWell(
-                    onTap: _pickImage,
+                    onTap: _pickAndCropImage,
                     child: _image != null
                         ? CircleAvatar(
-                            radius: 100,
-                            backgroundImage: MemoryImage(_image!),
+                            radius: 80,
+                            backgroundImage: FileImage(_image!),
+                            backgroundColor: Colors.grey[200],
                           )
                         : CircleAvatar(
-                            radius: 100,
+                            radius: 80,
                             backgroundImage: AssetImage(
                                 'assets/profiles/default-user-image.png'),
+                            backgroundColor: Colors.grey[200],
                           ),
                   ),
                   Positioned(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/services/relationship/user_invitation.dart';
 
 class InvitationsSent extends StatefulWidget {
@@ -45,14 +46,9 @@ class _InvitationsSentState extends State<InvitationsSent> {
                     Map<String, dynamic> userData = invites[index]['userData'];
 
                     return ListTile(
-                      leading: ClipOval(
-                        child: Image.network(
-                          userData['profileImageUrl'],
-                          fit: BoxFit.cover,
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
+                      leading: BuildProfileImage(
+                          profileImageUrl: userData['profileImageUrl'],
+                          imageSize: 40),
                       trailing: IconButton(
                         onPressed: () async {
                           await UserInvitation()

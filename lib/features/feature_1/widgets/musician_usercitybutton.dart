@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/search_list_city.dart';
 
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
@@ -43,17 +44,15 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                         ElevatedButton(
                           onPressed: () {
                             _city = 'Brasil';
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListMusicians(
+                            navigationFadeTo(
+                                context: context,
+                                destination: ListMusicians(
                                   profileListFunction:
                                       _searchService.getAvalibleProfiles(
                                           category: _category, city: _city),
                                   city: _city,
                                   category: _category,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -87,17 +86,15 @@ class _UserCityButtonProfileState extends State<UserCityButtonProfile> {
                               Navigator.of(context).pop();
                             } else {
                               _city = cityController.text;
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ListMusicians(
+                              navigationFadeTo(
+                                  context: context,
+                                  destination: ListMusicians(
                                     profileListFunction:
                                         _searchService.getAvalibleProfiles(
                                             category: _category, city: _city),
                                     city: _city,
                                     category: _category,
-                                  ),
-                                ),
-                              );
+                                  ));
                             }
                           },
                           child: Text('Selecionar'))

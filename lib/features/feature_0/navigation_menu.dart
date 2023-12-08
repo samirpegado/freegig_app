@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs.dart';
 import 'package:freegig_app/features/feature_0/screens/home/home.dart';
 import 'package:freegig_app/features/feature_0/screens/messages/messages.dart';
+import 'package:page_transition/page_transition.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int navPage;
@@ -14,19 +15,39 @@ class NavigationMenu extends StatefulWidget {
   _NavigationMenuState createState() => _NavigationMenuState();
 }
 
-class _NavigationMenuState extends State<NavigationMenu> {
+class _NavigationMenuState extends State<NavigationMenu>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
   int selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
     selectedIndex = widget.navPage;
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+    );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Inicia a animação após o primeiro frame ser desenhado
+      controller.forward();
+    });
   }
 
   void onDestinationSelected(int index) {
-    setState(() {
-      selectedIndex = index;
+    controller.reverse().then((value) {
+      setState(() {
+        selectedIndex = index;
+      });
+      controller.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -39,9 +60,15 @@ class _NavigationMenuState extends State<NavigationMenu> {
           return false;
         } else {
           // Se não, navega para outra instância de NavigationMenu com navPage: 0
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NavigationMenu(navPage: 0),
-          ));
+          Navigator.push(
+            context,
+            PageTransition(
+              duration: Duration(milliseconds: 300),
+              type: PageTransitionType.fade,
+              child: NavigationMenu(navPage: 0),
+            ),
+          );
+
           return false;
         }
       },
@@ -81,6 +108,21 @@ class _NavigationMenuState extends State<NavigationMenu> {
   }
 
   Widget _buildPage(int index) {
+    return FadeTransition(
+      opacity: Tween<double>(
+        begin: 0.0,
+        end: 1.0,
+      ).animate(
+        CurvedAnimation(
+          parent: controller,
+          curve: Curves.fastEaseInToSlowEaseOut,
+        ),
+      ),
+      child: _getPage(index),
+    );
+  }
+
+  Widget _getPage(int index) {
     switch (index) {
       case 0:
         return Home();

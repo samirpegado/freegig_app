@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/widgets/gigs_card.dart';
+import 'package:freegig_app/common/widgets/my_gigs_card_tile.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs_participating.dart';
+import 'package:iconsax/iconsax.dart';
 
 class ParticipantGigsCard extends StatefulWidget {
   @override
@@ -10,23 +11,17 @@ class ParticipantGigsCard extends StatefulWidget {
 }
 
 class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
-  late Stream<List<Map<String, dynamic>>> gigsDataList;
-
-  @override
-  void initState() {
-    super.initState();
-    gigsDataList = GigsDataService().getParticipantGigsStream();
-  }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: gigsDataList,
+      stream: GigsDataService().getParticipantGigsStream(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Center(child: CircularProgressIndicator()),
+          return Container(
+            height: MediaQuery.sizeOf(context).height * 0.6,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
           );
         } else if (snapshot.hasError) {
           return Text('Erro: ${snapshot.error}');
@@ -47,17 +42,12 @@ class _ParticipantGigsCardState extends State<ParticipantGigsCard> {
           return Column(
             children: gigs.map((gig) {
               // Seu código para construir os cards
-              return Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ParticipatingGigInfo(gig: gig)));
-                  },
-                  child: CommonGigsCard(
-                    gig: gig,
-                    moneyColor: Colors.green,
-                  ),
+              return MyGigsCardTile(
+                destination: ParticipatingGigInfo(gig: gig),
+                gig: gig,
+                leadingIcon: Icon(
+                  Iconsax.share,
+                  color: Colors.grey[500],
                 ),
               );
             }).toList(),

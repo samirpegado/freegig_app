@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
@@ -47,14 +49,9 @@ class _RequestsSentState extends State<RequestsSent> {
                     Map<String, dynamic> userData = requests[index]['userData'];
 
                     return ListTile(
-                      leading: ClipOval(
-                        child: Image.network(
-                          userData['profileImageUrl'],
-                          fit: BoxFit.cover,
-                          width: 50,
-                          height: 50,
-                        ),
-                      ),
+                      leading: BuildProfileImage(
+                          profileImageUrl: userData['profileImageUrl'],
+                          imageSize: 40),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -93,12 +90,10 @@ class _RequestsSentState extends State<RequestsSent> {
                                         onPressed: () async {
                                           await UserRequest().refuseRequest(
                                               requestData['requestUid']);
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      NavigationMenu(
-                                                        navPage: 1,
-                                                      )));
+                                          navigationFadeTo(
+                                              context: context,
+                                              destination:
+                                                  NavigationMenu(navPage: 1));
                                         },
                                         child: Text(
                                           'Remover',
@@ -150,12 +145,10 @@ class _RequestsSentState extends State<RequestsSent> {
                                                   requestData['gigUid'],
                                               requesterUid:
                                                   requestData['requesterUid']);
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      NavigationMenu(
-                                                        navPage: 1,
-                                                      )));
+                                          navigationFadeTo(
+                                              context: context,
+                                              destination:
+                                                  NavigationMenu(navPage: 1));
                                         },
                                         child: Text(
                                           'Adicionar',

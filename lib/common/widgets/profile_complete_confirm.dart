@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 
 class ProfileCompleteConfirm extends StatelessWidget {
@@ -23,8 +24,8 @@ class ProfileCompleteConfirm extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => NavigationMenu(navPage: 3)));
+            navigationFadeTo(
+                context: context, destination: NavigationMenu(navPage: 3));
           },
           child: Text(
             'Completar',

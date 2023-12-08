@@ -2,6 +2,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -44,16 +46,13 @@ class _LoginScreenState extends State<LoginScreen> {
     if (formKey.currentState!.validate()) {
       User? user = await _auth.signInWithEmailAndPassword(
           context, email.trim(), password.trim());
+
       if (user != null) {
         print('User is successfully sign in');
+        await FirebaseApi().updateUserToken();
 
         // Se o login tiver sucesso, navegue para a tela desejada
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NavigationMenu(),
-          ),
-        );
+        navigationFadeTo(context: context, destination: NavigationMenu());
       } else {
         print('Some error happend');
       }
@@ -173,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 signIn();
                               },
                               child: isSigningUp
@@ -203,8 +202,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: double.infinity,
                             child: OutlinedButton(
                               onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => SignUpScreen()));
+                                navigationFadeTo(
+                                    context: context,
+                                    destination: SignUpScreen());
                               },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
@@ -230,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  ///Dividor
+                  ///Divisor
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

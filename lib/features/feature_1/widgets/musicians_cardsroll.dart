@@ -3,6 +3,7 @@ import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/features/feature_1/screens/2_musiciandetail.dart';
 import 'package:freegig_app/features/feature_1/widgets/musician_rate.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeCardsRoll extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> profileListFunction;
@@ -53,12 +54,13 @@ class _HomeCardsRollState extends State<HomeCardsRoll> {
                           left: 15, right: 15, bottom: 10),
                       child: InkWell(
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ProfileDetailsPage(profile: profiles[index]),
-                            ),
-                          );
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  duration: Duration(milliseconds: 300),
+                                  type: PageTransitionType.leftToRight,
+                                  child: ProfileDetailsPage(
+                                      profile: profiles[index])));
                         },
                         child: Card(
                           elevation: 2,

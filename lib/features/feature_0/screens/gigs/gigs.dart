@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/profile_complete_confirm.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/my_gig_cards.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs_archived.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/created_gigs_card.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/participating_gigs_card.dart';
-import 'package:freegig_app/services/relationship/user_invitation.dart';
-import 'package:freegig_app/services/relationship/user_rate.dart';
-import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
 
 class GIGs extends StatefulWidget {
@@ -21,50 +17,17 @@ class GIGs extends StatefulWidget {
 }
 
 class _GIGsState extends State<GIGs> {
-  int notification = 0;
-  late Future<List<Map<String, dynamic>>> requestForMyGigs;
-  late Future<List<Map<String, dynamic>>> invitationToOtherGigs;
-  late Future<List<Map<String, dynamic>>> getRateNotifications;
-  late bool _profileStatus = true;
-
-  @override
-  void initState() {
-    super.initState();
-    loadNotifications();
-    _loadUserData();
-  }
-
-  Future<void> loadNotifications() async {
-    requestForMyGigs = UserRequest().listRequestsByGigOwner();
-    invitationToOtherGigs = UserInvitation().getReceivedInvitation();
-    getRateNotifications = UserRateService().getRateNotifications();
-
-    List<Map<String, dynamic>> requests =
-        await UserRequest().listRequestsByGigOwner();
-    List<Map<String, dynamic>> invitations =
-        await UserInvitation().getReceivedInvitation();
-    List<Map<String, dynamic>> rateNotifications =
-        await UserRateService().getRateNotifications();
-
-    if (mounted) {
-      setState(() {
-        // Atualize o estado apenas se a página estiver montada
-        notification =
-            requests.length + invitations.length + rateNotifications.length;
-      });
-    }
-  }
-
-  Future<void> _loadUserData() async {
+  Future<bool> checkProfileStatus() async {
     try {
       Map<String, dynamic> userData =
           await UserDataService().getCurrentUserData();
 
-      setState(() {
-        _profileStatus = userData['profileComplete'];
-      });
+      // Retorna o valor de _profileStatus como um Future<bool>
+      return userData['profileComplete'] ?? true;
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
+
+      return false;
     }
   }
 
@@ -72,195 +35,77 @@ class _GIGsState extends State<GIGs> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => NavigationMenu()));
+        navigationFadeTo(context: context, destination: NavigationMenu());
+
         return false;
       },
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            actions: [
-              Stack(
-                children: [
-                  Center(
-                    child: IconButton(
-                      onPressed: () {
-                        notification != 0
-                            ? Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => GigsNotification()))
-                            : showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text(
-                                              'Fechar',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ))
-                                      ],
-                                      content: Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: Text(
-                                          'Nenhuma notificação recebida',
-                                        ),
-                                      ),
-                                    ));
-                      },
-                      icon: Icon(Iconsax.notification),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          actions: [
+            IconButton(
+              onPressed: () async {
+                if (await checkProfileStatus() == true) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog.fullscreen(
+                      backgroundColor: backgroundColor,
+                      child: CreateNewGig(),
                     ),
-                  ),
-                  Visibility(
-                    visible: notification != 0 ? true : false,
-                    child: Positioned(
-                      bottom: 12,
-                      left: 30,
-                      child: Container(
-                        height: 15,
-                        width: 15,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            notification < 10 ? '$notification' : '9+',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 7.5,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                onPressed: () {
-                  if (_profileStatus == true) {
-                    showDialog(
+                  );
+                } else {
+                  showDialog(
                       context: context,
-                      builder: (context) => Dialog.fullscreen(
-                        backgroundColor: backgroundColor,
-                        child: CreateNewGig(),
-                      ),
-                    );
-                  } else {
-                    showDialog(
-                        context: context,
-                        builder: (context) => ProfileCompleteConfirm());
-                  }
-                },
-                icon: Icon(
-                  Iconsax.add_circle5,
-                  color: Colors.blue,
-                  size: 35,
-                ),
-              ),
-              SizedBox(width: 5)
-            ],
-            title: Text(
-              'GIGs',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 19.0,
+                      builder: (context) => ProfileCompleteConfirm());
+                }
+              },
+              icon: Icon(
+                Iconsax.add_circle5,
+                color: Colors.blue,
+                size: 35,
               ),
             ),
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
+            SizedBox(width: 5)
+          ],
+          title: Text(
+            'Minhas GIGs',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 19.0,
+            ),
           ),
-          backgroundColor: backgroundColor,
-          body: Column(
-            children: [
-              TabBar(
-                tabs: [
-                  Tab(
-                    height: 70,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Iconsax.note_add,
-                          size: 26,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          "Suas GIGs",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, color: Colors.blue),
-                        )
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    height: 70,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Iconsax.share,
-                            size: 26,
-                            color: Colors.green,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Participando",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Colors.green),
-                          )
-                        ]),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [MyGigsCard()],
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      child: Column(
-                        children: [ParticipantGigsCard()],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => ArchivedGigs()));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Gigs arquivadas  ',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                      Icon(Iconsax.arrow_right_3, color: Colors.black54),
-                    ],
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+        backgroundColor: backgroundColor,
+        body: Column(
+          children: [
+            ///Listar as gigs criadas e participando
+            Expanded(
+                child: SingleChildScrollView(
+              child: MyGigCards(),
+            )),
+
+            ///Botao para as gigs arquivadas
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    navigationFadeTo(
+                        context: context, destination: ArchivedGigs());
+                  },
+                  child: Text(
+                    'Gigs arquivadas  ',
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                 ),
-              )
-            ],
-          ),
+                Icon(Iconsax.arrow_right_3, color: Colors.black54),
+              ],
+            ),
+            SizedBox(height: 10),
+          ],
         ),
       ),
     );

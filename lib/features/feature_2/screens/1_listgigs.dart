@@ -1,13 +1,15 @@
 import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_usercategorybutton.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_usercitybutton.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_2/widgets/gigs_descriptioncard.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/search/search_service.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 
 class ListGigs extends StatefulWidget {
   final Stream<List<Map<String, dynamic>>> dataListFunction;
@@ -37,8 +39,18 @@ class _ListGigsState extends State<ListGigs> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => NavigationMenu()));
+        Navigator.push(
+          context,
+          PageTransition(
+            duration: Duration(milliseconds: 300),
+            type: PageTransitionType.fade,
+            childCurrent: ListGigs(
+                dataListFunction: widget.dataListFunction,
+                city: widget.city,
+                category: widget.category),
+            child: NavigationMenu(),
+          ),
+        );
         return false;
       },
       child: Scaffold(
@@ -73,6 +85,7 @@ class _ListGigsState extends State<ListGigs> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(width: 20),
                   Expanded(
                     child: UserCityButtonGig(
                       city: widget.city,
@@ -82,7 +95,8 @@ class _ListGigsState extends State<ListGigs> {
                   Expanded(
                     child: UserCategoryButton(
                         city: widget.city, category: widget.category),
-                  )
+                  ),
+                  SizedBox(width: 20),
                 ],
               ),
               Expanded(
@@ -135,9 +149,9 @@ Future openFilter(context, TextEditingController dateController, String city,
                     children: [
                       TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListGigs(
+                            navigationFadeTo(
+                                context: context,
+                                destination: ListGigs(
                                   dataListFunction:
                                       searchService.getAvalibleGigs(
                                     cache: 'decreasing',
@@ -146,16 +160,14 @@ Future openFilter(context, TextEditingController dateController, String city,
                                   ),
                                   city: city,
                                   category: category,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text('Maior para o menor')),
                       TextButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ListGigs(
+                            navigationFadeTo(
+                                context: context,
+                                destination: ListGigs(
                                   dataListFunction:
                                       searchService.getAvalibleGigs(
                                     cache: 'increasing',
@@ -164,9 +176,7 @@ Future openFilter(context, TextEditingController dateController, String city,
                                   ),
                                   city: city,
                                   category: category,
-                                ),
-                              ),
-                            );
+                                ));
                           },
                           child: Text('Menor para o maior')),
                     ],
@@ -200,18 +210,16 @@ Future openFilter(context, TextEditingController dateController, String city,
               actions: [
                 IconButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ListGigs(
+                    navigationFadeTo(
+                        context: context,
+                        destination: ListGigs(
                           dataListFunction: searchService.getAvalibleGigs(
                               category: category,
                               city: city,
                               data: dateController.text),
                           city: city,
                           category: category,
-                        ),
-                      ),
-                    );
+                        ));
                   },
                   icon: Icon(
                     Icons.check,

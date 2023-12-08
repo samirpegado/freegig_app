@@ -26,14 +26,17 @@ class ChatService extends ChangeNotifier {
     String chatRoomId = ids.join('_');
 
     //adiciona a mensagem a base de dados
-    await _firestore
+    DocumentReference msg = _firestore
         .collection('chat_rooms')
         .doc(chatRoomId)
         .collection('messages')
-        .add({
+        .doc();
+
+    await msg.set({
       'message': message,
       'timestamp': timestamp,
       'senderId': currentUserId,
+      'msgUid': msg.id,
     });
 
     DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
@@ -71,6 +74,99 @@ class ChatService extends ChangeNotifier {
         .collection('messages')
         .orderBy('timestamp', descending: false)
         .snapshots();
+  }
+
+  //APAGAR MENSAGEM
+  Future<void> deleteGigMessages(
+      String userId, String otherUserID, String gigUid, String msgUid) {
+    List<String> ids = [
+      userId.substring(0, 10),
+      otherUserID.substring(0, 10),
+      gigUid.substring(0, 10),
+    ];
+    ids.sort();
+    String chatRoomId = ids.join('_');
+    return _firestore
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .doc(msgUid)
+        .delete();
+  }
+
+  //CRIA O CAMPO DE ULTIMA VISUALIZACAO DO USUARIO
+  Future<void> lastSeen(
+    String otherUserID,
+    String gigUid,
+  ) async {
+    // pega informacao do usuario logado
+    final String currentUserId = _auth.currentUser!.uid;
+    final Timestamp timestamp = Timestamp.now();
+    List<String> ids = [
+      currentUserId.substring(0, 10),
+      otherUserID.substring(0, 10),
+      gigUid.substring(0, 10),
+    ];
+    ids.sort();
+    String chatRoomId = ids.join('_');
+
+    DocumentReference msg = _firestore
+        .collection('chat_rooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .doc('00ls_' + currentUserId);
+
+    await msg.set({
+      'lastSeen': timestamp,
+    });
+  }
+
+  Stream<Map<String, DateTime?>> getTimestampsStream(
+      String otherUserID, String gigUid) async* {
+    final String currentUserId = _auth.currentUser!.uid;
+
+    List<String> ids = [
+      currentUserId.substring(0, 10),
+      otherUserID.substring(0, 10),
+      gigUid.substring(0, 10),
+    ];
+    ids.sort();
+    String chatRoomId = ids.join('_');
+
+    try {
+      final DocumentReference<Map<String, dynamic>> userDocumentRef = _firestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .doc('00ls_' + currentUserId);
+
+      final Query<Map<String, dynamic>> query = _firestore
+          .collection('chat_rooms')
+          .doc(chatRoomId)
+          .collection('messages')
+          .orderBy('timestamp', descending: true)
+          .limit(1);
+
+      await for (final _ in userDocumentRef.snapshots()) {
+        final userDocument = await userDocumentRef.get();
+        final userLastSeen =
+            (userDocument.data()?['lastSeen'] as Timestamp?)?.toDate() ??
+                DateTime(1990, 6, 23);
+
+        final querySnapshot = await query.get();
+        final lastTimestamp = querySnapshot.docs.isNotEmpty
+            ? (querySnapshot.docs.first.get('timestamp') as Timestamp?)
+                ?.toDate()
+            : DateTime(1990, 6, 23);
+
+        yield {
+          'userLastSeen': userLastSeen,
+          'lastTimestamp': lastTimestamp,
+        };
+      }
+    } catch (e) {
+      print("Erro ao obter timestamps: $e");
+    }
   }
 
   //RECEBE DADOS DOS CHATS

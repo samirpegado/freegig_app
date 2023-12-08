@@ -44,38 +44,44 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          onPressed: () {
-            if (_profileStatus == true) {
-              showDialog(
-                  context: context,
-                  builder: (context) => InviteConfirm(profile: widget.profile));
-            } else {
-              showDialog(
-                  context: context,
-                  builder: (context) => ProfileCompleteConfirm());
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Text(
-              "Convidar músico",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 16.0,
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                if (_profileStatus == true) {
+                  showDialog(
+                      context: context,
+                      builder: (context) =>
+                          InviteConfirm(profile: widget.profile));
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (context) => ProfileCompleteConfirm());
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Text(
+                  "Convidar",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -87,76 +93,18 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
                 SizedBox(height: 20),
 
                 /// Header
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.profile['publicName'],
-                            style: TextStyle(
-                              height: 1,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            widget.profile['category'],
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Iconsax.location5,
-                                size: 18,
-                              ),
-                              Text(
-                                ' ' + widget.profile['city'],
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Iconsax.instagram5,
-                                size: 18,
-                              ),
-                              Text(
-                                ' ' + widget.profile['instagram'],
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            widget.profile['description'],
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-                    BuildProfileImage(
-                        profileImageUrl: widget.profile['profileImageUrl'],
-                        imageSize: 100)
-                  ],
-                ),
+                _header(widget.profile),
                 SizedBox(height: 20),
 
                 ///Profile numbers
                 RatingStreamBuilder(profileUid: widget.profile['uid']),
                 SizedBox(height: 10),
 
+                ///Profile about
                 buildAbout(profile: widget.profile),
                 SizedBox(height: 20),
+
+                ///Profile last releases
                 lastReleases(profile: widget.profile),
                 SizedBox(height: 20),
               ],
@@ -166,6 +114,68 @@ class _ProfileDetailsPageState extends State<ProfileDetailsPage> {
       ),
     );
   }
+}
+
+Widget _header(Map<String, dynamic> profile) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              profile['publicName'],
+              style: TextStyle(
+                height: 1,
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              profile['category'],
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+            ),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.location5,
+                  size: 18,
+                ),
+                Text(
+                  ' ' + profile['city'],
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Icon(
+                  Iconsax.instagram5,
+                  size: 18,
+                ),
+                Text(
+                  ' ' + profile['instagram'],
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                ),
+              ],
+            ),
+            Text(
+              profile['description'],
+              style: TextStyle(fontSize: 15, color: Colors.black),
+            ),
+          ],
+        ),
+      ),
+      BuildProfileImage(
+          profileImageUrl: profile['profileImageUrl'], imageSize: 100)
+    ],
+  );
 }
 
 Widget buildAbout({required Map<String, dynamic> profile}) => Container(

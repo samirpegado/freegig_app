@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profile_change_image.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_ads.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_delete_account.dart';
@@ -66,8 +67,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               ///Lista de servicos
               ListTile(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ProfileUpdateForm()));
+                  navigationFadeTo(
+                      context: context, destination: ProfileUpdateForm());
                 },
                 leading: Icon(Iconsax.user_edit),
                 title: Text('Editar perfil'),
@@ -75,8 +76,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
               ),
               ListTile(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ChangeProfileImage()));
+                  navigationFadeTo(
+                      context: context, destination: ChangeProfileImage());
                 },
                 leading: Icon(Iconsax.camera),
                 title: Text('Alterar foto'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs_created.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/invitationconfirm.dart';
 import 'package:freegig_app/common/screens/user_rate.dart';
@@ -14,32 +15,6 @@ class GigsNotification extends StatefulWidget {
 }
 
 class _GigsNotificationState extends State<GigsNotification> {
-  late Future<List<Map<String, dynamic>>> requestForMyGigs;
-  late Future<List<Map<String, dynamic>>> invitationToOtherGigs;
-  late Future<List<Map<String, dynamic>>> getRateNotifications;
-  bool _isLoading = true;
-
-  void initState() {
-    super.initState();
-    loadData();
-  }
-
-  void loadData() async {
-    try {
-      requestForMyGigs = UserRequest().listRequestsByGigOwner();
-      invitationToOtherGigs = UserInvitation().getReceivedInvitation();
-      getRateNotifications = UserRateService().getRateNotifications();
-      await Future.wait(
-          [requestForMyGigs, invitationToOtherGigs, getRateNotifications]);
-    } catch (error) {
-      print('Erro ao carregar dados: $error');
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,24 +24,22 @@ class _GigsNotificationState extends State<GigsNotification> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildInvitationsSection(),
-                  _buildRequestsSection(),
-                  _buildRateNotificationsSection(),
-                ],
-              ),
-            ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildInvitationsSection(),
+            _buildRequestsSection(),
+            _buildRateNotificationsSection(),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildInvitationsSection() {
     return FutureBuilder(
-      future: invitationToOtherGigs,
+      future: UserInvitation().getReceivedInvitation(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -115,7 +88,7 @@ class _GigsNotificationState extends State<GigsNotification> {
 
   Widget _buildRequestsSection() {
     return FutureBuilder(
-      future: requestForMyGigs,
+      future: UserRequest().listRequestsByGigOwner(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -136,11 +109,9 @@ class _GigsNotificationState extends State<GigsNotification> {
               return ListTile(
                 trailing: TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => CreatedGigInfo(gig: gigData),
-                      ),
-                    );
+                    navigationFadeTo(
+                        context: context,
+                        destination: CreatedGigInfo(gig: gigData));
                   },
                   child: Text('Ver'),
                 ),
@@ -158,7 +129,7 @@ class _GigsNotificationState extends State<GigsNotification> {
 
   Widget _buildRateNotificationsSection() {
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: getRateNotifications,
+      future: UserRateService().getRateNotifications(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -181,13 +152,9 @@ class _GigsNotificationState extends State<GigsNotification> {
                 ),
                 trailing: TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => UserRating(
-                          docData: notification,
-                        ),
-                      ),
-                    );
+                    navigationFadeTo(
+                        context: context,
+                        destination: UserRating(docData: notification));
                   },
                   child: Text('Ver'),
                 ),

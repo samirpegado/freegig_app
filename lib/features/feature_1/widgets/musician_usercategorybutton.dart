@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/features/feature_1/screens/1_listmusicians.dart';
 import 'package:freegig_app/services/search/search_service.dart';
@@ -42,15 +43,14 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                         ElevatedButton(
                           onPressed: () {
                             _category = 'Todos';
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => ListMusicians(
-                                      profileListFunction:
-                                          _searchService.getAvalibleProfiles(
-                                              city: _city, category: _category),
-                                      city: _city,
-                                      category: _category)),
-                            );
+                            navigationFadeTo(
+                                context: context,
+                                destination: ListMusicians(
+                                    profileListFunction:
+                                        _searchService.getAvalibleProfiles(
+                                            city: _city, category: _category),
+                                    city: _city,
+                                    category: _category));
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -86,16 +86,14 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                             } else {
                               _category = categoryController.text;
 
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => ListMusicians(
-                                        profileListFunction:
-                                            _searchService.getAvalibleProfiles(
-                                                city: _city,
-                                                category: _category),
-                                        city: _city,
-                                        category: _category)),
-                              );
+                              navigationFadeTo(
+                                  context: context,
+                                  destination: ListMusicians(
+                                      profileListFunction:
+                                          _searchService.getAvalibleProfiles(
+                                              city: _city, category: _category),
+                                      city: _city,
+                                      category: _category));
                             }
                           },
                           child: Text('Selecionar'))

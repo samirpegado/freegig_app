@@ -156,7 +156,7 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                     ),
                     BuildProfileImage(
                         profileImageUrl: widget.gig['profileImageUrl'],
-                        imageSize: 40),
+                        imageSize: 55),
                   ],
                 ),
               ],

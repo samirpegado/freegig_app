@@ -40,6 +40,20 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
+  void initState() {
+    _chatService.lastSeen(widget.receiverUid, widget.gigSubjectUid);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _chatService.lastSeen(widget.receiverUid, widget.gigSubjectUid);
+
+    _messageFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -129,14 +143,52 @@ class _ChatPageState extends State<ChatPage> {
       child: Column(
         crossAxisAlignment: columnAlignment,
         children: [
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), color: colorContainer),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                data['message'],
-                style: TextStyle(color: colorText, fontWeight: FontWeight.w500),
+          InkWell(
+            onLongPress: () {
+              if (data['senderId'] == _firebaseAuth.currentUser!.uid) {
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          actionsAlignment: MainAxisAlignment.center,
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Fechar',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _chatService.deleteGigMessages(
+                                    _firebaseAuth.currentUser!.uid,
+                                    widget.receiverUid,
+                                    widget.gigSubjectUid,
+                                    data['msgUid']);
+                                Navigator.of(context).pop();
+                              },
+                              child: Text(
+                                'Apagar',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ));
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: colorContainer),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  data['message'],
+                  style:
+                      TextStyle(color: colorText, fontWeight: FontWeight.w500),
+                ),
               ),
             ),
           ),
@@ -153,12 +205,6 @@ class _ChatPageState extends State<ChatPage> {
 
   // build message input
   FocusNode _messageFocusNode = FocusNode();
-  @override
-  void dispose() {
-    // Certifique-se de descartar o FocusNode ao sair do widget
-    _messageFocusNode.dispose();
-    super.dispose();
-  }
 
   Widget _buildMessageInput() {
     return Container(

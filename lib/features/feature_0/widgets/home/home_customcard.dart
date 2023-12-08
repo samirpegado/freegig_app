@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomeCustomCard extends StatefulWidget {
   final String imgCard;
@@ -54,8 +55,14 @@ class _HomeCustomCardState extends State<HomeCustomCard> {
                   backgroundColor: Colors.white,
                 ),
                 onPressed: () async {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => widget.destination));
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      duration: Duration(milliseconds: 500),
+                      type: PageTransitionType.bottomToTop,
+                      child: widget.destination,
+                    ),
+                  );
                 },
                 child: Text(
                   widget.buttonText,

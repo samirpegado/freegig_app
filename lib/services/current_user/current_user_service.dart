@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -30,13 +30,13 @@ class UserDataService {
     required String release,
     required String lastReleases,
     required String instagram,
-    required Uint8List image,
+    required File image,
   }) async {
     try {
       User? user = _auth.currentUser;
 
       if (user != null) {
-        String imageUrl = await uploadImagetoStorage(user.uid, image);
+        String imageUrl = await uploadImageToStorage(user.uid, image);
         await _firestore.collection('users').doc(user.uid).update({
           'description': description,
           'release': release,
@@ -53,13 +53,13 @@ class UserDataService {
   }
 
   Future<void> updateProfileImage({
-    required Uint8List image,
+    required File image,
   }) async {
     try {
       User? user = _auth.currentUser;
 
       if (user != null) {
-        String imageUrl = await uploadImagetoStorage(user.uid, image);
+        String imageUrl = await uploadImageToStorage(user.uid, image);
         await _firestore.collection('users').doc(user.uid).update({
           'profileImageUrl': imageUrl,
         });
@@ -99,11 +99,42 @@ class UserDataService {
     }
   }
 
-  Future<String> uploadImagetoStorage(String childName, Uint8List file) async {
-    Reference ref = _storage.ref().child(childName);
-    UploadTask uploadTask = ref.putData(file);
+  Future<String> uploadImageToStorage(String userUid, File file) async {
+    // Adiciona o timestamp ao nome do child
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    String userUidWithTimestamp = '$userUid-$timestamp';
+
+    // Cria a referência no Firebase Storage para o novo arquivo dentro da pasta userUid
+    Reference newRef =
+        _storage.ref().child(userUid).child(userUidWithTimestamp);
+
+    // Inicia o upload do novo arquivo
+    UploadTask uploadTask = newRef.putFile(file);
+
+    // Aguarda a conclusão do upload
     TaskSnapshot snapshot = await uploadTask;
+
+    // Obtém a URL de download do novo arquivo enviado
     String downloadUrl = await snapshot.ref.getDownloadURL();
+
+    // Cria a referência no Firebase Storage para a pasta userUid
+    Reference userDirectoryRef = _storage.ref().child(userUid);
+
+    try {
+      // Lista os itens na pasta userUid
+      ListResult listResult = await userDirectoryRef.listAll();
+
+      // Exclui todos os itens na pasta userUid, exceto o mais recente
+      for (Reference ref in listResult.items) {
+        if (ref.name != newRef.name) {
+          await ref.delete();
+        }
+      }
+    } catch (e) {
+      // Lida com erros ao excluir itens antigos
+      print('Erro ao excluir itens antigos: $e');
+    }
+
     return downloadUrl;
   }
 }

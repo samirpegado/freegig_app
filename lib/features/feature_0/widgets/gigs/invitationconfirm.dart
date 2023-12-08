@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/functions/toast.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/services/relationship/user_invitation.dart';
@@ -157,14 +159,9 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                   return Column(
                     children: participantsData.map((participant) {
                       return ListTile(
-                        leading: ClipOval(
-                          child: Image.network(
-                            participant['profileImageUrl'],
-                            fit: BoxFit.cover,
-                            width: 50,
-                            height: 50,
-                          ),
-                        ),
+                        leading: BuildProfileImage(
+                            profileImageUrl: participant['profileImageUrl'],
+                            imageSize: 40),
                         title: Text(
                           participant['publicName'],
                           style: TextStyle(fontSize: 15),
@@ -198,8 +195,9 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                   onPressed: () async {
                     await UserInvitation()
                         .myInvitationDelete(widget.inviteData['inviteUid']);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NavigationMenu(navPage: 1)));
+                    navigationFadeTo(
+                        context: context,
+                        destination: NavigationMenu(navPage: 1));
                   },
                   child: Text(
                     'Recusar',
@@ -212,8 +210,10 @@ class _InvitationConfirmState extends State<InvitationConfirm> {
                       await UserInvitation().acceptInvitation(
                           invitationId: widget.inviteData['inviteUid'],
                           selectedGigUid: widget.gig['gigUid']);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => NavigationMenu(navPage: 1)));
+
+                      navigationFadeTo(
+                          context: context,
+                          destination: NavigationMenu(navPage: 1));
                     } else {
                       Navigator.of(context).pop();
                       showToast(message: "Esta GIG se encontra fechada.");

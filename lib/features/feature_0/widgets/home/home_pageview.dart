@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/common/widgets/gig_more_info.dart';
 import 'package:iconsax/iconsax.dart';
@@ -57,19 +58,15 @@ class _HomeAgendaState extends State<HomeAgenda> {
                             context: context,
                             builder: (context) => MoreInfo(gig: gig));
                       },
-                      leading: Container(
-                        height: double
-                            .infinity, // Define a altura desejada para o ícone
-                        child: Icon(Iconsax.category_2),
+                      leading: Icon(Iconsax.category_2),
+                      title: Text(
+                        gig['gigDescription'],
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
-                      title: Text(gig['gigDescription']),
-                      subtitle: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(gig['gigDate']),
-                            Expanded(
-                                child: Text(' - ' + gig['gigInitHour'] + 'h')),
-                          ]),
+                      subtitle: Text(
+                          FormatDate().formatDateString(gig['gigDate']) +
+                              ', ' +
+                              gig['gigInitHour']),
                       trailing: Icon(Iconsax.arrow_right_3),
                     ),
                   );

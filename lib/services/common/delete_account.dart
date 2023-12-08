@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
 
 class DeleteUserService extends ChangeNotifier {
@@ -122,8 +123,7 @@ class DeleteUserService extends ChangeNotifier {
             .delete();
 
         await deleteFirebaseAuthUser();
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        navigationFadeTo(context: context, destination: LoginScreen());
       }
     } catch (e) {}
   }

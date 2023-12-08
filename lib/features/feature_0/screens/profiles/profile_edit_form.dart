@@ -1,9 +1,13 @@
 import 'dart:typed_data';
+import 'dart:io';
+
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:freegig_app/common/functions/pickimage.dart';
-import 'package:freegig_app/common/functions/themeapp.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -16,7 +20,7 @@ class ProfileEditForm extends StatefulWidget {
 
 class _ProfileEditFormState extends State<ProfileEditForm> {
   late String _publicName = "";
-  Uint8List? _image;
+  File? _image;
   bool _isImageSelected = false;
 
   @override
@@ -79,18 +83,63 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         instagram: instagram.text.trim(),
         image: _image!,
       );
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => NavigationMenu(navPage: 3),
-      ));
+      navigationFadeTo(
+          context: context, destination: NavigationMenu(navPage: 3));
     }
   }
 
-  void _pickImage() async {
-    Uint8List? img = await pickImage(ImageSource.gallery);
-    setState(() {
-      _image = img;
-      _isImageSelected = true;
-    });
+  void _pickAndCropImage() async {
+    final picker = ImagePicker();
+
+    // Passo 1: Obter imagem da galeria
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      // Passo 2: Abrir o ImageCropper
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Cortar',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: 'Cortar',
+          ),
+        ],
+      );
+
+      if (croppedFile != null) {
+        // Passo 3: Redimensionar a imagem
+        File resizedImage = await resizeImage(croppedFile.path, 600, 600);
+
+        // Passo 4: Atualizar o estado com a imagem redimensionada
+        setState(() {
+          _image = resizedImage;
+          _isImageSelected = true;
+        });
+      }
+    }
+  }
+
+// Função para redimensionar a imagem
+  Future<File> resizeImage(String imagePath, int width, int height) async {
+    File imageFile = File(imagePath);
+    Uint8List imageBytes = await imageFile.readAsBytes();
+
+    img.Image? image = img.decodeImage(imageBytes);
+    img.Image resizedImage =
+        img.copyResize(image!, width: width, height: height);
+
+    File resizedFile = File(imagePath)
+      ..writeAsBytesSync(
+          img.encodeJpg(resizedImage, quality: 50)); // Ajusta a qualidade
+
+    return resizedFile;
   }
 
   @override
@@ -155,16 +204,18 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
                   Stack(
                     children: [
                       InkWell(
-                        onTap: _pickImage,
+                        onTap: _pickAndCropImage,
                         child: _image != null
                             ? CircleAvatar(
                                 radius: 50,
-                                backgroundImage: MemoryImage(_image!),
+                                backgroundImage: FileImage(_image!),
+                                backgroundColor: Colors.grey[200],
                               )
                             : CircleAvatar(
                                 radius: 50,
                                 backgroundImage: AssetImage(
                                     'assets/profiles/default-user-image.png'),
+                                backgroundColor: Colors.grey[200],
                               ),
                       ),
                       Positioned(
