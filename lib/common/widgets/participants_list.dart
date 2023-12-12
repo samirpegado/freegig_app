@@ -16,8 +16,8 @@ class ParticipantList extends StatefulWidget {
 class _ParticipantListState extends State<ParticipantList> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: GigsDataService().getParticipantsData(widget.gigUid),
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: GigsDataService().getParticipantsDataStream(widget.gigUid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(heightFactor: 2, child: CircularProgressIndicator());

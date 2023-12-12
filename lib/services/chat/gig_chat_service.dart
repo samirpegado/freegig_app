@@ -118,16 +118,22 @@ class GigChatService extends ChangeNotifier {
   Stream<QuerySnapshot<Map<String, dynamic>>> getGigChatRoomsData() {
     // Obtém o ID do usuário logado
     String userId = _auth.currentUser!.uid;
+    try {
+      // Cria a consulta
+      Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+          .collection('gigs')
+          .where('gigArchived', isEqualTo: false)
+          .where('gigParticipants', arrayContains: userId)
+          .where('gigChat', isEqualTo: true);
 
-    // Cria a consulta
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-        .collection('gigs')
-        .where('gigArchived', isEqualTo: false)
-        .where('gigParticipants', arrayContains: userId)
-        .where('gigChat', isEqualTo: true);
-
-    // Retorna o stream da consulta
-    return query.snapshots();
+      // Retorna o stream da consulta
+      return query.snapshots();
+    } catch (e) {
+      // Se ocorrer um erro, você pode imprimir o erro para debug ou retornar um stream com um erro específico
+      print("Erro na consulta: $e");
+      throw Exception(
+          "Ocorreu um erro ao obter os dados da sala de bate-papo.");
+    }
   }
 
   /// pegar os dados da gig

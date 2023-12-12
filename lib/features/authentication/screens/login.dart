@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/features/authentication/widgets/forgot_pwd_alert.dart';
 import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
@@ -159,7 +160,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           /// Forgot Password
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => ForgotPasswordAlert());
+                            },
                             child: Text("Esqueceu sua senha?"),
                           ),
                           SizedBox(height: 20),

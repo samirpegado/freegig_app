@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
+import 'package:freegig_app/common/widgets/error_message.dart';
 import 'package:freegig_app/common/widgets/my_gigs_card_tile.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs_participating.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
@@ -27,7 +28,7 @@ class _MyGigsCardState extends State<MyGigCards> {
                 ),
               );
             } else if (snapshot.hasError) {
-              return Text('Erro: ${snapshot.error}');
+              return ErrorMessage();
             } else {
               /// Mapeia os dados da funcao getMyActiveGigsStream
               List<Map<String, dynamic>> createdGigs = snapshot.data ?? [];
@@ -44,7 +45,7 @@ class _MyGigsCardState extends State<MyGigCards> {
                       ),
                     );
                   } else if (snapshot.hasError) {
-                    return Text('Erro: ${snapshot.error}');
+                    return ErrorMessage();
                   } else {
                     /// Mapeia os dados da funcao getParticipantGigsStream
                     List<Map<String, dynamic>> participatingGigs =

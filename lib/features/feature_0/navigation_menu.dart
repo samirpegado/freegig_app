@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profileswitcher.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:freegig_app/features/feature_0/screens/gigs/gigs.dart';
 import 'package:freegig_app/features/feature_0/screens/home/home.dart';
 import 'package:freegig_app/features/feature_0/screens/messages/messages.dart';
-import 'package:page_transition/page_transition.dart';
 
 class NavigationMenu extends StatefulWidget {
   final int navPage;
@@ -58,16 +59,15 @@ class _NavigationMenuState extends State<NavigationMenu>
           // Se a página atual for a Home, chama SystemNavigator.pop()
           SystemNavigator.pop();
           return false;
+        } else if (selectedIndex == 2) {
+          NotificationService().removeMessageNotification();
+          navigationFadeTo(
+              context: context, destination: NavigationMenu(navPage: 0));
+          return false;
         } else {
           // Se não, navega para outra instância de NavigationMenu com navPage: 0
-          Navigator.push(
-            context,
-            PageTransition(
-              duration: Duration(milliseconds: 300),
-              type: PageTransitionType.fade,
-              child: NavigationMenu(navPage: 0),
-            ),
-          );
+          navigationFadeTo(
+              context: context, destination: NavigationMenu(navPage: 0));
 
           return false;
         }

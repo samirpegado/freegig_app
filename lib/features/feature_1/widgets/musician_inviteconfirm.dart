@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/gigs/createnewgigform.dart';
-import 'package:freegig_app/services/relationship/user_invitation.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class InviteConfirm extends StatefulWidget {
@@ -21,9 +20,12 @@ class InviteConfirm extends StatefulWidget {
 class _InviteConfirmState extends State<InviteConfirm> {
   late Stream<List<Map<String, dynamic>>> gigsDataList;
   String selectedGigUid = '';
-  late bool _isAlreadyInvited = false;
   late List _categorys = [];
   late List _participants = [];
+  late String _gigDate = '';
+  late String _gigDescription = '';
+  late String _gigCity = '';
+  late bool isLoading = false;
   late bool _userProfileStatus = widget.profile['profileComplete'];
   late int _gigDataCount = 0;
 
@@ -31,15 +33,6 @@ class _InviteConfirmState extends State<InviteConfirm> {
   void initState() {
     super.initState();
     gigsDataList = GigsDataService().getMyActiveGigsStream();
-  }
-
-  Future<void> isAlreadyInvited() async {
-    bool alreadyInvited = await UserInvitation()
-        .checkGuestInvite(selectedGigUid, widget.profile['uid']);
-
-    setState(() {
-      _isAlreadyInvited = alreadyInvited;
-    });
   }
 
   @override
@@ -106,6 +99,9 @@ class _InviteConfirmState extends State<InviteConfirm> {
                                       selectedGigUid = gig['gigUid'];
                                       _categorys = gig['gigCategorys'];
                                       _participants = gig['gigParticipants'];
+                                      _gigDescription = gig['gigDescription'];
+                                      _gigCity = gig['gigLocale'];
+                                      _gigDate = gig['gigDate'];
                                     });
                                   },
                                   child: Card(
@@ -166,95 +162,25 @@ class _InviteConfirmState extends State<InviteConfirm> {
                 SizedBox(width: 20),
                 InkWell(
                   onTap: () async {
-                    await isAlreadyInvited();
-
                     if (selectedGigUid != '' &&
-                        _isAlreadyInvited == false &&
                         _categorys.contains(widget.profile['category']) &&
                         !_participants.contains(widget.profile['uid']) &&
                         _userProfileStatus == true) {
-                      UserInvitation().userInvitation(
-                          guestUserUid: widget.profile['uid'],
-                          selectedGigUid: selectedGigUid);
-                      Navigator.of(context).pop();
-                      Fluttertoast.showToast(
-                        msg: "Convite enviado com sucesso",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await NotificationService().sendInvitation(
+                        recipientID: widget.profile['uid'],
+                        gigCity: _gigCity,
+                        gigDate: _gigDate,
+                        gigDescription: _gigDescription,
+                        gigUid: selectedGigUid,
                       );
+                      Navigator.of(context).pop();
                     } else {
                       showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Atenção!',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                    Icon(
-                                      Iconsax.warning_2,
-                                      color: Colors.red,
-                                      size: 30,
-                                    )
-                                  ],
-                                ),
-                                content: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Visibility(
-                                      visible: _categorys.contains(
-                                              widget.profile['category'])
-                                          ? false
-                                          : _categorys.isEmpty
-                                              ? false
-                                              : true,
-                                      child: Text(
-                                          "** A categoria deste músico não corresponde à GIG selecionada."),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Visibility(
-                                      visible: !_participants
-                                              .contains(widget.profile['uid'])
-                                          ? false
-                                          : true,
-                                      child: Text(
-                                          "** Este músico já está participando da GIG selecionada."),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Visibility(
-                                      visible: _isAlreadyInvited ? true : false,
-                                      child: Text("** Convite já enviado."),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Visibility(
-                                      visible:
-                                          selectedGigUid == '' ? true : false,
-                                      child: Text(
-                                        "** Por favor, selecione uma GIG para a qual deseja enviar o convite.",
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text(
-                                      'Fechar',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                ],
-                              ));
+                          builder: (context) => _alertInviteWarnings());
                     }
                   },
                   child: Container(
@@ -262,17 +188,83 @@ class _InviteConfirmState extends State<InviteConfirm> {
                     decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(100)),
-                    child: Icon(
-                      Icons.check,
-                      size: 50,
-                      color: Colors.white,
-                    ),
+                    child: isLoading
+                        ? Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Icon(
+                            Icons.check,
+                            size: 50,
+                            color: Colors.white,
+                          ),
                   ),
                 ),
               ],
             ))
       ],
       actionsAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget _alertInviteWarnings() {
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Atenção!',
+            style: TextStyle(color: Colors.red),
+          ),
+          Icon(
+            Iconsax.warning_2,
+            color: Colors.red,
+            size: 30,
+          )
+        ],
+      ),
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Visibility(
+            visible: _categorys.contains(widget.profile['category'])
+                ? false
+                : _categorys.isEmpty
+                    ? false
+                    : true,
+            child: Text(
+                "** A categoria deste músico não corresponde à GIG selecionada."),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible:
+                !_participants.contains(widget.profile['uid']) ? false : true,
+            child:
+                Text("** Este músico já está participando da GIG selecionada."),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible: selectedGigUid == '' ? true : false,
+            child: Text(
+              "** Por favor, selecione uma GIG para a qual deseja enviar o convite.",
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            'Fechar',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+      ],
     );
   }
 }

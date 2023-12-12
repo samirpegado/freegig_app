@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/common/widgets/error_message.dart';
 import 'package:freegig_app/features/chat/chat_page.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/widgets/messages/circle_not_read_gig_messages.dart';
@@ -43,7 +44,7 @@ class _ListMessagesState extends State<ListMessages> {
                     ),
                   );
                 } else if (gigSnapshot.hasError) {
-                  return Text('Erro: ${gigSnapshot.error}');
+                  return ErrorMessage();
                 }
                 List<DocumentSnapshot<Map<String, dynamic>>> gigDocuments =
                     gigSnapshot.data?.docs ?? [];
@@ -61,7 +62,7 @@ class _ListMessagesState extends State<ListMessages> {
                         ),
                       );
                     } else if (chatSnapshot.hasError) {
-                      return Text('Erro: ${chatSnapshot.error}');
+                      return ErrorMessage();
                     }
 
                     List<Map<String, dynamic>> dataList =

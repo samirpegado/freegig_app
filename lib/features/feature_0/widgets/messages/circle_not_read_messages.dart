@@ -25,7 +25,7 @@ class _CircleNotReadMessagesState extends State<CircleNotReadMessages> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(); // ou qualquer indicador de carregamento
         } else if (snapshot.hasError) {
-          return Text('Erro: ${snapshot.error}');
+          return Container();
         } else if (!snapshot.hasData) {
           return Container(); // Sem dados disponíveis ainda, você decide o que mostrar aqui
         } else {

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/chat/chat_service.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 
 final _firestore = FirebaseFirestore.instance;
 final _auth = FirebaseAuth.instance;
@@ -83,47 +84,6 @@ class UserRateService extends ChangeNotifier {
     }
   }
 
-  Future<void> rateNotification({
-    required String participantUid,
-    required String gigUid,
-  }) async {
-    try {
-      DocumentReference newRateNotice =
-          _firestore.collection('rateNotification').doc();
-
-      await newRateNotice.set({
-        'rateNotificationUid': newRateNotice.id,
-        'participantUid': participantUid,
-        'gigUid': gigUid,
-      });
-    } catch (e) {
-      print("Erro ao criar esta gig: $e");
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> getRateNotifications() async {
-    try {
-      User? user = _auth.currentUser;
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance
-              .collection('rateNotification')
-              .where('participantUid', isEqualTo: user!.uid)
-              .get();
-
-      List<Map<String, dynamic>> rateNotifications = [];
-
-      // Itera sobre os documentos do QuerySnapshot e adiciona à lista
-      querySnapshot.docs.forEach((doc) {
-        rateNotifications.add(doc.data());
-      });
-
-      return rateNotifications;
-    } catch (e) {
-      print('Erro ao pegar notificações: $e');
-      return [];
-    }
-  }
-
   Future<void> sendParticipantRate({
     required double rate,
     required String gigUid,
@@ -181,18 +141,12 @@ class UserRateService extends ChangeNotifier {
   }
 
   Future<void> createRateNotificationsAndArchive(String gigUid) async {
-    final CollectionReference gigsCollection =
-        FirebaseFirestore.instance.collection('gigs');
-    final CollectionReference rateNotificationsCollection =
-        FirebaseFirestore.instance.collection('rateNotification');
-
     // Obtém o documento da coleção 'gigs' pelo ID
-    DocumentReference gigDocumentRef = gigsCollection.doc(gigUid);
+    DocumentReference gigDocumentRef =
+        _firestore.collection('gigs').doc(gigUid);
     DocumentSnapshot gigDocument = await gigDocumentRef.get();
 
     if (gigDocument.exists) {
-      // Obtém os dados relevantes do documento 'gigs'
-      String gigDescription = gigDocument['gigDescription'];
       List<String> gigParticipants =
           List<String>.from(gigDocument['gigParticipants']);
       // Atualiza o campo gigArchived para true
@@ -202,21 +156,37 @@ class UserRateService extends ChangeNotifier {
       // Cria os rateNotifications apenas se houver mais de um participante
       if (gigParticipants.length > 1) {
         // Cria um novo documento para cada participante na coleção 'rateNotifications'
-        for (String participantUid in gigParticipants) {
+        for (String recipientID in gigParticipants) {
           // Cria um novo documento com um ID automático
           DocumentReference rateNotificationDocument =
-              rateNotificationsCollection.doc();
+              _firestore.collection('notifications').doc();
+
+          DocumentSnapshot recipientUserSnapshot =
+              await _firestore.collection('users').doc(recipientID).get();
+
+          String token = recipientUserSnapshot['token'];
+
+          String body =
+              'Compartilhe suas avaliações sobre os participantes envolvidos nesta GIG.';
+          String title = gigDocument['gigDescription'];
 
           // Define os campos do novo documento
           Map<String, dynamic> data = {
-            'gigDescription': gigDescription,
+            'body': body,
+            'title': title,
             'gigUid': gigUid,
-            'participantUid': participantUid,
-            'rateNotificationUid': rateNotificationDocument.id,
+            'recipientID': recipientID,
+            'notificationUid': rateNotificationDocument.id,
+            'type': 'rate',
           };
 
           // Adiciona os dados ao documento na coleção 'rateNotifications'
           await rateNotificationDocument.set(data);
+          await NotificationService().sendPushMessage(
+            token: token,
+            body: body,
+            title: title,
+          );
         }
       }
     } else {

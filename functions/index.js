@@ -37,12 +37,14 @@ exports.archiveOldGigs = functions.pubsub
         const gigParticipants = gigData.gigParticipants || [];
         if (gigParticipants.length > 1) {
           gigParticipants.forEach((participantUid) => {
-            const notificationRef = admin.firestore().collection('rateNotification').doc();
+            const notificationRef = admin.firestore().collection('notifications').doc();
             notificationsBatch.set(notificationRef, {
-              rateNotificationUid: notificationRef.id,
-              participantUid,
+              body: 'Compartilhe suas avaliações sobre os participantes envolvidos nesta GIG',
+              notificationUid: notificationRef.id,
+              recipientID: participantUid,
               gigUid: gigDoc.id,
-              gigDescription: gigData.gigDescription,
+              title: gigData.gigDescription,
+              type: 'rate'
             });
           });
         }

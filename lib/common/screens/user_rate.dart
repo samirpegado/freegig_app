@@ -1,18 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/themeapp.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
 
 class UserRating extends StatefulWidget {
-  final Map<String, dynamic> docData;
+  final String gigUid;
+  final String notificationID;
+  final String currentUserID;
 
   const UserRating({
     super.key,
-    required this.docData,
+    required this.gigUid,
+    required this.notificationID,
+    required this.currentUserID,
   });
 
   @override
@@ -24,35 +31,12 @@ class _UserRatingState extends State<UserRating> {
   List<bool> starColors = [];
   final commentController = TextEditingController();
   double starValue = 5;
-  late String _currentUser = '';
-  late String _gigDescription = '';
-  late String _gigCity = '';
-  late String _gigDate = '00-00-0000';
 
   @override
   void initState() {
     super.initState();
-    _loadGigData();
-    participantsData =
-        UserRateService().getRateParticipantsData(widget.docData['gigUid']);
+    participantsData = UserRateService().getRateParticipantsData(widget.gigUid);
     initializeStarColors();
-  }
-
-  // Carrega os dados da GIG e do usuário logado
-  Future<void> _loadGigData() async {
-    try {
-      Map<String, dynamic> gigData =
-          await UserRateService().getGigData(widget.docData['gigUid']);
-
-      setState(() {
-        _currentUser = gigData['currentUser'];
-        _gigDescription = gigData['gigDescription'];
-        _gigCity = gigData['gigLocale'];
-        _gigDate = gigData['gigDate'];
-      });
-    } catch (e) {
-      print("Erro ao buscar dados do usuário: $e");
-    }
   }
 
   // Inicializa starColors com o mesmo tamanho que a lista de participantes
@@ -95,41 +79,96 @@ class _UserRatingState extends State<UserRating> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 /// Header com as informacoes da GIG
-                SizedBox(height: 10),
-                Text(
-                  _gigDescription,
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87),
-                ),
-                Text(
-                  FormatDate().formatDateString(_gigDate),
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black54),
-                ),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(
-                      Iconsax.location5,
-                      size: 25,
-                      color: Colors.black54,
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _gigCity,
-                        style: TextStyle(
-                          fontSize: 16,
+
+                StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('gigs')
+                      .doc(widget.gigUid)
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return Text('Erro: ${snapshot.error}');
+                    }
+                    if (!snapshot.hasData || !snapshot.data!.exists) {
+                      return Text('Documento não encontrado');
+                    }
+                    Map<String, dynamic> data =
+                        snapshot.data!.data() as Map<String, dynamic>;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          data['gigDescription'],
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                        SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Iconsax.calendar,
+                              size: 20,
+                              color: Colors.green,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                FormatDate().formatDateString(data['gigDate']),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Iconsax.clock,
+                              size: 20,
+                              color: Colors.green,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                "${data['gigInitHour']}h - ${data['gigFinalHour']}h",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Iconsax.location,
+                              size: 20,
+                              color: Colors.green,
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                data['gigAdress'],
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                      ],
+                    );
+                  },
                 ),
-                SizedBox(height: 15),
                 Text(
                   "Participantes: ",
                   style: TextStyle(
@@ -139,7 +178,6 @@ class _UserRatingState extends State<UserRating> {
                 ),
                 SizedBox(height: 6),
 
-                /// Carrega a lista de participantes a serem avaliados
                 FutureBuilder<List<Map<String, dynamic>>>(
                   future: participantsData,
                   builder: (context, snapshot) {
@@ -164,7 +202,7 @@ class _UserRatingState extends State<UserRating> {
                           int index = entry.key;
                           Map<String, dynamic> participant = entry.value;
 
-                          if (participant['uid'] != _currentUser) {
+                          if (participant['uid'] != widget.currentUserID) {
                             return ListTile(
                               onTap: () {
                                 starValue = 5;
@@ -175,14 +213,10 @@ class _UserRatingState extends State<UserRating> {
                                       _evaluationDialog(participant, index),
                                 );
                               },
-                              leading: ClipOval(
-                                child: Image.network(
-                                  participant['profileImageUrl'],
-                                  fit: BoxFit.cover,
-                                  width: 60,
-                                  height: 60,
-                                ),
-                              ),
+                              leading: BuildProfileImage(
+                                  profileImageUrl:
+                                      participant['profileImageUrl'],
+                                  imageSize: 50),
                               trailing: Icon(
                                 Icons.star,
                                 color: starColors[index]
@@ -237,10 +271,9 @@ class _UserRatingState extends State<UserRating> {
       actions: [
         TextButton(
           onPressed: () async {
-            await UserRateService()
-                .rateNotificationDelete(widget.docData['rateNotificationUid']);
-            navigationFadeTo(
-                context: context, destination: NavigationMenu(navPage: 1));
+            await NotificationService()
+                .removeNotification(notificationID: widget.notificationID);
+            navigationFadeTo(context: context, destination: GigsNotification());
           },
           child: Text(
             'Sair sem avaliar',
@@ -249,8 +282,7 @@ class _UserRatingState extends State<UserRating> {
         ),
         TextButton(
           onPressed: () {
-            navigationFadeTo(
-                context: context, destination: NavigationMenu(navPage: 1));
+            navigationFadeTo(context: context, destination: GigsNotification());
           },
           child: Text(
             'Avaliar depois',
@@ -275,10 +307,10 @@ class _UserRatingState extends State<UserRating> {
               ),
             ),
             onPressed: () async {
-              await UserRateService().rateNotificationDelete(
-                  widget.docData['rateNotificationUid']);
+              await NotificationService()
+                  .removeNotification(notificationID: widget.notificationID);
               navigationFadeTo(
-                  context: context, destination: NavigationMenu(navPage: 1));
+                  context: context, destination: GigsNotification());
             },
             child: Padding(
               padding: const EdgeInsets.all(14.0),
@@ -370,7 +402,7 @@ class _UserRatingState extends State<UserRating> {
           onPressed: () async {
             await UserRateService().sendParticipantRate(
               rate: starValue,
-              gigUid: widget.docData['gigUid'],
+              gigUid: widget.gigUid,
               ratedParticipantUid: participant['uid'],
               comment: commentController.text,
             );

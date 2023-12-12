@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/chat/chat_service.dart';
 import 'package:freegig_app/services/common/common_service.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 
 class GigsDataService extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
@@ -150,40 +151,43 @@ class GigsDataService extends ChangeNotifier {
   }
 
   // Funcao para pegar os dados dos usuarios participantes de uma gig
-  Future<List<Map<String, dynamic>>> getParticipantsData(String gigUid) async {
+  Stream<List<Map<String, dynamic>>> getParticipantsDataStream(String gigUid) {
     try {
-      DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
-          await _firestore.collection('gigs').doc(gigUid).get();
+      Stream<DocumentSnapshot<Map<String, dynamic>>> gigSnapshotStream =
+          _firestore.collection('gigs').doc(gigUid).snapshots();
 
-      if (!gigSnapshot.exists) {
-        print('Gig com UID $gigUid não encontrado.');
-        return [];
-      }
-      List<String> participantUids =
-          List<String>.from(gigSnapshot['gigParticipants'] ?? []);
-
-      List<Map<String, dynamic>> participantsData = [];
-
-      for (String participantUid in participantUids) {
-        DocumentSnapshot<Map<String, dynamic>> participantSnapshot =
-            await _firestore.collection('users').doc(participantUid).get();
-
-        if (participantSnapshot.exists) {
-          Map<String, dynamic> participantData =
-              participantSnapshot.data() ?? {};
-          participantsData.add({
-            ...participantData,
-            'uid': participantUid,
-          });
-        } else {
-          print('Usuário com UID $participantUid não encontrado.');
+      return gigSnapshotStream.asyncMap((gigSnapshot) async {
+        if (!gigSnapshot.exists) {
+          print('Gig com UID $gigUid não encontrado.');
+          return [];
         }
-      }
 
-      return participantsData;
+        List<String> participantUids =
+            List<String>.from(gigSnapshot['gigParticipants'] ?? []);
+
+        List<Map<String, dynamic>> participantsData = [];
+
+        for (String participantUid in participantUids) {
+          DocumentSnapshot<Map<String, dynamic>> participantSnapshot =
+              await _firestore.collection('users').doc(participantUid).get();
+
+          if (participantSnapshot.exists) {
+            Map<String, dynamic> participantData =
+                participantSnapshot.data() ?? {};
+            participantsData.add({
+              ...participantData,
+              'uid': participantUid,
+            });
+          } else {
+            print('Usuário com UID $participantUid não encontrado.');
+          }
+        }
+
+        return participantsData;
+      });
     } catch (e) {
       print('Erro ao obter dados dos participantes: $e');
-      return [];
+      return Stream.value([]); // Return an empty stream in case of an error
     }
   }
 
@@ -194,6 +198,7 @@ class GigsDataService extends ChangeNotifier {
       User? user = _auth.currentUser;
 
       if (user != null) {
+        // remove o id do participante desistente da lista de participantes
         DocumentReference<Map<String, dynamic>> requestedGigUpdate =
             _firestore.collection('gigs').doc(gigUid);
 
@@ -208,6 +213,46 @@ class GigsDataService extends ChangeNotifier {
         await requestedGigUpdate.update({
           'gigParticipants': gigParticipants,
         });
+
+        // NOTIFICA O GIGOWNER DA DESISTENCIA DO USUARIO
+
+        // pega o nome atual do usuario logado
+        DocumentSnapshot userSnapshot =
+            await _firestore.collection('users').doc(user.uid).get();
+        String userPublicName = userSnapshot['publicName'];
+
+        // cria a instancia da colecao de notificacoes
+        DocumentReference notification =
+            _firestore.collection('notifications').doc();
+
+        // pega o token do gigOwner
+        DocumentSnapshot recipientUserSnapshot = await _firestore
+            .collection('users')
+            .doc(gigSnapshot['gigOwner'])
+            .get();
+        String token = recipientUserSnapshot['token'];
+
+        // Mensagem a ser enviada
+        String body = '$userPublicName desistiu de participar desta GIG';
+
+        // Envia a notificacao
+        await notification.set(
+          {
+            'body': body,
+            'title': gigSnapshot['gigDescription'],
+            'senderId': user.uid,
+            'recipientID': gigSnapshot['gigOwner'],
+            'notificationUid': notification.id,
+            'type': 'confirmation',
+          },
+        );
+
+        // Envia a notificacao de push
+        await NotificationService().sendPushMessage(
+          token: token,
+          body: body,
+          title: gigSnapshot['gigDescription'],
+        );
       }
     } catch (e) {
       print("Erro ao aceitar a solicitação: $e");

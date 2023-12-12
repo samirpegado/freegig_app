@@ -1,11 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
-import 'package:freegig_app/features/feature_0/screens/gigs/gigs_created.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/invitationconfirm.dart';
 import 'package:freegig_app/common/screens/user_rate.dart';
-import 'package:freegig_app/services/relationship/user_invitation.dart';
-import 'package:freegig_app/services/relationship/user_rate.dart';
-import 'package:freegig_app/services/relationship/user_request.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/invitate_confirmation.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/request_confirmation.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 
 class GigsNotification extends StatefulWidget {
   const GigsNotification({super.key});
@@ -17,152 +17,97 @@ class GigsNotification extends StatefulWidget {
 class _GigsNotificationState extends State<GigsNotification> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text('Notificações'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildInvitationsSection(),
-            _buildRequestsSection(),
-            _buildRateNotificationsSection(),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        navigationFadeTo(
+            context: context, destination: NavigationMenu(navPage: 0));
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          title: Text('Notificações'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              StreamBuilder(
+                  stream: NotificationService().getNotificationsData(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        height: MediaQuery.sizeOf(context).height * 0.8,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Erro: ${snapshot.error}');
+                    }
+                    List<DocumentSnapshot<Map<String, dynamic>>>
+                        notificationsDocument = snapshot.data?.docs ?? [];
+
+                    return Column(
+                      children: notificationsDocument.map((document) {
+                        Map<String, dynamic> data = document.data()!;
+
+                        return ListTile(
+                          subtitle: Text(data['title']),
+                          title: Text(data['body']),
+                          trailing: TextButton(
+                            child: Text('Ver'),
+                            onPressed: () async {
+                              if (data['type'] == 'inbox') {
+                                navigationFadeTo(
+                                    context: context,
+                                    destination: NavigationMenu(
+                                      navPage: 2,
+                                    ));
+                              } else if (data['type'] == 'invitation') {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => InvitationConfirm(
+                                          gigUid: data['gigUid'],
+                                          notificationID:
+                                              data['notificationUid'],
+                                        ));
+                              } else if (data['type'] == 'request') {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => RequestConfirmation(
+                                          gigUid: data['gigUid'],
+                                          notificationID:
+                                              data['notificationUid'],
+                                          senderID: data['senderId'],
+                                        ));
+                              } else if (data['type'] == 'rate') {
+                                navigationFadeTo(
+                                    context: context,
+                                    destination: UserRating(
+                                      gigUid: data['gigUid'],
+                                      notificationID: data['notificationUid'],
+                                      currentUserID: data['recipientID'],
+                                    ));
+                              } else if (data['type'] == 'confirmation') {
+                                navigationFadeTo(
+                                    context: context,
+                                    destination: NavigationMenu(navPage: 1));
+                                await NotificationService().removeNotification(
+                                    notificationID: data['notificationUid']);
+                              }
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  })
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInvitationsSection() {
-    return FutureBuilder(
-      future: UserInvitation().getReceivedInvitation(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('Erro ao carregar convites: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container();
-        } else {
-          List<Map<String, dynamic>> invites = snapshot.data!;
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: invites.length,
-            itemBuilder: (context, index) {
-              Map<String, dynamic> gigInviteData =
-                  invites[index]['gigInviteData'];
-              Map<String, dynamic> inviteOwnerData =
-                  invites[index]['inviteOwnerData'];
-              Map<String, dynamic> gigData = invites[index]['gigData'];
-              return ListTile(
-                title: Text(gigData['gigDescription']),
-                subtitle: Column(children: [
-                  Text(
-                    '${inviteOwnerData['publicName']} te convidou para uma GIG em ${gigData['gigLocale']}, no dia ${gigData['gigDate']}',
-                  ),
-                ]),
-                trailing: TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => InvitationConfirm(
-                        gig: gigData,
-                        inviteData: gigInviteData,
-                      ),
-                    );
-                  },
-                  child: Text('Ver'),
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildRequestsSection() {
-    return FutureBuilder(
-      future: UserRequest().listRequestsByGigOwner(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('Erro ao carregar convites: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container();
-        } else {
-          List<Map<String, dynamic>> requests = snapshot.data!;
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: requests.length,
-            itemBuilder: (context, index) {
-              Map<String, dynamic> allUserData = requests[index]['allUserData'];
-              Map<String, dynamic> gigData = requests[index]['gigData'];
-
-              return ListTile(
-                trailing: TextButton(
-                  onPressed: () {
-                    navigationFadeTo(
-                        context: context,
-                        destination: CreatedGigInfo(gig: gigData));
-                  },
-                  child: Text('Ver'),
-                ),
-                title: Text(gigData['gigDescription']),
-                subtitle: Text(
-                  '${allUserData['publicName']} deseja se juntar a sua GIG em ${gigData['gigLocale']}',
-                ),
-              );
-            },
-          );
-        }
-      },
-    );
-  }
-
-  Widget _buildRateNotificationsSection() {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: UserRateService().getRateNotifications(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Text('Erro ao carregar notificações: ${snapshot.error}');
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Container();
-        } else {
-          List<Map<String, dynamic>> rateNotifications = snapshot.data!;
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: rateNotifications.length,
-            itemBuilder: (context, index) {
-              Map<String, dynamic> notification = rateNotifications[index];
-              return ListTile(
-                title: Text(notification['gigDescription']),
-                subtitle: Text(
-                  'Compartilhe suas avaliações e feedbacks sobre todos os participantes envolvidos nesta GIG.',
-                ),
-                trailing: TextButton(
-                  onPressed: () {
-                    navigationFadeTo(
-                        context: context,
-                        destination: UserRating(docData: notification));
-                  },
-                  child: Text('Ver'),
-                ),
-              );
-            },
-          );
-        }
-      },
     );
   }
 }

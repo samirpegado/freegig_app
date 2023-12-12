@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 
 class ChatService extends ChangeNotifier {
   // pega as instancias do auth e firestore
@@ -55,6 +56,8 @@ class ChatService extends ChangeNotifier {
       'gigDate': gigDate,
       'gigInitHour': gigInitHour,
     });
+
+    await NotificationService().newMessageNotification(recipientID: receiverId);
   }
 
   //RECEBE MENSAGEM

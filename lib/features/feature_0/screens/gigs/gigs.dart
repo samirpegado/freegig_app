@@ -17,12 +17,19 @@ class GIGs extends StatefulWidget {
 }
 
 class _GIGsState extends State<GIGs> {
+  late bool isLoading = false;
   Future<bool> checkProfileStatus() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       Map<String, dynamic> userData =
           await UserDataService().getCurrentUserData();
 
-      // Retorna o valor de _profileStatus como um Future<bool>
+      setState(() {
+        isLoading = false;
+      });
+
       return userData['profileComplete'] ?? true;
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -43,28 +50,30 @@ class _GIGsState extends State<GIGs> {
         appBar: AppBar(
           elevation: 0,
           actions: [
-            IconButton(
-              onPressed: () async {
-                if (await checkProfileStatus() == true) {
-                  showDialog(
-                    context: context,
-                    builder: (context) => Dialog.fullscreen(
-                      backgroundColor: backgroundColor,
-                      child: CreateNewGig(),
+            isLoading
+                ? Center(child: CircularProgressIndicator())
+                : IconButton(
+                    onPressed: () async {
+                      if (await checkProfileStatus() == true) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog.fullscreen(
+                            backgroundColor: backgroundColor,
+                            child: CreateNewGig(),
+                          ),
+                        );
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) => ProfileCompleteConfirm());
+                      }
+                    },
+                    icon: Icon(
+                      Iconsax.add_circle5,
+                      color: Colors.blue,
+                      size: 35,
                     ),
-                  );
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (context) => ProfileCompleteConfirm());
-                }
-              },
-              icon: Icon(
-                Iconsax.add_circle5,
-                color: Colors.blue,
-                size: 35,
-              ),
-            ),
+                  ),
             SizedBox(width: 5)
           ],
           title: Text(

@@ -3,11 +3,10 @@ import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/screens/show_profile.dart';
 import 'package:freegig_app/common/themeapp.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
 import 'package:freegig_app/features/chat/gig_chat_page.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/created_invitations.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/created_requests.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:freegig_app/services/relationship/user_request.dart';
 import 'package:iconsax/iconsax.dart';
@@ -22,13 +21,14 @@ class CreatedGigInfo extends StatefulWidget {
 }
 
 class _CreatedGigInfoState extends State<CreatedGigInfo> {
-  late Future<List<Map<String, dynamic>>> participantsData;
+  late Stream<List<Map<String, dynamic>>> participantsData;
+  late bool isLoading = false;
   bool? _gigStatus;
   @override
   void initState() {
     super.initState();
     participantsData =
-        GigsDataService().getParticipantsData(widget.gig['gigUid']);
+        GigsDataService().getParticipantsDataStream(widget.gig['gigUid']);
     setState(() {
       _gigStatus = widget.gig['gigCompleted'];
     });
@@ -392,12 +392,6 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                   ],
                 ),
                 SizedBox(height: 15),
-                InvitationsSent(
-                  gigUid: widget.gig['gigUid'],
-                ),
-                RequestsSent(
-                  gigUid: widget.gig['gigUid'],
-                ),
                 Text(
                   "Participantes: ",
                   style: TextStyle(
@@ -406,8 +400,8 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                       color: Colors.blue),
                 ),
                 SizedBox(height: 6),
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: participantsData,
+                StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: participantsData,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -428,14 +422,9 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                       return Column(
                         children: participantsData.map((participant) {
                           return ListTile(
-                            leading: ClipOval(
-                              child: Image.network(
-                                participant['profileImageUrl'],
-                                fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
-                              ),
-                            ),
+                            leading: BuildProfileImage(
+                                profileImageUrl: participant['profileImageUrl'],
+                                imageSize: 40),
                             trailing: participant['uid'] !=
                                     widget.gig['gigOwner']
                                 ? Row(
@@ -476,28 +465,37 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     )),
-                                                TextButton(
-                                                    onPressed: () async {
-                                                      await UserRequest()
-                                                          .removeParticipant(
-                                                              gigUid:
-                                                                  widget.gig[
+                                                isLoading
+                                                    ? CircularProgressIndicator()
+                                                    : TextButton(
+                                                        onPressed: () async {
+                                                          setState(() {
+                                                            isLoading = true;
+                                                          });
+                                                          await UserRequest()
+                                                              .removeParticipant(
+                                                                  gigUid: widget
+                                                                          .gig[
                                                                       'gigUid'],
-                                                              participantUid:
-                                                                  participant[
-                                                                      'uid']);
-                                                      Navigator.of(context).push(
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  NavigationMenu(
-                                                                      navPage:
-                                                                          1)));
-                                                    },
-                                                    child: Text(
-                                                      'Remover',
-                                                      style: TextStyle(
-                                                          color: Colors.blue),
-                                                    ))
+                                                                  participantUid:
+                                                                      participant[
+                                                                          'uid']);
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      NavigationMenu(
+                                                                          navPage:
+                                                                              1)));
+                                                          setState(() {
+                                                            isLoading = false;
+                                                          });
+                                                        },
+                                                        child: Text(
+                                                          'Remover',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.blue),
+                                                        ))
                                               ],
                                             ),
                                           );

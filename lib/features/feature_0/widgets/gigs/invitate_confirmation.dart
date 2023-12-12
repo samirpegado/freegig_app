@@ -1,0 +1,242 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:freegig_app/classes/formatdate.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/common/functions/toast.dart';
+import 'package:freegig_app/common/widgets/participants_list.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
+import 'package:iconsax/iconsax.dart';
+
+class InvitationConfirm extends StatefulWidget {
+  final String gigUid;
+  final String notificationID;
+
+  const InvitationConfirm({
+    super.key,
+    required this.gigUid,
+    required this.notificationID,
+  });
+
+  @override
+  State<InvitationConfirm> createState() => _InvitationConfirmState();
+}
+
+class _InvitationConfirmState extends State<InvitationConfirm> {
+  late bool gigStatus = false;
+  late bool gigArchived = false;
+  late bool isLoading = false;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        "Confirmar convite",
+        textAlign: TextAlign.center,
+      ),
+      content: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('gigs')
+                  .doc(widget.gigUid)
+                  .snapshots(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Se os dados ainda estão sendo carregados, exiba um indicador de carregamento
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.hasError) {
+                  // Se ocorrer um erro, exiba uma mensagem de erro
+                  return Text('Erro: ${snapshot.error}');
+                }
+
+                if (!snapshot.hasData || !snapshot.data!.exists) {
+                  // Se não houver dados ou o documento não existir, exiba uma mensagem apropriada
+                  return Text('Documento não encontrado');
+                }
+
+                // Se tudo estiver certo, você pode acessar os dados do documento
+                Map<String, dynamic> data =
+                    snapshot.data!.data() as Map<String, dynamic>;
+
+                gigStatus = data['gigCompleted'];
+                gigArchived = data['gigArchived'];
+
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          gigStatus ? Iconsax.lock : Iconsax.unlock,
+                          size: 20,
+                          color: gigStatus ? Colors.green : Colors.black,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            gigStatus ? 'Fechada' : 'Aberta',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Iconsax.money,
+                          size: 20,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            data['gigCache'],
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Iconsax.calendar,
+                          size: 20,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            FormatDate().formatDateString(data['gigDate']),
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Iconsax.clock,
+                          size: 20,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "${data['gigInitHour']}h - ${data['gigFinalHour']}h",
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Iconsax.location,
+                          size: 20,
+                          color: Colors.green,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            data['gigAdress'],
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                );
+              },
+            ),
+            Text(
+              "Participantes: ",
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 6),
+            ParticipantList(gigUid: widget.gigUid),
+            SizedBox(height: 20),
+            Center(
+                child: Text(
+              'Gostaria de se juntar a esta GIG?',
+              textAlign: TextAlign.center,
+            )),
+          ],
+        ),
+      ),
+      actionsAlignment: MainAxisAlignment.center,
+      actions: [
+        isLoading
+            ? CircularProgressIndicator()
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                      onPressed: () async {
+                        await NotificationService().removeNotification(
+                            notificationID: widget.notificationID);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Recusar',
+                        style: TextStyle(color: Colors.red),
+                      )),
+                  TextButton(
+                      onPressed: () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        if (gigStatus == false && gigArchived == false) {
+                          await NotificationService().acceptInvite(
+                            gigUid: widget.gigUid,
+                            notificationID: widget.notificationID,
+                          );
+                          navigationFadeTo(
+                              context: context,
+                              destination: NavigationMenu(navPage: 1));
+                        } else {
+                          Navigator.of(context).pop();
+                          showToast(
+                              message:
+                                  "Esta GIG se encontra fechada ou arquivada.");
+                        }
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      child: Text('Aceitar')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Fechar',
+                        style: TextStyle(color: Colors.black),
+                      )),
+                ],
+              )
+      ],
+    );
+  }
+}

@@ -20,6 +20,7 @@ class ParticipatingGigInfo extends StatefulWidget {
 class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
   late Future<List<Map<String, dynamic>>> participantsData;
   late bool gigStatus = widget.gig['gigCompleted'];
+  late bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +56,25 @@ class _ParticipatingGigInfoState extends State<ParticipatingGigInfo> {
                           },
                           child: Text("Cancelar",
                               style: TextStyle(color: Colors.black))),
-                      TextButton(
-                          onPressed: () async {
-                            await GigsDataService()
-                                .leaveGig(gigUid: widget.gig['gigUid']);
-                            navigationFadeTo(
-                                context: context,
-                                destination: NavigationMenu(navPage: 1));
-                          },
-                          child: Text("Confirmar",
-                              style: TextStyle(color: Colors.red))),
+                      isLoading
+                          ? CircularProgressIndicator()
+                          : TextButton(
+                              onPressed: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                await GigsDataService()
+                                    .leaveGig(gigUid: widget.gig['gigUid']);
+
+                                navigationFadeTo(
+                                    context: context,
+                                    destination: NavigationMenu(navPage: 1));
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                              child: Text("Confirmar",
+                                  style: TextStyle(color: Colors.red))),
                     ],
                   ),
                 );

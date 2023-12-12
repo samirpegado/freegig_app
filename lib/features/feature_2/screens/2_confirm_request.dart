@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/themeapp.dart';
-import 'package:freegig_app/common/functions/toast.dart';
 import 'package:freegig_app/common/screens/show_profile.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/features/chat/chat_page.dart';
 import 'package:freegig_app/services/current_user/current_user_service.dart';
 import 'package:freegig_app/services/gigs/gigs_service.dart';
-import 'package:freegig_app/services/relationship/user_request.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:iconsax/iconsax.dart';
 
 class ConfirmRequestPage extends StatefulWidget {
@@ -28,7 +27,8 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
   late String userCategory = '';
   late String userProfileName = '';
   late bool userProfileStatus = false;
-  late bool _isAlreadyRequested = false;
+
+  late bool isLoading = false;
 
   @override
   void initState() {
@@ -45,20 +45,10 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
         userUid = userData['uid'];
         userCategory = userData['category'];
         userProfileStatus = userData['profileComplete'];
-        isAlreadyRequested();
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
     }
-  }
-
-  Future<void> isAlreadyRequested() async {
-    bool alreadyRequested =
-        await UserRequest().checkUserRequest(widget.gig['gigUid'], userUid);
-
-    setState(() {
-      _isAlreadyRequested = alreadyRequested;
-    });
   }
 
   @override
@@ -213,9 +203,9 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
                     color: Colors.green),
               ),
               SizedBox(height: 6),
-              FutureBuilder<List<Map<String, dynamic>>>(
-                future:
-                    GigsDataService().getParticipantsData(widget.gig['gigUid']),
+              StreamBuilder<List<Map<String, dynamic>>>(
+                stream: GigsDataService()
+                    .getParticipantsDataStream(widget.gig['gigUid']),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -250,32 +240,33 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
                                 style: TextStyle(fontSize: 15),
                               ),
                               Visibility(
-                                visible:
-                                    participant['uid'] == widget.gig['gigOwner']
-                                        ? true
-                                        : false,
+                                visible: participant['uid'] ==
+                                    widget.gig['gigOwner'],
                                 child: TextButton(
-                                    onPressed: () {
-                                      navigationFadeTo(
-                                          context: context,
-                                          destination: ChatPage(
-                                              receiverUid:
-                                                  widget.gig['gigOwner'],
-                                              gigSubjectUid:
-                                                  widget.gig['gigUid']));
-                                    },
-                                    child: Text('Enviar mensagem')),
+                                  onPressed: () {
+                                    navigationFadeTo(
+                                      context: context,
+                                      destination: ChatPage(
+                                        receiverUid: widget.gig['gigOwner'],
+                                        gigSubjectUid: widget.gig['gigUid'],
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Enviar mensagem'),
+                                ),
                               ),
                             ],
                           ),
                           trailing: IconButton(
-                              onPressed: () {
-                                navigationFadeTo(
-                                    context: context,
-                                    destination: SimpleShowProfile(
-                                        profile: participant));
-                              },
-                              icon: Icon(Iconsax.arrow_right_3)),
+                            onPressed: () {
+                              navigationFadeTo(
+                                context: context,
+                                destination:
+                                    SimpleShowProfile(profile: participant),
+                              );
+                            },
+                            icon: Icon(Iconsax.arrow_right_3),
+                          ),
                         );
                       }).toList(),
                     );
@@ -309,87 +300,82 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
                       ),
                       SizedBox(width: 20),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
                           if (_categorys.contains(userCategory) &&
                               !_participants.contains(userUid) &&
-                              _isAlreadyRequested == false &&
                               userProfileStatus == true) {
-                            UserRequest().userRequest(
-                                gigOwnerId: widget.gig['gigOwner'],
-                                selectedGigUid: widget.gig['gigUid']);
-                            Navigator.of(context).pop();
-                            showToast(
-                                message: 'Solicitação enviada com sucesso');
+                            setState(() {
+                              isLoading = true;
+                            });
+                            await NotificationService().sendRequest(
+                              recipientID: widget.gig['gigOwner'],
+                              gigCity: widget.gig['gigLocale'],
+                              gigDate: widget.gig['gigDate'],
+                              gigDescription: widget.gig['gigDescription'],
+                              gigUid: widget.gig['gigUid'],
+                            );
+                            setState(() {
+                              isLoading = false;
+                            });
                           } else {
                             showDialog(
                                 context: context,
-                                builder: (context) => AlertDialog(
-                                      title: Text('Atenção'),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                            },
-                                            child: Text(
-                                              'Fechar',
-                                              style: TextStyle(
-                                                  color: Colors.black),
-                                            ))
-                                      ],
-                                      content: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Visibility(
-                                            visible: _categorys
-                                                    .contains(userCategory)
-                                                ? false
-                                                : true,
-                                            child: Text(
-                                                "** Esta GIG não está disponível para músicos na sua categoria."),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Visibility(
-                                            visible:
-                                                !_participants.contains(userUid)
-                                                    ? false
-                                                    : true,
-                                            child: Text(
-                                                "** Você já está participando desta GIG."),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Visibility(
-                                            visible: _isAlreadyRequested
-                                                ? true
-                                                : false,
-                                            child: Text(
-                                                "** Solicitação já enviada."),
-                                          ),
-                                          SizedBox(height: 10),
-                                          Visibility(
-                                            visible: userProfileStatus
-                                                ? false
-                                                : true,
-                                            child: Text(
-                                                "** Para participar de uma GIG, por favor, complete o seu perfil. O seu perfil ainda não está completo."),
-                                          ),
-                                        ],
-                                      ),
-                                    ));
+                                builder: (context) => _requestAlertWarnings());
                           }
                         },
-                        child: Icon(
-                          Icons.check_circle,
-                          size: 55,
-                          color: Colors.green,
-                        ),
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.green,
+                              )
+                            : Icon(
+                                Icons.check_circle,
+                                size: 55,
+                                color: Colors.green,
+                              ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _requestAlertWarnings() {
+    return AlertDialog(
+      title: Text('Atenção'),
+      actions: [
+        TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Fechar',
+              style: TextStyle(color: Colors.black),
+            ))
+      ],
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Visibility(
+            visible: _categorys.contains(userCategory) ? false : true,
+            child: Text(
+                "** Esta GIG não está disponível para músicos na sua categoria."),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible: !_participants.contains(userUid) ? false : true,
+            child: Text("** Você já está participando desta GIG."),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible: userProfileStatus ? false : true,
+            child: Text(
+                "** Para participar de uma GIG, por favor, complete o seu perfil. O seu perfil ainda não está completo."),
+          ),
+        ],
+      ),
     );
   }
 }
