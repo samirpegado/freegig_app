@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
+import 'package:freegig_app/features/feature_0/screens/home/notifications.dart';
 import 'package:freegig_app/firebase_options.dart';
 import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/notification/local_notifications.dart';
@@ -37,7 +37,15 @@ class MyApp extends StatelessWidget {
       title: "FreeGig",
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: 'Poppins'),
+      theme: ThemeData(
+        fontFamily: 'Poppins',
+        colorScheme: ColorScheme.light(
+          primary: Colors.blue,
+          surfaceTint: Colors.white,
+        ),
+
+        //useMaterial3: false,
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

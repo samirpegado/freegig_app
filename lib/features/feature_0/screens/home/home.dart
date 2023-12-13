@@ -2,7 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
+import 'package:freegig_app/features/feature_0/screens/home/notifications.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_search_cards.dart';
 import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:freegig_app/features/feature_0/widgets/home/home_pageview.dart';

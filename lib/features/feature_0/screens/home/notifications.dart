@@ -17,11 +17,11 @@ class GigsNotification extends StatefulWidget {
 class _GigsNotificationState extends State<GigsNotification> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         navigationFadeTo(
             context: context, destination: NavigationMenu(navPage: 0));
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(

@@ -71,6 +71,7 @@ class _ArchivedGigsState extends State<ArchivedGigs> {
                                       ArchivedMoreInfo(gig: gig));
                             },
                             child: Card(
+                              color: Colors.white,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 20, vertical: 10),

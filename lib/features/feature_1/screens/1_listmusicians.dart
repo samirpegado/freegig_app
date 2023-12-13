@@ -27,8 +27,9 @@ class ListMusicians extends StatefulWidget {
 class _ListMusiciansState extends State<ListMusicians> {
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         Navigator.push(
           context,
           PageTransition(
@@ -41,8 +42,6 @@ class _ListMusiciansState extends State<ListMusicians> {
             child: NavigationMenu(),
           ),
         );
-
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(

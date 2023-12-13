@@ -20,9 +20,6 @@ class _GIGsState extends State<GIGs> {
   late bool isLoading = false;
   Future<bool> checkProfileStatus() async {
     try {
-      setState(() {
-        isLoading = true;
-      });
       Map<String, dynamic> userData =
           await UserDataService().getCurrentUserData();
 
@@ -40,20 +37,29 @@ class _GIGsState extends State<GIGs> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         navigationFadeTo(context: context, destination: NavigationMenu());
-
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
           actions: [
             isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Iconsax.more_circle5,
+                      color: Colors.blue,
+                      size: 35,
+                    ),
+                  )
                 : IconButton(
                     onPressed: () async {
+                      setState(() {
+                        isLoading = true;
+                      });
                       if (await checkProfileStatus() == true) {
                         showDialog(
                           context: context,
@@ -67,6 +73,9 @@ class _GIGsState extends State<GIGs> {
                             context: context,
                             builder: (context) => ProfileCompleteConfirm());
                       }
+                      setState(() {
+                        isLoading = false;
+                      });
                     },
                     icon: Icon(
                       Iconsax.add_circle5,

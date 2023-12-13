@@ -101,12 +101,11 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         navigationFadeTo(
             context: context, destination: NavigationMenu(navPage: 1));
-
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -157,19 +156,9 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Confirmar exclusão',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          Icon(
-                            Iconsax.danger,
-                            color: Colors.red,
-                            size: 30,
-                          )
-                        ],
+                      title: Text(
+                        'Confirmar exclusão',
+                        style: TextStyle(color: Colors.red),
                       ),
                       content: Text('Tem certeza que deseja excluir esta GIG?'),
                       actions: [
@@ -218,19 +207,9 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Arquivar GIG',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Icon(
-                            Iconsax.archive,
-                            color: Colors.grey,
-                            size: 30,
-                          )
-                        ],
+                      title: Text(
+                        'Arquivar GIG',
+                        style: TextStyle(color: Colors.grey),
                       ),
                       content: Text('Gostaria de arquivar esta GIG?'),
                       actions: [

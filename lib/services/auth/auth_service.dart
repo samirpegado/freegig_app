@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
-import 'package:freegig_app/features/authentication/screens/login.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
+import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
@@ -72,6 +72,8 @@ class FirebaseAuthService {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
 
+      await FirebaseApi().updateUserToken();
+
       return credential.user;
     } on FirebaseAuthException catch (e) {
       print('some error occured');
@@ -116,11 +118,12 @@ class FirebaseAuthService {
     }
     _auth.signOut();
 
-    navigationFadeTo(context: context, destination: LoginScreen());
+    navigationFadeTo(context: context, destination: AuthGoogleGate());
   }
 
   //Sign in with google
   signInWithGoogle() async {
+    await GoogleSignIn().signOut();
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;
@@ -131,24 +134,6 @@ class FirebaseAuthService {
     );
 
     return await _auth.signInWithCredential(credential);
-  }
-
-  Future<void> checkGoogleUser(BuildContext context) async {
-    final user = FirebaseAuth.instance.currentUser!;
-    final userDocumentReference =
-        FirebaseFirestore.instance.collection('users').doc(user.uid);
-
-    try {
-      final documentSnapshot = await userDocumentReference.get();
-
-      if (documentSnapshot.exists) {
-        navigationFadeTo(context: context, destination: NavigationMenu());
-      } else {
-        print('O documento não existe!');
-      }
-    } catch (e) {
-      print('Erro ao obter documento: $e');
-    }
   }
 
   ///Cria a colecao users

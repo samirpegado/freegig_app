@@ -44,37 +44,48 @@ class _HomeCustomCardState extends State<HomeCustomCard> {
               child: Image.asset(
                 widget.imgCard,
                 width: 120,
-                //fit: BoxFit.cover,
               ),
             )),
-            SizedBox(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                ),
-                onPressed: () async {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      duration: Duration(milliseconds: 500),
-                      type: PageTransitionType.bottomToTop,
-                      child: widget.destination,
+            Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.grey, width: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      offset: Offset(2, 2),
+                      blurRadius: 1,
+                      spreadRadius: 0,
                     ),
-                  );
-                },
-                child: Text(
-                  widget.buttonText,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.0,
-                  ),
+                  ],
                 ),
-              ),
-            ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            duration: Duration(milliseconds: 500),
+                            type: PageTransitionType.bottomToTop,
+                            child: widget.destination,
+                          ),
+                        );
+                      },
+                      child: Text(
+                        widget.buttonText,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
           ],
         ),
       ),

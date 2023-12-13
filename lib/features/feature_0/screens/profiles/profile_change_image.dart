@@ -191,7 +191,11 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
                   Positioned(
                     bottom: 0,
                     left: 120,
-                    child: Icon(Icons.add_a_photo, size: 40),
+                    child: Icon(
+                      Icons.add_a_photo,
+                      size: 40,
+                      color: Colors.black54,
+                    ),
                   )
                 ],
               ),

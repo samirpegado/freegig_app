@@ -5,7 +5,7 @@ import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
-import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
+import 'package:freegig_app/features/feature_0/screens/home/notifications.dart';
 import 'package:freegig_app/services/notification/notifications_service.dart';
 import 'package:freegig_app/services/relationship/user_rate.dart';
 import 'package:iconsax/iconsax.dart';
@@ -50,12 +50,11 @@ class _UserRatingState extends State<UserRating> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         /// Confirmacoes de saida da pagina
         showDialog(context: context, builder: (context) => _exitAlert());
-
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(
@@ -332,7 +331,7 @@ class _UserRatingState extends State<UserRating> {
   Widget _evaluationDialog(Map<String, dynamic> participant, int index) {
     return AlertDialog(
       title: Text(
-        'Como você avalia este participante?',
+        'Como você avalia esta pessoa?',
         textAlign: TextAlign.center,
       ),
       content: SingleChildScrollView(

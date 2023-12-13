@@ -37,8 +37,9 @@ class _ListGigsState extends State<ListGigs> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
         Navigator.push(
           context,
           PageTransition(
@@ -51,7 +52,6 @@ class _ListGigsState extends State<ListGigs> {
             child: NavigationMenu(),
           ),
         );
-        return false;
       },
       child: Scaffold(
         appBar: AppBar(

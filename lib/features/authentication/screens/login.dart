@@ -39,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email.trim(),
         password.trim(),
       );
-      await FirebaseApi().updateUserToken();
     }
   }
 
@@ -52,10 +51,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
         SystemNavigator.pop();
-        return false;
       },
       child: Scaffold(
         body: SafeArea(
@@ -274,11 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 isGoogleSigningUp = true;
                               });
                               await FirebaseAuthService().signInWithGoogle();
-                              setState(() {
-                                isGoogleSigningUp = false;
-                              });
-                              await FirebaseAuthService()
-                                  .checkGoogleUser(context);
+                              await FirebaseApi().updateUserToken();
                             },
                             icon: Image(
                               width: 40,

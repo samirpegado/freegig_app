@@ -53,23 +53,20 @@ class _NavigationMenuState extends State<NavigationMenu>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
         if (selectedIndex == 0) {
           // Se a página atual for a Home, chama SystemNavigator.pop()
           SystemNavigator.pop();
-          return false;
         } else if (selectedIndex == 2) {
           NotificationService().removeMessageNotification();
           navigationFadeTo(
               context: context, destination: NavigationMenu(navPage: 0));
-          return false;
         } else {
           // Se não, navega para outra instância de NavigationMenu com navPage: 0
           navigationFadeTo(
               context: context, destination: NavigationMenu(navPage: 0));
-
-          return false;
         }
       },
       child: Scaffold(
