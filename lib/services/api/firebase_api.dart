@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:freegig_app/main.dart';
 
 class FirebaseApi {
   final _firebaseMessaging = FirebaseMessaging.instance;
@@ -37,6 +38,7 @@ String fromServerToken = '';
 
 void handleMessage(RemoteMessage? message) {
   if (message == null) return;
+  navigatorKey.currentState?.pushNamed('/notification_screen');
 }
 
 Future initPushNotifications() async {

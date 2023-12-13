@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/authentication/screens/login.dart';
+import 'package:freegig_app/features/feature_0/navigation_menu.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
   FirebaseAuth _auth = FirebaseAuth.instance;
@@ -115,5 +117,63 @@ class FirebaseAuthService {
     _auth.signOut();
 
     navigationFadeTo(context: context, destination: LoginScreen());
+  }
+
+  //Sign in with google
+  signInWithGoogle() async {
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+
+    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: gAuth.accessToken,
+      idToken: gAuth.idToken,
+    );
+
+    return await _auth.signInWithCredential(credential);
+  }
+
+  Future<void> checkGoogleUser(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final userDocumentReference =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    try {
+      final documentSnapshot = await userDocumentReference.get();
+
+      if (documentSnapshot.exists) {
+        navigationFadeTo(context: context, destination: NavigationMenu());
+      } else {
+        print('O documento não existe!');
+      }
+    } catch (e) {
+      print('Erro ao obter documento: $e');
+    }
+  }
+
+  ///Cria a colecao users
+  Future addUserDetailsGoogleSignIn(
+    String firstName,
+    String lastName,
+    String publicName,
+    String category,
+    String birthDate,
+    String phoneNo,
+    String city,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser!;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'uid': user.uid,
+      'firstName': firstName,
+      'lastName': lastName,
+      'publicName': publicName,
+      'category': category,
+      'birthDate': birthDate,
+      'phoneNo': phoneNo,
+      'city': city,
+      'profileComplete': false,
+      'googleUser': true,
+    });
   }
 }

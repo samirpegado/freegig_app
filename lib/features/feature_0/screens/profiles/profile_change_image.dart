@@ -80,8 +80,8 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
             toolbarTitle: 'Cortar',
             toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
           ),
           IOSUiSettings(
             title: 'Cortar',

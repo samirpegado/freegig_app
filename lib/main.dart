@@ -2,12 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
+import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
+import 'package:freegig_app/features/feature_0/widgets/gigs/notifications.dart';
 import 'package:freegig_app/firebase_options.dart';
 import 'package:freegig_app/services/api/firebase_api.dart';
-import 'package:freegig_app/services/auth/auth_gate.dart';
 import 'package:freegig_app/services/notification/local_notifications.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +44,9 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate
       ],
       supportedLocales: [const Locale('pt', 'BR')],
-      home: AuthGate(),
+      home: AuthGoogleGate(),
+      navigatorKey: navigatorKey,
+      routes: {'/notification_screen': (context) => GigsNotification()},
     );
   }
 }

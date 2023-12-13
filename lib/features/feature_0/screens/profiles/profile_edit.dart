@@ -68,13 +68,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage:
-                        AssetImage('assets/profiles/default-user-image.png'),
-                  )),
+              SizedBox(height: 20),
               Text(
                 "Olá, $_publicName",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -84,16 +78,22 @@ class _ProfileEditState extends State<ProfileEdit> {
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               SizedBox(height: 20),
-              Text(
-                //max 35 char
-                "Aprimore a sua experiência no FreeGIG completando o seu perfil. Personalize suas informações para usufruir ao máximo dos recursos oferecidos.",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.black),
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Text(
+                  "Aprimore a sua experiência no FreeGIG completando o seu perfil.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
               ),
-              SizedBox(height: 20),
-              buildAbout(),
-              SizedBox(height: 20),
-              lastReleases(),
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: Text(
+                  "Personalize suas informações para usufruir ao máximo dos recursos oferecidos.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+              ),
               SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -125,41 +125,3 @@ class _ProfileEditState extends State<ProfileEdit> {
     );
   }
 }
-
-Widget buildAbout() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Sobre',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "*Nenhum release publicado",
-            style: TextStyle(fontSize: 15, height: 1.4),
-          ),
-        ],
-      ),
-    );
-
-Widget lastReleases() => Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Últimos trabalhos',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "*Nenhum trabalho publicado",
-            style: TextStyle(fontSize: 15, height: 1.4),
-          ),
-        ],
-      ),
-    );

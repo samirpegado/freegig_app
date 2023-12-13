@@ -54,51 +54,60 @@ class _GigsNotificationState extends State<GigsNotification> {
                       children: notificationsDocument.map((document) {
                         Map<String, dynamic> data = document.data()!;
 
-                        return ListTile(
-                          subtitle: Text(data['title']),
-                          title: Text(data['body']),
-                          trailing: TextButton(
-                            child: Text('Ver'),
-                            onPressed: () async {
-                              if (data['type'] == 'inbox') {
-                                navigationFadeTo(
-                                    context: context,
-                                    destination: NavigationMenu(
-                                      navPage: 2,
-                                    ));
-                              } else if (data['type'] == 'invitation') {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => InvitationConfirm(
-                                          gigUid: data['gigUid'],
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ListTile(
+                            title: Text(data['title']),
+                            subtitle: Text(
+                              data['body'],
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.black54),
+                            ),
+                            trailing: TextButton(
+                              child: Text('Ver'),
+                              onPressed: () async {
+                                if (data['type'] == 'inbox') {
+                                  navigationFadeTo(
+                                      context: context,
+                                      destination: NavigationMenu(
+                                        navPage: 2,
+                                      ));
+                                } else if (data['type'] == 'invitation') {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => InvitationConfirm(
+                                            gigUid: data['gigUid'],
+                                            notificationID:
+                                                data['notificationUid'],
+                                          ));
+                                } else if (data['type'] == 'request') {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => RequestConfirmation(
+                                            gigUid: data['gigUid'],
+                                            notificationID:
+                                                data['notificationUid'],
+                                            senderID: data['senderId'],
+                                          ));
+                                } else if (data['type'] == 'rate') {
+                                  navigationFadeTo(
+                                      context: context,
+                                      destination: UserRating(
+                                        gigUid: data['gigUid'],
+                                        notificationID: data['notificationUid'],
+                                        currentUserID: data['recipientID'],
+                                      ));
+                                } else if (data['type'] == 'confirmation') {
+                                  navigationFadeTo(
+                                      context: context,
+                                      destination: NavigationMenu(navPage: 1));
+                                  await NotificationService()
+                                      .removeNotification(
                                           notificationID:
-                                              data['notificationUid'],
-                                        ));
-                              } else if (data['type'] == 'request') {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => RequestConfirmation(
-                                          gigUid: data['gigUid'],
-                                          notificationID:
-                                              data['notificationUid'],
-                                          senderID: data['senderId'],
-                                        ));
-                              } else if (data['type'] == 'rate') {
-                                navigationFadeTo(
-                                    context: context,
-                                    destination: UserRating(
-                                      gigUid: data['gigUid'],
-                                      notificationID: data['notificationUid'],
-                                      currentUserID: data['recipientID'],
-                                    ));
-                              } else if (data['type'] == 'confirmation') {
-                                navigationFadeTo(
-                                    context: context,
-                                    destination: NavigationMenu(navPage: 1));
-                                await NotificationService().removeNotification(
-                                    notificationID: data['notificationUid']);
-                              }
-                            },
+                                              data['notificationUid']);
+                                }
+                              },
+                            ),
                           ),
                         );
                       }).toList(),

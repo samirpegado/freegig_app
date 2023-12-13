@@ -1,5 +1,4 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
@@ -7,7 +6,6 @@ import 'package:freegig_app/features/authentication/widgets/forgot_pwd_alert.dar
 import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:iconsax/iconsax.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -23,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
 
   bool isSigningUp = false;
+  bool isGoogleSigningUp = false;
   bool showPassword = false;
 
   void toggleShowPassword() {
@@ -31,36 +30,24 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void signIn() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+    if (formKey.currentState!.validate()) {
+      await _auth.signInWithEmailAndPassword(
+        context,
+        email.trim(),
+        password.trim(),
+      );
+      await FirebaseApi().updateUserToken();
+    }
+  }
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
-  }
-
-  void signIn() async {
-    setState(() {
-      isSigningUp = true;
-    });
-    String email = emailController.text;
-    String password = passwordController.text;
-    if (formKey.currentState!.validate()) {
-      User? user = await _auth.signInWithEmailAndPassword(
-          context, email.trim(), password.trim());
-
-      if (user != null) {
-        print('User is successfully sign in');
-        await FirebaseApi().updateUserToken();
-
-        // Se o login tiver sucesso, navegue para a tela desejada
-        navigationFadeTo(context: context, destination: NavigationMenu());
-      } else {
-        print('Some error happend');
-      }
-    }
-    setState(() {
-      isSigningUp = false;
-    });
   }
 
   @override
@@ -178,6 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () async {
+                                setState(() {
+                                  isSigningUp = true;
+                                });
                                 signIn();
                               },
                               child: isSigningUp
@@ -268,22 +258,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 16),
 
                   ///Footer
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Image(
-                        width: 40,
-                        height: 40,
-                        image: AssetImage("assets/images/google.png"),
-                      ),
-                    ),
-                  )
+                  isGoogleSigningUp
+                      ? CircularProgressIndicator()
+                      : Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            border:
+                                Border.all(color: Colors.grey.withOpacity(0.3)),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              setState(() {
+                                isGoogleSigningUp = true;
+                              });
+                              await FirebaseAuthService().signInWithGoogle();
+                              setState(() {
+                                isGoogleSigningUp = false;
+                              });
+                              await FirebaseAuthService()
+                                  .checkGoogleUser(context);
+                            },
+                            icon: Image(
+                              width: 40,
+                              height: 40,
+                              image: AssetImage("assets/images/google.png"),
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),

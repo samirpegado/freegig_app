@@ -53,74 +53,11 @@ class DeleteUserService extends ChangeNotifier {
           });
         });
 
-        // 4. Excluir documentos na coleção 'rating' com campo 'ratedParticipantUid' ou 'rater' igual ao ID do usuário
-        await FirebaseFirestore.instance
-            .collection('rating')
-            .where('ratedParticipantUid', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
-        await FirebaseFirestore.instance
-            .collection('rating')
-            .where('rater', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
-        // 5. Excluir documentos na coleção 'userInvite' com campo 'guestUserId' ou 'inviteOwner' igual ao ID do usuário
-        await FirebaseFirestore.instance
-            .collection('userInvite')
-            .where('guestUserId', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
-        await FirebaseFirestore.instance
-            .collection('userInvite')
-            .where('inviteOwner', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
-        // 6. Excluir documentos na coleção 'userRequest' com campo 'gigOwnerId' ou 'requesterUid' igual ao ID do usuário
-        await FirebaseFirestore.instance
-            .collection('userRequest')
-            .where('gigOwnerId', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
-        await FirebaseFirestore.instance
-            .collection('userRequest')
-            .where('requesterUid', isEqualTo: user.uid)
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
-        });
-
         //Excluir o próprio usuário
         await FirebaseFirestore.instance
             .collection('users')
             .doc(user.uid)
-            .delete();
+            .update({'publicName': 'Usuário desativado'});
 
         await deleteFirebaseAuthUser();
         navigationFadeTo(context: context, destination: LoginScreen());

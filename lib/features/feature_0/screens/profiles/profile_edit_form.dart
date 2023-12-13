@@ -104,8 +104,8 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
             toolbarTitle: 'Cortar',
             toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
           ),
           IOSUiSettings(
             title: 'Cortar',
@@ -167,30 +167,35 @@ class _ProfileEditFormState extends State<ProfileEditForm> {
         foregroundColor: Colors.black,
       ),
       backgroundColor: backgroundColor,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          onPressed: () {
-            _completeProfile();
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Text(
-              "Completar perfil",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 16.0,
+      bottomNavigationBar: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              onPressed: () {
+                _completeProfile();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Text(
+                  "Completar perfil",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
       body: SafeArea(
           child: SingleChildScrollView(
