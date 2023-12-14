@@ -277,15 +277,17 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
           ),
         ),
       ),
-      bottomNavigationBar: _gigStatus
-          ? Container()
-          : Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Center(child: Text('Gostaria de participar desta GIG?')),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _gigStatus
+              ? Container()
+              : Center(child: Text('Gostaria de participar desta GIG?')),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: _gigStatus
+                ? Container()
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       InkWell(
@@ -335,9 +337,9 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
+          ),
+        ],
+      ),
     );
   }
 

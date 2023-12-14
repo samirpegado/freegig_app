@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freegig_app/classes/formatdate.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -115,7 +116,8 @@ class _CommonGigsCardState extends State<CommonGigsCard> {
                               ),
                               SizedBox(width: 4),
                               Text(
-                                widget.gig['gigDate'],
+                                FormatDate()
+                                    .formatDateString(widget.gig['gigDate']),
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: Colors.black54,

@@ -15,6 +15,7 @@ class FirebaseAuthService {
     try {
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
+
       return credential.user;
     } on FirebaseAuthException catch (e) {
       print('some error occured');
@@ -50,6 +51,8 @@ class FirebaseAuthService {
     String city,
   ) async {
     final user = FirebaseAuth.instance.currentUser!;
+
+    await user.sendEmailVerification();
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
       'uid': user.uid,
@@ -116,7 +119,7 @@ class FirebaseAuthService {
           .doc(currentUserId)
           .update({'token': ''});
     }
-    _auth.signOut();
+    await _auth.signOut();
 
     navigationFadeTo(context: context, destination: AuthGoogleGate());
   }
@@ -124,9 +127,16 @@ class FirebaseAuthService {
   //Sign in with google
   signInWithGoogle() async {
     await GoogleSignIn().signOut();
+
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+    if (gUser == null) {
+      // O usuário cancelou o login, trate esse caso conforme necessário
+      print('Login com Google cancelado.');
+      return null; // ou retorne algo apropriado no seu caso
+    }
+
+    final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
       accessToken: gAuth.accessToken,

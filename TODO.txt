@@ -1,4 +1,2 @@
-** Confirmar conta com e-mail para login com email e senha;
 ** Ajustar a funcao para deletar conta;
 ** Termos de uso;
-** Verificar exception na tentativa de logar com google quando o documento na colecao users ainda nao foi criado;

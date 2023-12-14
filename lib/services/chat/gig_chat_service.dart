@@ -160,4 +160,22 @@ class GigChatService extends ChangeNotifier {
       return [];
     }
   }
+
+  Future<void> deleteGigGroupMessages(String gigUid) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('gigs')
+          .doc(gigUid)
+          .collection('group_messages')
+          .get()
+          .then((messagesSnapshot) {
+        for (QueryDocumentSnapshot<Map<String, dynamic>> messageSnapshot
+            in messagesSnapshot.docs) {
+          messageSnapshot.reference.delete();
+        }
+      });
+    } catch (e) {
+      print('Erro ao deletar as mensagens em grupo da GIG');
+    }
+  }
 }

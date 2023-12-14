@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/chat/chat_service.dart';
+import 'package:freegig_app/services/chat/gig_chat_service.dart';
 import 'package:freegig_app/services/common/common_service.dart';
 import 'package:freegig_app/services/notification/notifications_service.dart';
 
@@ -120,29 +121,16 @@ class GigsDataService extends ChangeNotifier {
   }
 
   // Funcao para deletar uma gig criada
-  Future<void> deleteGig(String documentId) async {
+  Future<void> deleteGig(String gigUid) async {
     try {
       // Exclui a coleção 'group_messages' associada a cada documento da coleção 'gigs'
-      await FirebaseFirestore.instance
-          .collection('gigs')
-          .doc(documentId)
-          .collection('group_messages')
-          .get()
-          .then((messagesSnapshot) {
-        for (QueryDocumentSnapshot<Map<String, dynamic>> messageSnapshot
-            in messagesSnapshot.docs) {
-          messageSnapshot.reference.delete();
-        }
-      });
+      await GigChatService().deleteGigGroupMessages(gigUid);
 
       // Exclui o documento principal da coleção 'gigs'
-      await FirebaseFirestore.instance
-          .collection('gigs')
-          .doc(documentId)
-          .delete();
+      await FirebaseFirestore.instance.collection('gigs').doc(gigUid).delete();
 
       // Chama a função para excluir a sala de chat (chat_room) associada à gig
-      await ChatService().deleteChatRoom(documentId);
+      await ChatService().deleteChatRoom(gigUid);
 
       print('Gig e subcoleção de mensagens removidas com sucesso!');
     } catch (e) {

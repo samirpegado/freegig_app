@@ -55,7 +55,10 @@ class _UserCityButtonGigState extends State<UserCityButtonGig> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text('Todo o Brasil'),
+                            child: Text(
+                              'Todo o Brasil',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,

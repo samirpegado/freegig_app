@@ -50,245 +50,197 @@ class _UserRatingState extends State<UserRating> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        /// Confirmacoes de saida da pagina
-        showDialog(context: context, builder: (context) => _exitAlert());
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text(
-            'Avaliar participantes',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 19.0,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        title: Text(
+          'Avaliar participantes',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 19.0,
           ),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
         ),
-        backgroundColor: backgroundColor,
-        bottomNavigationBar: _evaluationButton(),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// Header com as informacoes da GIG
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+      ),
+      backgroundColor: backgroundColor,
+      bottomNavigationBar: _evaluationButton(),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header com as informacoes da GIG
 
-                StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('gigs')
-                      .doc(widget.gigUid)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Erro: ${snapshot.error}');
-                    }
-                    if (!snapshot.hasData || !snapshot.data!.exists) {
-                      return Text('Documento não encontrado');
-                    }
-                    Map<String, dynamic> data =
-                        snapshot.data!.data() as Map<String, dynamic>;
+              StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('gigs')
+                    .doc(widget.gigUid)
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Erro: ${snapshot.error}');
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Text('Documento não encontrado');
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        data['gigDescription'],
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.calendar,
+                            size: 20,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              FormatDate().formatDateString(data['gigDate']),
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.clock,
+                            size: 20,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              "${data['gigInitHour']}h - ${data['gigFinalHour']}h",
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.location,
+                            size: 20,
+                            color: Colors.green,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              data['gigAdress'],
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  );
+                },
+              ),
+              Text(
+                "Participantes: ",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87),
+              ),
+              SizedBox(height: 6),
+
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: participantsData,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text(
+                      'Erro ao carregar participantes: ${snapshot.error}',
+                      style: TextStyle(fontSize: 15),
+                    );
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Text(
+                      'Nenhum participante encontrado.',
+                      style: TextStyle(fontSize: 15),
+                    );
+                  } else {
+                    List<Map<String, dynamic>> participantsData =
+                        snapshot.data!;
 
                     return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data['gigDescription'],
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.calendar,
-                              size: 20,
-                              color: Colors.green,
+                      children: participantsData.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        Map<String, dynamic> participant = entry.value;
+
+                        if (participant['uid'] != widget.currentUserID) {
+                          return ListTile(
+                            onTap: () {
+                              starValue = 5;
+                              commentController.clear();
+                              showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    _evaluationDialog(participant, index),
+                              );
+                            },
+                            leading: BuildProfileImage(
+                                profileImageUrl: participant['profileImageUrl'],
+                                imageSize: 50),
+                            trailing: Icon(
+                              Icons.star,
+                              color: starColors[index]
+                                  ? Colors.amber
+                                  : Colors.grey,
+                              size: 30,
                             ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                FormatDate().formatDateString(data['gigDate']),
-                                style: TextStyle(
-                                  fontSize: 15,
+                            title: Text(
+                              participant['publicName'],
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  participant['category'],
+                                  style: TextStyle(fontSize: 15),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.clock,
-                              size: 20,
-                              color: Colors.green,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                "${data['gigInitHour']}h - ${data['gigFinalHour']}h",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Iconsax.location,
-                              size: 20,
-                              color: Colors.green,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                data['gigAdress'],
-                                style: TextStyle(
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                      ],
+                          );
+                        }
+                        return Container();
+                      }).toList(),
                     );
-                  },
-                ),
-                Text(
-                  "Participantes: ",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87),
-                ),
-                SizedBox(height: 6),
-
-                FutureBuilder<List<Map<String, dynamic>>>(
-                  future: participantsData,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text(
-                        'Erro ao carregar participantes: ${snapshot.error}',
-                        style: TextStyle(fontSize: 15),
-                      );
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text(
-                        'Nenhum participante encontrado.',
-                        style: TextStyle(fontSize: 15),
-                      );
-                    } else {
-                      List<Map<String, dynamic>> participantsData =
-                          snapshot.data!;
-
-                      return Column(
-                        children: participantsData.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          Map<String, dynamic> participant = entry.value;
-
-                          if (participant['uid'] != widget.currentUserID) {
-                            return ListTile(
-                              onTap: () {
-                                starValue = 5;
-                                commentController.clear();
-                                showDialog(
-                                  context: context,
-                                  builder: (context) =>
-                                      _evaluationDialog(participant, index),
-                                );
-                              },
-                              leading: BuildProfileImage(
-                                  profileImageUrl:
-                                      participant['profileImageUrl'],
-                                  imageSize: 50),
-                              trailing: Icon(
-                                Icons.star,
-                                color: starColors[index]
-                                    ? Colors.amber
-                                    : Colors.grey,
-                                size: 30,
-                              ),
-                              title: Text(
-                                participant['publicName'],
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    participant['category'],
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          return Container();
-                        }).toList(),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _exitAlert() {
-    return AlertDialog(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(child: Text('Sair da avaliação?')),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.close))
-        ],
-      ),
-      content: Text(
-          "Deseja sair da avaliação antes de finalizá-la? Selecione uma das opções abaixo."),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await NotificationService()
-                .removeNotification(notificationID: widget.notificationID);
-            navigationFadeTo(context: context, destination: GigsNotification());
-          },
-          child: Text(
-            'Sair sem avaliar',
-            style: TextStyle(color: Colors.red),
-          ),
-        ),
-        TextButton(
-          onPressed: () {
-            navigationFadeTo(context: context, destination: GigsNotification());
-          },
-          child: Text(
-            'Avaliar depois',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-      ],
     );
   }
 

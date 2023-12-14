@@ -176,61 +176,65 @@ class _RequestConfirmationState extends State<RequestConfirmation> {
             SizedBox(height: 6),
             ParticipantList(gigUid: widget.gigUid),
             SizedBox(height: 20),
-            Text(
-              "Solicitante: ",
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(widget.senderID)
-                    .snapshots(),
-                builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
-                  }
-                  if (snapshot.hasError) {
-                    return Text('Erro: ${snapshot.error}');
-                  }
-                  if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return Text('Documento não encontrado');
-                  }
-                  Map<String, dynamic> senderData =
-                      snapshot.data!.data() as Map<String, dynamic>;
+            Visibility(
+              visible: isLoading ? false : true,
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(widget.senderID)
+                      .snapshots(),
+                  builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    }
+                    if (snapshot.hasError) {
+                      return Text('Erro: ${snapshot.error}');
+                    }
+                    if (!snapshot.hasData || !snapshot.data!.exists) {
+                      return Text('Solicitante não encontrado');
+                    }
+                    Map<String, dynamic> senderData =
+                        snapshot.data!.data() as Map<String, dynamic>;
 
-                  return Column(
-                    children: [
-                      ListTile(
-                        onTap: () {
-                          navigationFadeTo(
-                              context: context,
-                              destination:
-                                  SimpleShowProfile(profile: senderData));
-                        },
-                        leading: BuildProfileImage(
-                            profileImageUrl: senderData['profileImageUrl'],
-                            imageSize: 40),
-                        trailing: Icon(Iconsax.arrow_right_3),
-                        title: Text(
-                          senderData['publicName'],
-                          style: TextStyle(fontSize: 15),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Solicitante: ",
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.blue),
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              senderData['category'],
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  );
-                }),
+                        ListTile(
+                          onTap: () {
+                            navigationFadeTo(
+                                context: context,
+                                destination:
+                                    SimpleShowProfile(profile: senderData));
+                          },
+                          leading: BuildProfileImage(
+                              profileImageUrl: senderData['profileImageUrl'],
+                              imageSize: 40),
+                          trailing: Icon(Iconsax.arrow_right_3),
+                          title: Text(
+                            senderData['publicName'],
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                senderData['category'],
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    );
+                  }),
+            ),
             SizedBox(height: 10),
             Center(
                 child: Text(
@@ -271,9 +275,6 @@ class _RequestConfirmationState extends State<RequestConfirmation> {
                           navigationFadeTo(
                               context: context,
                               destination: NavigationMenu(navPage: 1));
-                          setState(() {
-                            isLoading = false;
-                          });
                         } else {
                           Navigator.of(context).pop();
                           showToast(

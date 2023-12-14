@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/services/chat/chat_service.dart';
+import 'package:freegig_app/services/chat/gig_chat_service.dart';
 import 'package:freegig_app/services/notification/notifications_service.dart';
 
 final _firestore = FirebaseFirestore.instance;
@@ -151,6 +152,11 @@ class UserRateService extends ChangeNotifier {
           List<String>.from(gigDocument['gigParticipants']);
       // Atualiza o campo gigArchived para true
       await gigDocumentRef.update({'gigArchived': true});
+
+      // Exclui a coleção 'group_messages' associada a cada documento da coleção 'gigs'
+      await GigChatService().deleteGigGroupMessages(gigUid);
+
+      // deleta o chat individual a cerca da gig
       await ChatService().deleteChatRoom(gigUid);
 
       // Cria os rateNotifications apenas se houver mais de um participante

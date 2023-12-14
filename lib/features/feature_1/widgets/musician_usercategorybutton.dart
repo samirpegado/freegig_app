@@ -54,7 +54,10 @@ class _MusicianCategoryButtonState extends State<MusicianCategoryButton> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text('Todas as Categorias'),
+                            child: Text(
+                              'Todas as Categorias',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,

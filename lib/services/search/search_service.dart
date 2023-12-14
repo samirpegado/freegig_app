@@ -103,11 +103,16 @@ class SearchService extends ChangeNotifier {
               });
             }
           }
+          double convertToNumber(String value) {
+            return double.parse(value.replaceAll(',', '.'));
+          }
 
           if (cache == 'decreasing') {
-            gigsDataList.sort((b, a) => a['gigCache'].compareTo(b['gigCache']));
+            gigsDataList.sort((b, a) => convertToNumber(a['gigCache'])
+                .compareTo(convertToNumber(b['gigCache'])));
           } else if (cache == 'increasing') {
-            gigsDataList.sort((a, b) => a['gigCache'].compareTo(b['gigCache']));
+            gigsDataList.sort((a, b) => convertToNumber(a['gigCache'])
+                .compareTo(convertToNumber(b['gigCache'])));
           } else {
             gigsDataList.sort((a, b) {
               DateTime dateA = DateTimeConvert().parseDate(a['gigDate']);

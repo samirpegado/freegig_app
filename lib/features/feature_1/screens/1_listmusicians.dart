@@ -5,7 +5,6 @@ import 'package:freegig_app/features/feature_1/widgets/musician_usercitybutton.d
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/features/feature_1/widgets/musicians_cardsroll.dart';
 import 'package:freegig_app/common/themeapp.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ListMusicians extends StatefulWidget {
@@ -52,17 +51,6 @@ class _ListMusiciansState extends State<ListMusicians> {
               fontSize: 19.0,
             ),
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                openFilter(context);
-              },
-              icon: Icon(
-                Iconsax.setting_4,
-                color: Colors.black,
-              ),
-            )
-          ],
           elevation: 0,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
@@ -105,44 +93,3 @@ class _ListMusiciansState extends State<ListMusicians> {
     );
   }
 }
-
-Future openFilter(context) => showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text("Filtrar"),
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: Icon(
-                  Icons.close,
-                )),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ExpansionTile(
-              initiallyExpanded: true,
-              title: Text("Avaliação"),
-              children: [
-                TextButton(onPressed: () {}, child: Text('Maior para o menor')),
-                TextButton(onPressed: () {}, child: Text('Menor para o maior')),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(
-                Icons.check,
-              )),
-        ],
-      ),
-    );

@@ -43,8 +43,6 @@ class MyApp extends StatelessWidget {
           primary: Colors.blue,
           surfaceTint: Colors.white,
         ),
-
-        //useMaterial3: false,
       ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

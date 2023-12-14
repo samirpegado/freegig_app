@@ -2,10 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:freegig_app/classes/city_list.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/features/authentication/screens/confirm_email_page.dart';
 import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/widgets/signup_form.dart';
-import 'package:freegig_app/features/feature_0/navigation_menu.dart';
 import 'package:freegig_app/common/themeapp.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -92,7 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         print('User is successfully created');
         ;
 
-        navigationFadeTo(context: context, destination: NavigationMenu());
+        navigationFadeTo(context: context, destination: ConfirmEmailPage());
       } else {
         print('Some error happened');
       }

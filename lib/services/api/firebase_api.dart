@@ -19,15 +19,25 @@ class FirebaseApi {
   Future<void> updateUserToken() async {
     final User? currentUser = _auth.currentUser;
     final fCMToken = await _firebaseMessaging.getToken();
+
     if (currentUser != null) {
       final String currentUserId = currentUser.uid;
+      final userDocumentReference =
+          FirebaseFirestore.instance.collection('users').doc(currentUserId);
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUserId)
-          .update({'token': fCMToken});
+      try {
+        final userDocumentSnapshot = await userDocumentReference.get();
 
-      print('Token atualizado: $fCMToken');
+        if (userDocumentSnapshot.exists) {
+          // O documento existe, então podemos atualizar o token
+          await userDocumentReference.update({'token': fCMToken});
+          print('Token atualizado: $fCMToken');
+        } else {
+          print('Documento não encontrado para o usuário $currentUserId');
+        }
+      } catch (e) {
+        print('Erro ao verificar o documento: $e');
+      }
     } else {
       print('Usuário não autenticado');
     }

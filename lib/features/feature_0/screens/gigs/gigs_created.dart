@@ -414,22 +414,10 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                                           showDialog(
                                             context: context,
                                             builder: (context) => AlertDialog(
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Remover participante',
-                                                    style: TextStyle(
-                                                        color: Colors.blue),
-                                                  ),
-                                                  Icon(
-                                                    Iconsax.user_remove,
-                                                    color: Colors.blue,
-                                                    size: 30,
-                                                  )
-                                                ],
+                                              title: Text(
+                                                'Remover participante',
+                                                style: TextStyle(
+                                                    color: Colors.blue),
                                               ),
                                               content: Text(
                                                   'Deseja remover este participante da sua GIG?'),
@@ -444,37 +432,34 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     )),
-                                                isLoading
-                                                    ? CircularProgressIndicator()
-                                                    : TextButton(
-                                                        onPressed: () async {
-                                                          setState(() {
-                                                            isLoading = true;
-                                                          });
-                                                          await UserRequest()
-                                                              .removeParticipant(
-                                                                  gigUid: widget
-                                                                          .gig[
+                                                TextButton(
+                                                    onPressed: () async {
+                                                      setState(() {
+                                                        isLoading = true;
+                                                      });
+                                                      await UserRequest()
+                                                          .removeParticipant(
+                                                              gigUid:
+                                                                  widget.gig[
                                                                       'gigUid'],
-                                                                  participantUid:
-                                                                      participant[
-                                                                          'uid']);
-                                                          Navigator.of(context).push(
-                                                              MaterialPageRoute(
-                                                                  builder: (context) =>
-                                                                      NavigationMenu(
-                                                                          navPage:
-                                                                              1)));
-                                                          setState(() {
-                                                            isLoading = false;
-                                                          });
-                                                        },
-                                                        child: Text(
-                                                          'Remover',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.blue),
-                                                        ))
+                                                              participantUid:
+                                                                  participant[
+                                                                      'uid']);
+
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      setState(() {
+                                                        isLoading = false;
+                                                      });
+                                                    },
+                                                    child: isLoading
+                                                        ? CircularProgressIndicator()
+                                                        : Text(
+                                                            'Remover',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .blue),
+                                                          ))
                                               ],
                                             ),
                                           );

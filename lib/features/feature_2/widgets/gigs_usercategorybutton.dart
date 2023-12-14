@@ -55,7 +55,10 @@ class _UserCategoryButtonState extends State<UserCategoryButton> {
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
-                            child: Text('Todas as Categorias'),
+                            child: Text(
+                              'Todas as Categorias',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/features/authentication/widgets/forgot_pwd_alert.dart';
-import 'package:freegig_app/services/api/firebase_api.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 import 'package:freegig_app/features/authentication/screens/signup.dart';
 import 'package:iconsax/iconsax.dart';
@@ -257,31 +256,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 16),
 
                   ///Footer
-                  isGoogleSigningUp
-                      ? CircularProgressIndicator()
-                      : Container(
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.grey.withOpacity(0.3)),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: IconButton(
-                            onPressed: () async {
-                              setState(() {
-                                isGoogleSigningUp = true;
-                              });
-                              await FirebaseAuthService().signInWithGoogle();
-                              await FirebaseApi().updateUserToken();
-                            },
-                            icon: Image(
+                  Container(
+                    height: 60,
+                    width: 60,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    child: IconButton(
+                      onPressed: () async {
+                        setState(() {
+                          isGoogleSigningUp = true;
+                        });
+                        await FirebaseAuthService().signInWithGoogle();
+                      },
+                      icon: isGoogleSigningUp
+                          ? CircularProgressIndicator()
+                          : Image(
                               width: 40,
                               height: 40,
                               image: AssetImage("assets/images/google.png"),
                             ),
-                          ),
-                        )
+                    ),
+                  )
                 ],
               ),
             ),
