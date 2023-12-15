@@ -61,21 +61,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void signUp() async {
     cityValidate(city.text);
-    setState(() {
-      isSigningUp = true;
-    });
+
     String _email = email.text;
     String _password = password.text;
     if (formKey.currentState!.validate() && !cityValidator) {
+      setState(() {
+        isSigningUp = true;
+      });
       // create user
       User? user = await _auth.signUpWithEmailAndPassword(
         context,
         _email.trim(),
         _password.trim(),
       );
-      setState(() {
-        isSigningUp = false;
-      });
 
       if (user != null) {
         _auth.addUserDetails(
@@ -90,16 +88,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
         await FirebaseApi().updateUserToken();
         print('User is successfully created');
-        ;
 
         navigationFadeTo(context: context, destination: ConfirmEmailPage());
       } else {
         print('Some error happened');
       }
     }
-    setState(() {
-      isSigningUp = false;
-    });
   }
 
   @override

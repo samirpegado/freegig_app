@@ -33,6 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
     String email = emailController.text;
     String password = passwordController.text;
     if (formKey.currentState!.validate()) {
+      setState(() {
+        isSigningUp = true;
+      });
       await _auth.signInWithEmailAndPassword(
         context,
         email.trim(),
@@ -163,9 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () async {
-                                setState(() {
-                                  isSigningUp = true;
-                                });
                                 signIn();
                               },
                               child: isSigningUp

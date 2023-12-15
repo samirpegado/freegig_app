@@ -3,7 +3,6 @@ import 'package:freegig_app/common/functions/navigation.dart';
 import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profile_change_image.dart';
-import 'package:freegig_app/features/feature_0/widgets/profile/dialog_ads.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_delete_account.dart';
 import 'package:freegig_app/features/feature_0/widgets/profile/dialog_report.dart';
 import 'package:freegig_app/features/feature_0/screens/profiles/profile_update_form.dart';
@@ -83,7 +82,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 title: Text('Alterar foto'),
                 trailing: Icon(Iconsax.arrow_right_3),
               ),
-              ListTile(
+              /* ListTile(
                 onTap: () {
                   showDialog(
                       context: context, builder: (context) => AdsDialog());
@@ -91,7 +90,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                 leading: Icon(Iconsax.shop),
                 title: Text('Anúncios'),
                 trailing: Icon(Iconsax.arrow_right_3),
-              ),
+              ),*/
               ListTile(
                 onTap: () {
                   showDialog(

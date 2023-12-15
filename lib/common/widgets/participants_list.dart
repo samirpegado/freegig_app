@@ -37,9 +37,11 @@ class _ParticipantListState extends State<ParticipantList> {
             children: participantsData.map((participant) {
               return ListTile(
                 onTap: () {
-                  navigationFadeTo(
-                      context: context,
-                      destination: SimpleShowProfile(profile: participant));
+                  participant['category'] == 'Desativado'
+                      ? null
+                      : navigationFadeTo(
+                          context: context,
+                          destination: SimpleShowProfile(profile: participant));
                 },
                 leading: BuildProfileImage(
                     profileImageUrl: participant['profileImageUrl'],

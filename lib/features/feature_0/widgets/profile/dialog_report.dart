@@ -26,7 +26,7 @@ class ReportDialog extends StatelessWidget {
             ),
             SizedBox(height: 15),
             Text(
-              "faleconosco@freegig.com.",
+              "freegigbr@gmail.com",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.blue),
             ),

@@ -156,13 +156,13 @@ class _ListMessagesState extends State<ListMessages> {
             children: [
               CircleNotReadMessages(
                 gigUid: chatRoomData['gigSubjectUid'],
-                receiverId: receiverUserData['uid'],
+                receiverId: receiverUserData['uid'] ?? '',
               ),
               Icon(Iconsax.arrow_right_3),
             ],
           ),
           leading: BuildProfileImage(
-              profileImageUrl: receiverUserData['profileImageUrl'],
+              profileImageUrl: receiverUserData['profileImageUrl'] ?? '',
               imageSize: 45),
         );
       },

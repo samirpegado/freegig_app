@@ -83,7 +83,7 @@ class DeleteAccountDetails extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              "faleconosco@freegig.com.",
+              "freegigbr@gmail.com",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.blue),
             ),
