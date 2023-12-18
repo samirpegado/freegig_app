@@ -1,5 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/services/common/delete_account.dart';
+import 'package:flutter/services.dart';
+import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
+import 'package:freegig_app/features/authentication/screens/reauth.dart';
+import 'package:freegig_app/features/authentication/screens/reauthGoogle.dart';
 import 'package:iconsax/iconsax.dart';
 
 class DeleteAccountConfirm extends StatelessWidget {
@@ -7,6 +12,8 @@ class DeleteAccountConfirm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return AlertDialog(
       title: Text(
         'Excluir minha conta',
@@ -39,10 +46,25 @@ class DeleteAccountConfirm extends StatelessWidget {
           ),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(context);
-            showDialog(
-                context: context, builder: (context) => DeleteAccountDetails());
+          onPressed: () async {
+            if (user != null) {
+              // O usuário está autenticado, agora verificamos o provedor
+              bool isGoogleUser = await user.providerData
+                  .any((userInfo) => userInfo.providerId == 'google.com');
+              print(isGoogleUser);
+
+              if (isGoogleUser) {
+                // O usuário está autenticado com o Google, navegue para uma página
+                navigationFadeTo(
+                    context: context, destination: ReAuthGoogleScreen());
+              } else {
+                // O usuário está autenticado, mas não com o Google, navegue para outra página
+                navigationFadeTo(context: context, destination: ReAuthScreen());
+              }
+            } else {
+              // O usuário não está autenticado, navegue para uma página de login
+              navigationFadeTo(context: context, destination: AuthGoogleGate());
+            }
           },
           child: Text(
             'Excluir',
@@ -55,59 +77,42 @@ class DeleteAccountConfirm extends StatelessWidget {
 }
 
 // segunda confirmacao
-class DeleteAccountDetails extends StatelessWidget {
-  const DeleteAccountDetails({
+class DeletedAccountDetails extends StatelessWidget {
+  const DeletedAccountDetails({
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        'Conte-nos mais detalhes',
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.red),
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '😢',
-              style: TextStyle(fontSize: 30),
-            ),
-            SizedBox(height: 15),
-            Text(
-              "Lamentamos saber que você está considerando sair. Por favor, compartilhe o que não atendeu às suas expectativas, para que possamos trabalhar para melhorar no futuro. Clique no e-mail abaixo para nos enviar uma mensagem.",
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 10),
-            Text(
-              "freegigbr@gmail.com",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.blue),
-            ),
-            SizedBox(height: 20),
-          ],
-        ),
+      title: Text('Conta excluida'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '😢',
+            style: TextStyle(fontSize: 30),
+          ),
+          SizedBox(height: 15),
+          Text(
+            'Lamentamos saber que você está saindo. Por favor, compartilhe o que não atendeu às suas expectativas, para que possamos trabalhar para melhorar no futuro. Clique no e-mail abaixo para nos enviar uma mensagem.',
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+          Text(
+            "freegigbr@gmail.com",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.blue),
+          ),
+        ],
       ),
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            SystemNavigator.pop();
           },
           child: Text(
-            'Cancelar',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        TextButton(
-          onPressed: () {
-            DeleteUserService().deleteUserAndRelatedData(context);
-          },
-          child: Text(
-            'Excluir conta',
-            style: TextStyle(color: Colors.red),
+            'Fechar',
           ),
         ),
       ],

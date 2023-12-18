@@ -242,18 +242,22 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
                               Visibility(
                                 visible: participant['uid'] ==
                                     widget.gig['gigOwner'],
-                                child: TextButton(
-                                  onPressed: () {
-                                    navigationFadeTo(
-                                      context: context,
-                                      destination: ChatPage(
-                                        receiverUid: widget.gig['gigOwner'],
-                                        gigSubjectUid: widget.gig['gigUid'],
+                                child: _gigStatus
+                                    ? Container()
+                                    : TextButton(
+                                        onPressed: () {
+                                          navigationFadeTo(
+                                            context: context,
+                                            destination: ChatPage(
+                                              receiverUid:
+                                                  widget.gig['gigOwner'],
+                                              gigSubjectUid:
+                                                  widget.gig['gigUid'],
+                                            ),
+                                          );
+                                        },
+                                        child: Text('Enviar mensagem'),
                                       ),
-                                    );
-                                  },
-                                  child: Text('Enviar mensagem'),
-                                ),
                               ),
                             ],
                           ),
@@ -286,7 +290,16 @@ class _ConfirmRequestPageState extends State<ConfirmRequestPage> {
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: _gigStatus
-                ? Container()
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Esta GIG já se encontra fechada',
+                      style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

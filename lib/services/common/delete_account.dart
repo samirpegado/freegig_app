@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:freegig_app/common/functions/navigation.dart';
-import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
+import 'package:freegig_app/features/feature_0/widgets/profile/dialog_delete_account.dart';
 import 'package:freegig_app/services/auth/auth_service.dart';
 
 class DeleteUserService extends ChangeNotifier {
@@ -19,7 +18,7 @@ class DeleteUserService extends ChangeNotifier {
     User? user = _auth.currentUser!;
 
     try {
-      // 1. Excluir documentos na coleção 'gigs' com campo 'gigOwner' igual ao ID do usuário
+      // 1. ARQUIVA TODAS AS GIGS ATIVAS DO USUARIO
       await FirebaseFirestore.instance
           .collection('gigs')
           .where('gigOwner', isEqualTo: user.uid)
@@ -40,7 +39,7 @@ class DeleteUserService extends ChangeNotifier {
     }
 
     try {
-      // 2. Atualizar documentos na coleção 'gigs' com campo 'gigParticipants' contendo o ID do usuário
+      //2. REMOVE O USUARIO DE TODAS AS GIGS ATIVAS
       await FirebaseFirestore.instance
           .collection('gigs')
           .where('gigParticipants', arrayContains: user.uid)
@@ -87,6 +86,7 @@ class DeleteUserService extends ChangeNotifier {
     }
 
     try {
+      // 4. REMOVE OS CHATS DIRETOS ATIVOS DO USUARIO
       await FirebaseFirestore.instance
           .collection('chat_rooms')
           .where('participants', arrayContains: user.uid)
@@ -100,32 +100,41 @@ class DeleteUserService extends ChangeNotifier {
       print('ERRO AO REMOVER OS CHATS DIRETOS COM ESSE USUARIO: $e');
     }
 
-    // 3. Excluir documentos na coleção
+    // 5. REMOVE O USUARIO O AUTHENTICATION
     try {
+      // Remover autenticação do Google (se o usuário fez login pelo Google)
+      if (user.providerData
+          .any((userInfo) => userInfo.providerId == 'google.com')) {
+        await user.unlink('google.com');
+      }
       await FirebaseAuth.instance.currentUser!.delete();
     } catch (e) {
       print('ERRO AO REMOVER O USUARIO DO AUTHENTICATION: $e');
     }
 
+    //6. MARCA O USUARIO COM DESATIVADO
     try {
+      Timestamp currentDate = Timestamp.now();
       //MUDA O DOCUMENTO DA COLECAO USERS PARA USUARIO DESATIVADO
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
         'publicName': 'Usuário desativado',
         'profileImageUrl':
             'https://firebasestorage.googleapis.com/v0/b/freegig-fac8e.appspot.com/o/desativated-user.png?alt=media&token=f30971ea-4e5b-458d-bffd-29b90bd9b052',
         'category': 'Desativado',
+        'deletedDate': currentDate,
       });
     } catch (e) {
       print(
           'ERRO AO MUDAR O DOCUMENTO DA COLECAO USERS PARA USUARIO DESATIVADO: $e');
     }
 
+    // 7. FAZ O LOGOUT E VOLTA PRO AUTHGATE
     try {
       await FirebaseAuthService().logOut(context);
     } catch (e) {
       print('ERRO AO FAZER LOGOUT E VOLTAR PRA O AUTHGATE: $e');
     }
 
-    navigationFadeTo(context: context, destination: AuthGoogleGate());
+    showDialog(context: context, builder: (context) => DeletedAccountDetails());
   }
 }

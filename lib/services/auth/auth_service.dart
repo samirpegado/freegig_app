@@ -171,4 +171,65 @@ class FirebaseAuthService {
       'googleUser': true,
     });
   }
+
+  ///Metodo para fazer reautenticacao
+  Future<User?> reAuthWithEmailAndPassword(
+      BuildContext context, String password) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    try {
+      if (user != null) {
+        AuthCredential credential = EmailAuthProvider.credential(
+          email: user.email!,
+          password: password,
+        );
+
+        await user.reauthenticateWithCredential(credential);
+        print('USUARIO REAUTENTICADO');
+      }
+
+      return null;
+    } on FirebaseAuthException catch (e) {
+      print('some error occured');
+      String errorMessage = "Erro ao fazer login";
+
+      switch (e.code) {
+        case 'INVALID_LOGIN_CREDENTIALS':
+          errorMessage = 'Senha inválida.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Senha incorreta. Tente novamente.';
+          break;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
+    }
+
+    return null;
+  }
+
+  //Sign in with google
+  reAuthWithGoogle() async {
+    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+
+    if (gUser == null) {
+      // O usuário cancelou o login, trate esse caso conforme necessário
+      print('Login com Google cancelado.');
+      return null; // ou retorne algo apropriado no seu caso
+    }
+
+    final GoogleSignInAuthentication gAuth = await gUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: gAuth.accessToken,
+      idToken: gAuth.idToken,
+    );
+
+    return await _auth.signInWithCredential(credential);
+  }
+
+  ///
 }

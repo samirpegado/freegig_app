@@ -18,26 +18,32 @@ class _MusicianMultiSelectionFormState
 
   void _showSelectionDialog() async {
     Map<String, List<String>> musicianCategories = {
-      'Voz': ['Vocalista', 'Backing Vocal'],
-      'Cordas': [
+      'Populares': [
+        'Vocalista',
         'Guitarrista',
         'Baixista',
         'Violonista',
+        'Tecladista',
+        'Sanfoneiro',
+        'Baterista',
+        'Percussionista',
+        'Saxofonista',
         'Violinista',
+      ],
+      'Diversos': [
+        'Flautista',
         'Violoncelista',
         'Harpista',
-      ],
-      'Teclas': ['Pianista', 'Tecladista', 'Organista', 'Sanfoneiro'],
-      'Sopros': [
-        'Flautista',
-        'Saxofonista',
-        'Trompetista',
-        'Trombonista',
+        'Pianista',
+        'Organista',
         'Clarinetista',
         'Oboísta',
+        'Trompetista',
+        'Trombonista',
+        'Timpanista',
+        'Xilofonista',
       ],
-      'Percussão': ['Baterista', 'Percussionista', 'Timpanista', 'Xilofonista'],
-      'Outras': ['Banda'],
+      'Outros': ['Banda'],
     };
 
     // Inicialize os conjuntos para cada categoria
@@ -64,6 +70,7 @@ class _MusicianMultiSelectionFormState
                     (index) {
                       var category = musicianCategories.keys.toList()[index];
                       return ExpansionTile(
+                        initiallyExpanded: category == 'Populares',
                         title: Text(category),
                         children: List<Widget>.generate(
                           musicianCategories[category]!.length,
