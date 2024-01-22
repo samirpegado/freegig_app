@@ -1,5 +1,7 @@
 # FreeGig - Encontre Músicos e Crie Gigs Facilmente
 
+https://github.com/samirpegado/freegig-app/assets/57074996/c7956b9b-456d-49e7-bac8-0c61e655c459
+
 O FreeGig é uma emocionante fusão da minha experiência no mundo da música e minha trajetória como programador. Como músico apaixonado e desenvolvedor, este projeto representa a confluência de duas paixões profundas. 
 
 **Idealizado por mim (Samir Gomes) e está sendo desenvolvido em Flutter**, o FreeGig é um aplicativo inovador que simplifica a busca por músicos talentosos e a criação de gigs musicais para artistas e organizadores de eventos. Seja você um músico em busca de um grupo para tocar em um evento específico ou um artista que precisa montar uma banda de forma rápida e eficiente, o FreeGig é a solução perfeita para você.
