@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        //useMaterial3: false,
         fontFamily: 'Poppins',
         colorScheme: ColorScheme.light(
           primary: Colors.blue,

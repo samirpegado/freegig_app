@@ -1,2 +1,2 @@
-** Ajustar a funcao para deletar conta;
-** Termos de uso;
+** Ajustar envio de notificacoes para as mensagens de grupo
+** Ao excluir uma gig tbm excluir as notificaoes a respeito dela

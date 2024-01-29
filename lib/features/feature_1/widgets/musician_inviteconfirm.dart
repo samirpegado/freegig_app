@@ -58,70 +58,174 @@ class _InviteConfirmState extends State<InviteConfirm> {
                     return Column(
                       children: [
                         _gigDataCount != 0
-                            ? Text(
-                                "Escolha a GIG à qual você deseja enviar o convite para ${widget.profile['publicName']}:",
-                                textAlign: TextAlign.center,
+                            ? Column(
+                                children: [
+                                  Text(
+                                    "Escolha a GIG à qual você deseja enviar o convite para ${widget.profile['publicName']}:",
+                                    textAlign: TextAlign.center,
+                                  ),
+
+                                  SizedBox(height: 10),
+
+                                  /// cards de selecao de gigs
+                                  Column(
+                                    children: data.map<Widget>((gig) {
+                                      bool isSelected =
+                                          gig['gigUid'] == selectedGigUid;
+
+                                      return Column(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedGigUid = gig['gigUid'];
+                                                _categorys =
+                                                    gig['gigCategorys'];
+                                                _participants =
+                                                    gig['gigParticipants'];
+                                                _gigDescription =
+                                                    gig['gigDescription'];
+                                                _gigCity = gig['gigLocale'];
+                                                _gigDate = gig['gigDate'];
+                                              });
+                                            },
+                                            child: Card(
+                                              elevation: 3,
+                                              color: isSelected
+                                                  ? const Color.fromARGB(
+                                                      255, 188, 213, 233)
+                                                  : null,
+                                              child: ListTile(
+                                                title: Text(
+                                                    gig['gigDescription'] ??
+                                                        ''),
+                                                subtitle: Text(
+                                                  '${gig['gigLocale']}, ${gig['gigDate']}',
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }).toList(),
+                                  ),
+
+                                  /// botoes
+                                  SizedBox(height: 20),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(100)),
+                                          child: Icon(
+                                            Icons.close,
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 20),
+                                      InkWell(
+                                        onTap: () async {
+                                          if (selectedGigUid != '' &&
+                                              _categorys.contains(
+                                                  widget.profile['category']) &&
+                                              !_participants.contains(
+                                                  widget.profile['uid']) &&
+                                              _userProfileStatus == true) {
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+                                            await NotificationService()
+                                                .sendInvitation(
+                                              recipientID:
+                                                  widget.profile['uid'],
+                                              gigCity: _gigCity,
+                                              gigDate: _gigDate,
+                                              gigDescription: _gigDescription,
+                                              gigUid: selectedGigUid,
+                                            );
+                                            Navigator.of(context).pop();
+                                          } else {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    _alertInviteWarnings());
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              borderRadius:
+                                                  BorderRadius.circular(100)),
+                                          child: isLoading
+                                              ? Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(6.0),
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                )
+                                              : Icon(
+                                                  Icons.check,
+                                                  size: 50,
+                                                  color: Colors.white,
+                                                ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               )
                             : Column(
                                 children: [
                                   Text(
-                                    "Você ainda não criou nenhuma GIG para convidar este usuário.",
+                                    "Nenhuma GIG disponível para convidar este usuário.",
                                     textAlign: TextAlign.center,
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => Dialog.fullscreen(
-                                          backgroundColor: backgroundColor,
-                                          child: CreateNewGig(),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text(
+                                          'Fechar',
+                                          style: TextStyle(color: Colors.black),
                                         ),
-                                      );
-                                    },
-                                    child: Text(
-                                      'Criar Nova GIG',
-                                      style: TextStyle(fontSize: 18),
-                                    ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                Dialog.fullscreen(
+                                              backgroundColor: backgroundColor,
+                                              child: CreateNewGig(),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Criar GIG',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                        SizedBox(height: 10),
-                        Column(
-                          children: data.map<Widget>((gig) {
-                            bool isSelected = gig['gigUid'] == selectedGigUid;
-
-                            return Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedGigUid = gig['gigUid'];
-                                      _categorys = gig['gigCategorys'];
-                                      _participants = gig['gigParticipants'];
-                                      _gigDescription = gig['gigDescription'];
-                                      _gigCity = gig['gigLocale'];
-                                      _gigDate = gig['gigDate'];
-                                    });
-                                  },
-                                  child: Card(
-                                    elevation: 3,
-                                    color: isSelected
-                                        ? const Color.fromARGB(
-                                            255, 188, 213, 233)
-                                        : null,
-                                    child: ListTile(
-                                      title: Text(gig['gigDescription'] ?? ''),
-                                      subtitle: Text(
-                                        '${gig['gigLocale']}, ${gig['gigDate']}',
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
                       ],
                     );
                   } else if (snapshot.hasError) {
@@ -137,75 +241,6 @@ class _InviteConfirmState extends State<InviteConfirm> {
           ),
         ),
       ),
-      actions: [
-        Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(100)),
-                    child: Icon(
-                      Icons.close,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 20),
-                InkWell(
-                  onTap: () async {
-                    if (selectedGigUid != '' &&
-                        _categorys.contains(widget.profile['category']) &&
-                        !_participants.contains(widget.profile['uid']) &&
-                        _userProfileStatus == true) {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      await NotificationService().sendInvitation(
-                        recipientID: widget.profile['uid'],
-                        gigCity: _gigCity,
-                        gigDate: _gigDate,
-                        gigDescription: _gigDescription,
-                        gigUid: selectedGigUid,
-                      );
-                      Navigator.of(context).pop();
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (context) => _alertInviteWarnings());
-                    }
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(100)),
-                    child: isLoading
-                        ? Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
-                        : Icon(
-                            Icons.check,
-                            size: 50,
-                            color: Colors.white,
-                          ),
-                  ),
-                ),
-              ],
-            ))
-      ],
-      actionsAlignment: MainAxisAlignment.center,
     );
   }
 

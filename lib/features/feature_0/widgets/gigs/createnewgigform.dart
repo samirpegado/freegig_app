@@ -189,6 +189,11 @@ class _CreateNewGigState extends State<CreateNewGig> {
                       format: hourformat,
                       onShowPicker: (context, currentValue) async {
                         final timeInicio = await showTimePicker(
+                          builder: (context, child) => MediaQuery(
+                            data: MediaQuery.of(context)
+                                .copyWith(alwaysUse24HourFormat: true),
+                            child: child!,
+                          ),
                           context: context,
                           initialTime: TimeOfDay.fromDateTime(
                               currentValue ?? DateTime.now()),

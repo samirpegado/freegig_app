@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freegig_app/common/widgets/musicianonlyselectionform.dart';
 import 'package:freegig_app/common/widgets/search_list_city.dart';
+import 'package:freegig_app/common/widgets/terms_and_privacy.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -271,25 +272,32 @@ class _SignUpFormState extends State<SignUpForm> {
             SizedBox(height: 25),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: 'Ao se cadastrar, você concorda com os ',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                    TextSpan(
-                      text: 'Termos de Serviço',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+              child: GestureDetector(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => TermsAndPrivacyDialog());
+                },
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Ao se cadastrar, você concorda com os ',
+                        style: TextStyle(color: Colors.black87),
                       ),
-                    ),
-                    TextSpan(
-                      text: ' do Freegig.',
-                      style: TextStyle(color: Colors.black87),
-                    ),
-                  ],
+                      TextSpan(
+                        text: 'Termos de Serviço e Politica de Privacidade',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' do Freegig.',
+                        style: TextStyle(color: Colors.black87),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
