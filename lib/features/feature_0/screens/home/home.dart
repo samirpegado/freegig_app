@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -79,25 +81,31 @@ class _HomeState extends State<Home> {
   }
 
   Widget _carouselSlider() {
+    List<String> images = [
+      'assets/images/backimg.png',
+      'assets/images/backimg2.png',
+      'assets/images/backimg3.png',
+      'assets/images/backimg4.png',
+    ];
+
+    List<int> indices = List.generate(images.length, (index) => index);
+    indices.shuffle(); // Embaralha os índices
+
     return CarouselSlider(
       options: CarouselOptions(
         height: 380,
         viewportFraction: 1,
-        initialPage: 0,
+        initialPage: Random()
+            .nextInt(images.length), // Seleciona uma página inicial aleatória
         autoPlay: true,
       ),
-      items: [
-        'assets/images/backimg.png',
-        'assets/images/backimg2.png',
-        'assets/images/backimg3.png',
-        'assets/images/backimg4.png',
-      ].map((i) {
+      items: indices.map((index) {
         return Builder(
           builder: (BuildContext context) {
             return SizedBox(
               width: double.infinity,
               child: Image.asset(
-                i,
+                images[index],
                 fit: BoxFit.cover,
               ),
             );

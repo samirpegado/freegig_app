@@ -160,7 +160,8 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                         'Confirmar exclusão',
                         style: TextStyle(color: Colors.red),
                       ),
-                      content: Text('Tem certeza que deseja excluir esta GIG?'),
+                      content: Text(
+                          'Esta GIG será arquivada automaticamente um dia após sua realização. Você tem certeza de que deseja excluir permanentemente esta GIG?'),
                       actions: [
                         TextButton(
                             onPressed: () {
@@ -251,6 +252,59 @@ class _CreatedGigInfoState extends State<CreatedGigInfo> {
                   ),
                 ),
               ),
+              /*  SizedBox(width: 15),
+              InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(
+                        'Editar GIG',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      content: Text('Gostaria de editar esta GIG?'),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Fechar',
+                              style: TextStyle(color: Colors.black),
+                            )),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              showDialog(
+                                context: context,
+                                builder: (context) => Dialog.fullscreen(
+                                  backgroundColor: backgroundColor,
+                                  child:
+                                      EditGigForm(gigUid: widget.gig['gigUid']),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Editar',
+                            ))
+                      ],
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(100)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Icon(
+                      Iconsax.edit,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),*/
             ],
           ),
         ),

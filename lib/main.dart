@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
+import 'package:freegig_app/common/themeapp.dart';
 import 'package:freegig_app/features/authentication/screens/auth_google_gate.dart';
 import 'package:freegig_app/features/feature_0/screens/home/notifications.dart';
 import 'package:freegig_app/firebase_options.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.light(
           primary: Colors.blue,
           surfaceTint: Colors.white,
+          surfaceVariant: backgroundColor,
         ),
       ),
       localizationsDelegates: [

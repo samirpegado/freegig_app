@@ -57,7 +57,9 @@ class ChatService extends ChangeNotifier {
       'gigInitHour': gigInitHour,
     });
 
-    await NotificationService().newMessageNotification(recipientID: receiverId);
+    //envia a notificacao de push
+    await NotificationService()
+        .newMessagePushNotification(recipientID: receiverId);
   }
 
   //RECEBE MENSAGEM

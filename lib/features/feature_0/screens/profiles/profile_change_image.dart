@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:freegig_app/common/functions/navigation.dart';
+import 'package:freegig_app/common/widgets/build_profile_image.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:freegig_app/features/feature_0/navigation_menu.dart';
@@ -20,6 +21,7 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
   late String _publicName = "";
   File? _image;
   bool _isImageSelected = false;
+  late String _currentProfileImageURL = '';
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
 
       setState(() {
         _publicName = userData['publicName'];
+        _currentProfileImageURL = userData['profileImageUrl'];
       });
     } catch (e) {
       print("Erro ao buscar dados do usuário: $e");
@@ -181,12 +184,16 @@ class _ChangeProfileImageState extends State<ChangeProfileImage> {
                             backgroundImage: FileImage(_image!),
                             backgroundColor: Colors.grey[200],
                           )
-                        : CircleAvatar(
-                            radius: 80,
-                            backgroundImage: AssetImage(
-                                'assets/profiles/default-user-image.png'),
-                            backgroundColor: Colors.grey[200],
-                          ),
+                        : _currentProfileImageURL.isNotEmpty
+                            ? BuildProfileImage(
+                                profileImageUrl: _currentProfileImageURL,
+                                imageSize: 160)
+                            : CircleAvatar(
+                                radius: 80,
+                                backgroundImage: AssetImage(
+                                    'assets/profiles/default-user-image.png'),
+                                backgroundColor: Colors.grey[200],
+                              ),
                   ),
                   Positioned(
                     bottom: 0,

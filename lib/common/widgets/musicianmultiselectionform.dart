@@ -13,7 +13,6 @@ class MusicianMultiSelectionForm extends StatefulWidget {
 
 class _MusicianMultiSelectionFormState
     extends State<MusicianMultiSelectionForm> {
-  TextEditingController _textController = TextEditingController();
   Map<String, Set<String>> selectedMusiciansByCategory = {};
 
   void _showSelectionDialog() async {
@@ -114,8 +113,9 @@ class _MusicianMultiSelectionFormState
                           .forEach((category, musicians) {
                         selectedMusicians.addAll(musicians);
                       });
-                      _textController.text = selectedMusicians.join(', ');
-                      widget.categoryController.text = _textController.text;
+
+                      widget.categoryController.text =
+                          selectedMusicians.join(', ');
 
                       Navigator.of(context).pop();
                     },
@@ -129,18 +129,18 @@ class _MusicianMultiSelectionFormState
       },
     );
   }
-
+/*
   @override
   void dispose() {
-    _textController.dispose();
+    widget.categoryController.dispose();
 
     super.dispose();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _textController,
+      controller: widget.categoryController,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Categoria inválida.';

@@ -15,7 +15,6 @@ class MusicianOnlySelectionForm extends StatefulWidget {
 }
 
 class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
-  TextEditingController _textController = TextEditingController();
   String? selectedMusician;
 
   void _showSelectionDialog() async {
@@ -100,8 +99,7 @@ class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
                 IconButton(
                   onPressed: () {
                     if (selectedMusician != null) {
-                      _textController.text = selectedMusician!;
-                      widget.categoryController.text = _textController.text;
+                      widget.categoryController.text = selectedMusician!;
                     }
 
                     Navigator.of(context).pop();
@@ -120,7 +118,7 @@ class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
 
   @override
   void dispose() {
-    _textController.dispose();
+    widget.categoryController.dispose();
 
     super.dispose();
   }
@@ -128,7 +126,7 @@ class _MusicianOnlySelectionFormState extends State<MusicianOnlySelectionForm> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: _textController,
+      controller: widget.categoryController,
       validator: (value) {
         if (value!.isEmpty) {
           return 'Categoria inválida.';

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:freegig_app/services/notification/notifications_service.dart';
 
 class GigChatService extends ChangeNotifier {
   // pega as instancias do auth e firestore
@@ -13,12 +14,19 @@ class GigChatService extends ChangeNotifier {
     final String currentUserId = _auth.currentUser!.uid;
     final Timestamp timestamp = Timestamp.now();
 
-    //pegar a lista de participantes da GIG
+    // pegar a lista de participantes da GIG
     DocumentSnapshot<Map<String, dynamic>> userSnapshot =
         await _firestore.collection('users').doc(currentUserId).get();
 
+    // aqui eu quero pegar a lista dos participantes dessa gig que esta salva no firebase no campo 'gigParticipants'
+    DocumentSnapshot<Map<String, dynamic>> gigSnapshot =
+        await _firestore.collection('gigs').doc(gigUid).get();
+
+    List<dynamic> participantList = gigSnapshot['gigParticipants'] ?? [];
+
     String senderPublicName = userSnapshot['publicName'];
-    //adiciona a mensagem a base de dados
+
+    // adiciona a mensagem à base de dados
     DocumentReference msg = _firestore
         .collection('gigs')
         .doc(gigUid)
@@ -36,6 +44,14 @@ class GigChatService extends ChangeNotifier {
     await _firestore.collection('gigs').doc(gigUid).update({
       'gigChat': true,
     });
+
+    // Envia notificação para cada participante
+    for (String participantId in participantList) {
+      if (participantId != currentUserId) {
+        await NotificationService()
+            .newMessagePushNotification(recipientID: participantId);
+      }
+    }
   }
 
   //RECEBE MENSAGEM

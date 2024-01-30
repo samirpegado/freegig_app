@@ -49,7 +49,6 @@ class _HomeCustomCardState extends State<HomeCustomCard> {
             Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(color: Colors.grey, width: 0.3),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(

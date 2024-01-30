@@ -1,2 +1,2 @@
-** Ajustar envio de notificacoes para as mensagens de grupo
-** Ao excluir uma gig tbm excluir as notificaoes a respeito dela
+
+** criar a parte dos anuncios

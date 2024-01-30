@@ -149,7 +149,7 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
-  Future<void> newMessageNotification({
+  Future<void> newMessagePushNotification({
     required String recipientID,
   }) async {
     // Obter o ID do usuário logado

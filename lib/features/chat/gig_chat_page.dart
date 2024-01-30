@@ -156,6 +156,7 @@ class _GigChatPageState extends State<GigChatPage> {
                     context: context,
                     builder: (context) => AlertDialog(
                           actionsAlignment: MainAxisAlignment.center,
+                          title: Text('Apagar'),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -173,7 +174,7 @@ class _GigChatPageState extends State<GigChatPage> {
                                 Navigator.of(context).pop();
                               },
                               child: Text(
-                                'Apagar',
+                                'Apagar mensagem',
                                 style: TextStyle(color: Colors.red),
                               ),
                             ),

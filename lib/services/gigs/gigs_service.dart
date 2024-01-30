@@ -132,7 +132,17 @@ class GigsDataService extends ChangeNotifier {
       // Chama a função para excluir a sala de chat (chat_room) associada à gig
       await ChatService().deleteChatRoom(gigUid);
 
-      print('Gig e subcoleção de mensagens removidas com sucesso!');
+      // Exclui os documentos da coleção 'notifications' onde 'gigUid' é igual a 'gigUid'
+      QuerySnapshot<Map<String, dynamic>> notificationsSnapshot =
+          await FirebaseFirestore.instance
+              .collection('notifications')
+              .where('gigUid', isEqualTo: gigUid)
+              .get();
+
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in notificationsSnapshot.docs) {
+        await doc.reference.delete();
+      }
     } catch (e) {
       print('Erro ao remover gig: $e');
     }
